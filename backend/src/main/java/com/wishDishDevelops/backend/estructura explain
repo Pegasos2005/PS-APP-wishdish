@@ -1,0 +1,18 @@
+La Estructura de Carpetas (Paquetes)
+
+📂 models (o entities): Los Ingredientes. (El más fácil)
+Aquí irán las clases de Java que son un espejo exacto de las
+tablas de MySQL que creamos antes (Category, Product, Order).
+
+📂 repositories: El Ayudante de Despensa ("Tu Base de Datos").
+Son los archivos que se encargan exclusivamente de hablar con MySQL.
+Hacen los SELECT, INSERT, UPDATE y DELETE.
+
+📂 services: El Cocinero (Lógica de Negocio).
+Aquí es donde programas la inteligencia de la aplicación. Por
+ejemplo: "Antes de guardar esta comanda (Repository), comprueba si
+la mesa existe, y si el producto tiene stock".
+
+📂 controllers: El Camarero.
+Recibirán las peticiones de Angular y se las mandará a services y
+devolverá las respuestas a Angular

@@ -29,7 +29,7 @@ CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     table_id INT NOT NULL,
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    status ENUM('pending', 'preparing', 'served') DEFAULT 'pending',
+    status ENUM('in_kitchen', 'served', 'paid') DEFAULT 'in_kitchen',
     general_notes TEXT, -- Aquí va un comentario del cliente sobre la comanda (Necesito 2 servilletas, nos falta un cenicero, etc...)
     FOREIGN KEY (table_id) REFERENCES dining_tables(id)
 );
@@ -40,6 +40,7 @@ CREATE TABLE order_items (
     order_id INT NOT NULL,
     product_id INT NOT NULL,
     quantity INT DEFAULT 1,
+    status ENUM('in_kitchen', 'prepared') DEFAULT 'in_kitchen',
     item_notes TEXT, -- Aquí van los "Sin pepinillo"
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id)
