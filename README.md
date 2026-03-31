@@ -1,4 +1,4 @@
-﻿# PS-APP-dishWish
+﻿# PS-APP-wishdish
 Carpeta a documentación:
 https://drive.google.com/drive/folders/1ucSZ0Uf3MIEq-D5C9aPp5Ra1Enk7GQan?usp=drive_link
 
