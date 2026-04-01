@@ -40,7 +40,7 @@ PS-APP-wishdish/
 │   │   │   │   ├── controller/    # Controladores REST
 │   │   │   │   ├── service/       # Lógica de negocio
 │   │   │   │   ├── repository/    # Repositorios JPA
-│   │   │   │   └── entity/        # Entidades JPA
+│   │   │   │   └── entity/        # Entidades JPA (definen el esquema BD)
 │   │   │   └── resources/
 │   │   │       └── application.properties
 │   │   └── test/
@@ -48,9 +48,9 @@ PS-APP-wishdish/
 ├── frontend/             # Aplicación Angular
 │   ├── src/
 │   └── package.json
-├── database/             # Scripts SQL
-│   ├── schema.sql       # Estructura de la BD
-│   └── data.sql         # Datos de prueba
+├── database/             # Scripts SQL (NO USAR - solo referencia)
+│   ├── schema.sql       # ⚠️ DEPRECADO - Hibernate genera las tablas
+│   └── data.sql         # ⚠️ DEPRECADO - Usar entidades Java
 └── README.md
 ```
 
@@ -73,23 +73,15 @@ cd PS-APP-wishdish
 
 ### 2. Configurar la Base de Datos
 
-1. Crear la base de datos en MySQL:
+**IMPORTANTE:** Este proyecto usa **JPA/Hibernate** para la gestión del esquema de base de datos. **NO ejecutes scripts SQL manualmente**. Las tablas se crean automáticamente desde las entidades Java.
+
+1. Crear la base de datos vacía en MySQL:
 
 ```sql
 CREATE DATABASE wishdish;
 ```
 
-2. Ejecutar los scripts de inicialización:
-
-```bash
-# Crear las tablas
-mysql -u root -p wishdish < database/schema.sql
-
-# Insertar datos de prueba (opcional)
-mysql -u root -p wishdish < database/data.sql
-```
-
-3. Actualizar credenciales en `backend/src/main/resources/application.properties`:
+2. Actualizar credenciales en `backend/src/main/resources/application.properties`:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/wishdish
@@ -140,6 +132,49 @@ npm start
 ```
 
 Acceder a la aplicación en: **http://localhost:4200**
+
+## Gestión de la Base de Datos
+
+### ⚠️ POLÍTICA DE GESTIÓN DE DATOS - LEER OBLIGATORIAMENTE
+
+**Este proyecto usa JPA/Hibernate para gestionar el esquema de la base de datos.**
+
+### Reglas NO Negociables:
+
+1. **NUNCA ejecutes scripts SQL directamente** (`schema.sql`, `data.sql`)
+2. **SIEMPRE define las tablas** mediante entidades Java en `backend/src/main/java/com/wishdish/backend/entity/`
+3. **NUNCA modifiques** `spring.jpa.hibernate.ddl-auto` - debe estar en `update`
+4. **Las tablas se crean/actualizan automáticamente** al iniciar la aplicación
+
+### ¿Cómo añadir una nueva tabla?
+
+1. Crear una clase Java anotada con `@Entity` en el paquete `entity`
+2. Definir atributos con anotaciones JPA (`@Column`, `@Id`, `@GeneratedValue`, etc.)
+3. Iniciar la aplicación → Hibernate creará la tabla automáticamente
+
+### ¿Cómo modificar una tabla existente?
+
+1. Modificar la entidad Java correspondiente
+2. Reiniciar la aplicación → Hibernate aplicará los cambios
+
+### Ejemplo de Entidad:
+
+```java
+@Entity
+@Table(name = "categorias")
+public class Categoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true, length = 100)
+    private String nombre;
+
+    // getters, setters, constructores...
+}
+```
+
+**Los archivos SQL en `/database/` son solo para referencia histórica y NO deben usarse.**
 
 ## Configuración en IntelliJ IDEA
 
