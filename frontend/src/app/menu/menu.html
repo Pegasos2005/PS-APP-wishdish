@@ -1,0 +1,51 @@
+<div class="principal-container">
+
+  <header class="head">
+    <img src="../../../assets/logo.png" alt="logo">
+    <button class="return-button">&lt;</button>
+    <div class="image-logo"></div>
+  </header>
+
+  <div class="body-menu">
+
+    <aside class="category-column">
+      @for(category of menuCategories; track category.category_id){
+        <button class="category-btn"
+          [class.active]="selectedCategory === category.category_id"
+          (click)="scrollToCategory(category.category_id)">
+          {{ category.category_name}}
+        </button>
+      }
+      <button class="show-order-btn">
+        show order
+        @if(cartCount > 0) {
+          <span class="cart-count">{{ cartCount }}</span>
+        }
+      </button>
+    </aside>
+
+    <main class="product-column"
+      #productColumn
+      (scroll)="onScroll($event)">
+
+      @for (category of menuCategories; track category.category_id){
+        <section [attr.data-category-id]="category.category_id">
+          <h2
+            class="section-title"
+            [attr.data-category-id]="category.category_id">
+            {{ category.category_name }}
+          </h2>
+
+          @for (p of category.products; track p.id){
+            <app-product-card
+              [product]="p"
+              (addToCart)="onAddToCart($event)">
+            </app-product-card>
+          }
+        </section>
+      }
+
+    </main>
+  </div>
+
+</div>
