@@ -1,0 +1,62 @@
+.product-card{
+  display:flex;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+  position: relative;
+}
+
+.dish-image{
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+.product-info{
+  flex: 1;
+
+  h3{
+    margin: 0 0 5px 0;
+    font-size: 16px;
+  }
+
+  p{
+    margin: 0;
+    font-size: 16px;
+    color: #666;
+  }
+}
+
+.price{
+  display: block;
+  margin-top: 8px;
+  font-weight: bold;
+  color: #333
+}
+
+.add-btn{
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  transition: background 0.2s;
+}
+
+.add-btn:hover{
+  background: #f0f0f0;
+}

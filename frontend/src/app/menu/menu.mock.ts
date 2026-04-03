@@ -118,7 +118,7 @@ export const DATA_MENU = [
         product_name: 'Chesscake de Pistacho Casera',
         price: 6.50,
         description: 'Deliciosa Cheesecake Casera con Topping de Pistacho.',
-        image: 'assets/cheescake_pisacho.jpg'
+        image: 'assets/cheescake_pistacho.jpg'
       },
 
       {

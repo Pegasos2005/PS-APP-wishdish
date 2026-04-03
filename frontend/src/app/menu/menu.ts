@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Importante para que funcionen cosas básicas
-import { DATA_MENU } from './menu.mock';
-import { ProductCard } from './product-card/product-card';        // Importar el json
+import { DATA_MENU } from './menu.mock';        // Importar el json
+import { ProductCard } from './product-card/product-card';
 
 @Component({
   selector: 'app-menu',

@@ -1,6 +1,7 @@
 <div class="principal-container">
 
   <header class="head">
+    <img src="../../../assets/logo.png" alt="logo">
     <button class="return-button">&lt;</button>
     <div class="image-logo"></div>
   </header>
@@ -8,7 +9,6 @@
   <div class="body-menu">
 
     <aside class="category-column">
-      <h2>Menú</h2>
       @for(category of menuCategories; track category.category_id){
         <button class="category-btn">
           {{ category.category_name}}
