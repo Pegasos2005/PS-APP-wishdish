@@ -22,13 +22,13 @@ export class OrderService {
       // Si el producto está en la lista...
       // se suma 1 pero no se duplica el producto
       if(existingItem) {
-        existingItem.quantiy ++;
-        console.log("Se ha incrementado: ", productToAdd.product_name, " en: ", existingItem.quantiy, " unidad/es");
+        existingItem.quantity ++;
+        console.log("Se ha incrementado: ", productToAdd.product_name, " en: ", existingItem.quantity, " unidad/es");
       }
       else{
         this.order.push({
           product: productToAdd,
-          quantiy: 1
+          quantity: 1
         });
         console.log("Añadido nuevo plato: ", productToAdd.product_name);
       }

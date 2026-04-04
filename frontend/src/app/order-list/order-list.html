@@ -1,0 +1,30 @@
+<div class="summary-container">
+
+  <h2>Tu pedido</h2>
+
+  @for (item of orderService.order; track item.product.id){
+
+    <div class="summary-card">
+      <img [src]="item.product.image" alt="foto de {{ item.product.product_name }}">
+
+      <div class="product-info">
+        <h3>{{ item.product.product_name }}</h3>
+        <p>{{ item.product.description }}</p>
+
+        <button class="btn-editar">editar</button>
+      </div>
+
+      <div class="controles-derecha">
+        <span class="price">{{ item.product.price }} €</span>
+
+        <div class="botones-cantidad">
+          <button>-</button>
+          <span class="cantidad">{{ item.quantity }}</span>
+          <button>+</button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
+<button class="btn-finish">Finish</button>
