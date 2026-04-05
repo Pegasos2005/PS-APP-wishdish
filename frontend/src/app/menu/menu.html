@@ -9,11 +9,11 @@
   <div class="body-menu">
 
     <aside class="category-column">
-      @for(category of menuCategories; track category.category_id){
+      @for(category of menuCategories(); track category.categoriaId){
         <button class="category-btn"
-          [class.active]="selectedCategory === category.category_id"
-          (click)="scrollToCategory(category.category_id)">
-          {{ category.category_name}}
+          [class.active]="selectedCategory === category.categoriaId"
+          (click)="scrollToCategory(category.categoriaId)">
+          {{ category.categoriaNombre }}
         </button>
       }
       <button class="show-order-btn">
@@ -28,15 +28,15 @@
       #productColumn
       (scroll)="onScroll($event)">
 
-      @for (category of menuCategories; track category.category_id){
-        <section [attr.data-category-id]="category.category_id">
+      @for (category of menuCategories(); track category.categoriaId){
+        <section [attr.data-category-id]="category.categoriaId">
           <h2
             class="section-title"
-            [attr.data-category-id]="category.category_id">
-            {{ category.category_name }}
+            [attr.data-category-id]="category.categoriaId">
+            {{ category.categoriaNombre }}
           </h2>
 
-          @for (p of category.products; track p.id){
+          @for (p of category.productos; track p.id){
             <app-product-card
               [product]="p"
               (addToCart)="onAddToCart($event)">

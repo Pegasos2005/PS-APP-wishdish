@@ -54,6 +54,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Logs
+*.log
+
 ### STS ###
 .apt_generated
 .classpath
