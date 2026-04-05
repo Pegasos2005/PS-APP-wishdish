@@ -1,33 +1,185 @@
-/* Contenedor para posicionar el botón al final de la vista */
-.seccion-acciones {
-  display: flex;
-  justify-content: center;
+.contenedor-pedido {
   padding: 20px;
-  margin-top: 50px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-/* Estilos específicos del botón */
-.boton-enviar-comanda {
-  background-color: #ff4757; /* Un rojo/naranja llamativo */
+/* Banner de Error */
+.banner-error {
+  background-color: #dc3545;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Mensaje cuando no hay comandas */
+.mensaje-vacio {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+.mensaje-vacio h2 {
+  font-size: 1.8rem;
+  font-weight: 300;
+}
+
+/* Grid de Comandas */
+.grid-comandas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+/* Tarjeta de Comanda */
+.tarjeta-comanda {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tarjeta-comanda:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Header de la Comanda */
+.header-comanda {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.header-comanda h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #212529;
+}
+
+/* Badges de Estado */
+.estado-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.estado-badge.en-cocina {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.estado-badge.servida {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Fecha */
+.fecha-comanda {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 15px;
+}
+
+/* Items de la Comanda */
+.items-comanda {
+  margin: 15px 0;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.item-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.cantidad {
+  font-weight: bold;
+  color: #495057;
+  min-width: 30px;
+}
+
+.nombre-producto {
+  color: #212529;
+}
+
+.estado-item {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.estado-item.en-cocina {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.estado-item.preparado {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* Notas */
+.notas {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-left: 3px solid #007bff;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+/* Botón Vista Cliente */
+.btn-vista-cliente {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  background-color: #007bff;
   color: white;
   border: none;
-  padding: 15px 32px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border-radius: 50px; /* Estilo píldora, muy moderno */
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
   transition: all 0.3s ease;
+  z-index: 1000;
 }
 
-/* Interacción visual (Feedback de usuario) */
-.boton-enviar-comanda:hover {
-  background-color: #ff6b81;
+.btn-vista-cliente:hover {
+  background-color: #0056b3;
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(255, 71, 87, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
 }
 
-.boton-enviar-comanda:active {
+.btn-vista-cliente:active {
   transform: translateY(0);
-  box-shadow: 0 2px 5px rgba(255, 71, 87, 0.2);
 }

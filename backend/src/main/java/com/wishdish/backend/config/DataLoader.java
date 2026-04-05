@@ -1,9 +1,11 @@
 package com.wishdish.backend.config;
 
-import com.wishdish.backend.entity.Categoria;
-import com.wishdish.backend.entity.Producto;
-import com.wishdish.backend.repository.CategoriaRepository;
-import com.wishdish.backend.repository.ProductoRepository;
+import com.wishdish.backend.models.Categoria;
+import com.wishdish.backend.models.Producto;
+import com.wishdish.backend.models.Mesa;
+import com.wishdish.backend.repositories.CategoriaRepository;
+import com.wishdish.backend.repositories.ProductoRepository;
+import com.wishdish.backend.repositories.MesaRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,8 +18,10 @@ import java.math.BigDecimal;
  * Esta clase se ejecuta automáticamente al iniciar Spring Boot y pobla la BD
  * con datos de ejemplo si la base de datos está vacía.
  *
- * IMPORTANTE: Solo carga datos si NO existen categorías en la BD.
- * Esto evita duplicados al reiniciar la aplicación.
+ * IMPORTANTE:
+ * - Las MESAS se verifican y crean de forma independiente (siempre necesarias)
+ * - Los PRODUCTOS y CATEGORÍAS solo se cargan si NO existen categorías
+ * - Esto evita duplicados al reiniciar la aplicación
  *
  * Para desactivar esta carga automática:
  * - Comentar la anotación @Bean
@@ -33,16 +37,46 @@ public class DataLoader {
     @Bean
     CommandLineRunner initDatabase(
             CategoriaRepository categoriaRepository,
-            ProductoRepository productoRepository) {
+            ProductoRepository productoRepository,
+            MesaRepository mesaRepository) {
 
         return args -> {
-            // Solo cargar datos si la BD está vacía
+            System.out.println("🔄 Verificando datos en la base de datos...");
+
+            // ===========================
+            // CREAR MESAS (verificación independiente)
+            // ===========================
+            if (mesaRepository.count() == 0) {
+                System.out.println("   🪑 Creando mesas...");
+                for (int i = 1; i <= 10; i++) {
+                    mesaRepository.save(new Mesa(i));
+                }
+                System.out.println("   ✓ 10 mesas creadas");
+            } else {
+                System.out.println("   ✅ Mesas ya existen (" + mesaRepository.count() + " mesas)");
+            }
+
+            // ===========================
+            // VERIFICAR PRODUCTOS Y CATEGORÍAS
+            // ===========================
             if (categoriaRepository.count() > 0) {
-                System.out.println("✅ Base de datos ya contiene datos. Omitiendo carga inicial.");
+                System.out.println("   ✅ Categorías y productos ya existen. Omitiendo carga de productos.");
+
+                // Mostrar resumen
+                long totalCategorias = categoriaRepository.count();
+                long totalProductos = productoRepository.count();
+                long totalMesas = mesaRepository.count();
+
+                System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                System.out.println("✅ Base de datos lista");
+                System.out.println("   📁 Categorías: " + totalCategorias);
+                System.out.println("   🍔 Productos: " + totalProductos);
+                System.out.println("   🪑 Mesas: " + totalMesas);
+                System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
                 return;
             }
 
-            System.out.println("🔄 Cargando datos de prueba en la base de datos...");
+            System.out.println("   📦 Cargando categorías y productos...");
 
             // ===========================
             // CREAR CATEGORÍAS
@@ -232,11 +266,13 @@ public class DataLoader {
             // ===========================
             long totalCategorias = categoriaRepository.count();
             long totalProductos = productoRepository.count();
+            long totalMesas = mesaRepository.count();
 
             System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             System.out.println("✅ Base de datos inicializada correctamente");
             System.out.println("   📁 Categorías: " + totalCategorias);
             System.out.println("   🍔 Productos: " + totalProductos);
+            System.out.println("   🪑 Mesas: " + totalMesas);
             System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         };
     }

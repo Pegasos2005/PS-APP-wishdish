@@ -74,8 +74,25 @@
   background: #c71621;
 }
 
-.show-order-btn {
+.send-order-btn {
   margin-top: auto;
+  padding: 15px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  font-size: 16px;
+}
+
+.send-order-btn:hover {
+  background-color: #218838;
+}
+
+.show-order-btn {
+  margin-top: 10px;
   padding: 15px;
   background-color: #e31b23;
   color: white;
@@ -84,6 +101,28 @@
   font-weight: bold;
   cursor: pointer;
   position: relative;
+  font-size: 14px;
+}
+
+.show-order-btn:hover {
+  background-color: #c71621;
+}
+
+.waiter-view-btn {
+  margin-top: 10px;
+  padding: 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  font-size: 14px;
+}
+
+.waiter-view-btn:hover {
+  background-color: #0056b3;
 }
 
 .cart-count {

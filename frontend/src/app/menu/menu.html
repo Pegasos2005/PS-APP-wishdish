@@ -16,11 +16,20 @@
           {{ category.categoriaNombre }}
         </button>
       }
+      <button class="send-order-btn" (click)="sendOrder()">
+        Send Order
+        @if(cartCount > 0) {
+          <span class="cart-count">{{ cartCount }}</span>
+        }
+      </button>
       <button class="show-order-btn">
         show order
         @if(cartCount > 0) {
           <span class="cart-count">{{ cartCount }}</span>
         }
+      </button>
+      <button class="waiter-view-btn" (click)="navigateToPedido()">
+        Vista Camarero
       </button>
     </aside>
 

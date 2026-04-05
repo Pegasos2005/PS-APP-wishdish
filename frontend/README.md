@@ -62,8 +62,12 @@ ng serve --open
 - ✅ Tarjetas de producto con imagen, nombre, descripción y precio
 - ✅ Sidebar de categorías
 - ✅ Scroll sincronizado entre categorías y productos
-- ✅ Contador de carrito (básico)
-- ✅ Integración con backend vía API REST
+- ✅ Contador de carrito y creación de comandas
+- ✅ Vista de camarero con listado de comandas activas
+- ✅ Navegación entre vista cliente y vista camarero
+- ✅ Sistema de rutas con Angular Router
+- ✅ Polling automático cada 3 segundos para actualizar comandas
+- ✅ Integración completa con API REST
 
 ### Integración con Backend
 
@@ -86,31 +90,74 @@ El servicio carga los datos desde `http://localhost:8080/api/menu`
 
 **Importante:** El backend debe estar corriendo en el puerto 8080 para que funcione correctamente.
 
+## Arquitectura y Rutas
+
+### Sistema de Rutas
+
+La aplicación utiliza **Angular Router** para gestionar la navegación entre vistas:
+
+**Archivo:** `src/app/app.routes.ts`
+
+```typescript
+export const routes: Routes = [
+  { path: '', component: Menu },        // Vista cliente (por defecto)
+  { path: 'pedido', component: Pedido } // Vista camarero
+];
+```
+
+**Componente raíz:** El `App` component (`src/app/app.ts`) usa `<router-outlet>` para renderizar dinámicamente los componentes según la ruta activa.
+
+### Flujo de Navegación
+
+```
+┌─────────────────────────────────────────┐
+│  http://localhost:4200/                 │
+│  ↓                                       │
+│  Menu Component (Vista Cliente)         │
+│  - Mostrar productos                    │
+│  - Agregar al carrito                   │
+│  - Botón "Send Order"                   │
+│  - Botón "Vista Camarero" → /pedido     │
+└─────────────────────────────────────────┘
+                  ↓
+┌─────────────────────────────────────────┐
+│  http://localhost:4200/pedido           │
+│  ↓                                       │
+│  Pedido Component (Vista Camarero)      │
+│  - Listar comandas activas              │
+│  - Actualización automática (polling)   │
+│  - Botón "Vista Cliente" → /            │
+└─────────────────────────────────────────┘
+```
+
 ## Estructura del Proyecto
 
 ```
 frontend/
 ├── src/app/
-│   ├── menu/                      # Componente principal
-│   │   ├── menu.ts               # Lógica del menú
-│   │   ├── menu.html             # Template
+│   ├── menu/                      # Vista cliente - Menú
+│   │   ├── menu.ts               # Lógica: carrito, navegación
+│   │   ├── menu.html             # Template con categorías/productos
 │   │   ├── menu.css              # Estilos
 │   │   └── product-card/         # Componente de tarjeta
 │   │       ├── product-card.ts
 │   │       ├── product-card.html
 │   │       └── product-card.css
-│   ├── pedido/                    # Componente de pedido (WIP)
-│   │   ├── pedido.ts
-│   │   ├── pedido.html
-│   │   └── pedido.css
+│   ├── pedido/                    # Vista camarero - Comandas
+│   │   ├── pedido.ts             # Lógica: polling, navegación
+│   │   ├── pedido.html           # Template con grid de comandas
+│   │   └── pedido.css            # Estilos de tarjetas
 │   ├── models/                    # Interfaces TypeScript
-│   │   ├── menu-categoria-backend.model.ts
-│   │   └── producto-backend.model.ts
+│   │   ├── menu-categoria.model.ts
+│   │   ├── producto.model.ts
+│   │   └── comanda.model.ts      # DTOs de comandas
 │   ├── services/                  # Servicios HTTP
-│   │   └── menu.service.ts       # Comunicación con API
-│   ├── app.ts                     # Componente raíz
-│   ├── app.config.ts              # Configuración
-│   └── app.routes.ts              # Rutas
+│   │   ├── menu.service.ts       # API de menú
+│   │   └── comanda.service.ts    # API de comandas
+│   ├── app.ts                     # Componente raíz con <router-outlet>
+│   ├── app.html                   # Template raíz
+│   ├── app.config.ts              # Configuración (HttpClient, Router)
+│   └── app.routes.ts              # Definición de rutas
 ├── assets/                        # Imágenes de productos
 ├── index.html
 ├── main.ts
@@ -119,16 +166,63 @@ frontend/
 
 ## Componentes Principales
 
-### Menu Component
+### App Component (Raíz)
+
+**Ubicación:** `src/app/app.ts`
+
+**Responsabilidades:**
+- Renderizar `<router-outlet>` para navegación
+- Punto de entrada de la aplicación
+
+**Template:**
+```html
+<router-outlet></router-outlet>
+```
+
+### Menu Component (Vista Cliente)
 
 **Ubicación:** `src/app/menu/`
+**Ruta:** `/` (raíz)
 
 **Responsabilidades:**
 - Cargar menú desde la API
 - Mostrar categorías en sidebar
 - Mostrar productos agrupados por categoría
 - Gestionar scroll sincronizado
-- Contador de carrito
+- Gestionar carrito de compras
+- Crear comandas vía API
+- Navegación a vista camarero
+
+**Funcionalidades:**
+```typescript
+onAddToCart(product)      // Agregar producto al carrito
+sendOrder()               // Crear comanda en el backend
+navigateToPedido()        // Ir a vista camarero
+```
+
+### Pedido Component (Vista Camarero)
+
+**Ubicación:** `src/app/pedido/`
+**Ruta:** `/pedido`
+
+**Responsabilidades:**
+- Listar comandas activas (estados: en_cocina, servida)
+- Actualización automática cada 3 segundos (polling)
+- Mostrar items de cada comanda
+- Navegación a vista cliente
+
+**Características:**
+```typescript
+cargarComandasActivas()   // Carga inicial desde API
+iniciarPolling()          // Actualización automática
+navigateToMenu()          // Volver a vista cliente
+```
+
+**Datos mostrados:**
+- Número de mesa
+- Estado de comanda (En Cocina / Servida)
+- Lista de items con cantidad y nombre
+- Estado de cada item
 
 ### ProductCard Component
 
@@ -140,17 +234,27 @@ frontend/
 
 **Input/Output:**
 ```typescript
-@Input() product!: ProductoBackend;
-@Output() addToCart = new EventEmitter<ProductoBackend>();
+@Input() product!: Producto;
+@Output() addToCart = new EventEmitter<Producto>();
 ```
+
+## Servicios
 
 ### MenuService
 
 **Ubicación:** `src/app/services/menu.service.ts`
 
-**Responsabilidades:**
-- Comunicación con backend vía HTTP
-- Endpoint: `GET http://localhost:8080/api/menu`
+**Endpoints:**
+- `GET http://localhost:8080/api/menu` - Obtener menú completo
+
+### ComandaService
+
+**Ubicación:** `src/app/services/comanda.service.ts`
+
+**Endpoints:**
+- `GET http://localhost:8080/api/comandas/activas` - Listar comandas activas
+- `POST http://localhost:8080/api/comandas` - Crear nueva comanda
+- `PUT http://localhost:8080/api/comandas/items/{id}/avanzar` - Avanzar estado de item
 
 ## Scripts Disponibles
 
@@ -238,13 +342,34 @@ El backend ya está configurado para aceptar peticiones desde `http://localhost:
 
 Si cambias el puerto del frontend, actualiza la configuración CORS en el backend (`WebConfig.java`).
 
+## Sintaxis de Angular 19
+
+El proyecto utiliza la nueva sintaxis de control flow de Angular 19:
+
+**Condicionales:**
+```html
+@if (condition) {
+  <div>Contenido</div>
+}
+```
+
+**Bucles:**
+```html
+@for (item of items; track item.id) {
+  <div>{{ item.name }}</div>
+}
+```
+
+**Nota:** La sintaxis antigua (`*ngIf`, `*ngFor`) no se utiliza en este proyecto.
+
 ## Próximos Pasos
 
-- [ ] Implementar carrito funcional completo
+- [ ] Implementar selector de mesa en vista cliente
+- [ ] Agregar funcionalidad de avance de estado de items
 - [ ] Crear servicio de carrito persistente (LocalStorage)
-- [ ] Completar componente de pedido
-- [ ] Agregar manejo de errores visual
+- [ ] Agregar manejo de errores visual mejorado
 - [ ] Agregar loading states
+- [ ] Agregar filtros en vista camarero
 
 ## Documentación Adicional
 

@@ -1,8 +1,60 @@
 <div class="contenedor-pedido">
-  <div class="seccion-acciones">
-    <button class="boton-enviar-comanda" (click)="enviarComanda()">
-      Enviar Comanda
-    </button>
-  </div>
+  <!-- Botón para volver a Vista Cliente -->
+  <button class="btn-vista-cliente" (click)="navigateToMenu()">
+    Vista Cliente
+  </button>
 
+  <!-- Banner de Error de Conexión -->
+  @if (errorConexion) {
+    <div class="banner-error">
+      Conexión perdida, reconectando...
+    </div>
+  }
+
+  <!-- Mensaje cuando no hay comandas -->
+  @if (comandas.length === 0 && !errorConexion) {
+    <div class="mensaje-vacio">
+      <h2>No hay pedidos pendientes. Buen trabajo.</h2>
+    </div>
+  }
+
+  <!-- Grid de Tarjetas de Comandas -->
+  @if (comandas.length > 0) {
+    <div class="grid-comandas">
+      @for (comanda of comandas; track comanda.id) {
+        <div class="tarjeta-comanda">
+          <div class="header-comanda">
+            <h3>Mesa {{ comanda.numeroMesa }}</h3>
+            <span class="estado-badge" [class.en-cocina]="comanda.estado === 'en_cocina'" [class.servida]="comanda.estado === 'servida'">
+              {{ comanda.estado === 'en_cocina' ? 'En Cocina' : comanda.estado === 'servida' ? 'Servida' : comanda.estado }}
+            </span>
+          </div>
+
+          <div class="fecha-comanda">
+            {{ comanda.fechaComanda | date:'short' }}
+          </div>
+
+          <div class="items-comanda">
+            @for (item of comanda.items; track item.id) {
+              <div class="item">
+                <div class="item-info">
+                  <span class="cantidad">{{ item.cantidad }}x</span>
+                  <span class="nombre-producto">{{ item.producto.nombre }}</span>
+                </div>
+                <span class="estado-item" [class.preparado]="item.estado === 'preparado'" [class.en-cocina]="item.estado === 'en_cocina'">
+                  {{ item.estado === 'en_cocina' ? 'En Cocina' : 'Preparado' }}
+                </span>
+              </div>
+            }
+          </div>
+
+          @if (comanda.notasGenerales) {
+            <div class="notas">
+              <strong>Notas:</strong> {{ comanda.notasGenerales }}
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
 </div>

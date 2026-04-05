@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ProductCard } from './product-card/product-card';
 import { MenuService } from '../services/menu.service';
 import { MenuCategoria } from '../models/menu-categoria.model';
+import { ComandaService } from '../services/comanda.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
@@ -14,9 +16,14 @@ export class Menu implements OnInit {
   menuCategories = signal<MenuCategoria[]>([]);
   selectedCategory: number | null = null;
   cartCount: number = 0;
+  cartProductIds: number[] = [];
   isLoading = signal<boolean>(false);
 
-  constructor(private menuService: MenuService) {}
+  constructor(
+    private menuService: MenuService,
+    private comandaService: ComandaService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadMenu();
@@ -43,7 +50,53 @@ export class Menu implements OnInit {
 
   onAddToCart(product: any) {
     this.cartCount++;
+    this.cartProductIds.push(product.id);
     console.log(`Añadiste ${product.nombre} al carrito`);
+  }
+
+  sendOrder() {
+    if (this.cartProductIds.length === 0) {
+      alert('El carrito está vacío');
+      return;
+    }
+
+    const comandaRequest = {
+      numeroMesa: 1, // Mesa por defecto para desarrollo
+      productosIds: this.cartProductIds
+    };
+
+    console.log('📤 Enviando comanda:', comandaRequest);
+
+    this.comandaService.crearComanda(comandaRequest).subscribe({
+      next: (comanda: any) => {
+        console.log('✅ Comanda creada:', comanda);
+        alert(`Comanda creada exitosamente para mesa ${comandaRequest.numeroMesa}`);
+        // Limpiar carrito
+        this.cartProductIds = [];
+        this.cartCount = 0;
+      },
+      error: (error: any) => {
+        console.error('❌ Error completo al crear comanda:', error);
+        console.error('❌ Mensaje de error:', error.message);
+        console.error('❌ Status:', error.status);
+        console.error('❌ Error del servidor:', error.error);
+
+        let errorMessage = 'Error al crear la comanda';
+        if (error.status === 0) {
+          errorMessage = 'No se puede conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+        } else if (error.error?.message) {
+          errorMessage = `Error: ${error.error.message}`;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
+        alert(errorMessage);
+      }
+    });
+  }
+
+  navigateToPedido() {
+    this.router.navigate(['/pedido']);
   }
 
   scrollToCategory(categoryId: number) {

@@ -1,43 +1,14 @@
-package com.wishdish.backend.dto;
+package com.wishdish.backend.dtos;
 
-import com.wishdish.backend.entity.Producto;
+import com.wishdish.backend.models.Producto;
 import java.util.List;
 
-/**
- * DTO (Data Transfer Object) para representar una categoría con sus productos.
- *
- * Se utiliza para enviar al frontend la estructura completa del menú:
- * - Información de la categoría
- * - Lista de productos que pertenecen a esa categoría
- *
- * Ejemplo JSON:
- * {
- *   "categoriaId": 1,
- *   "categoriaNombre": "Hamburguesas",
- *   "categoriaDescripcion": "Nuestras mejores hamburguesas",
- *   "productos": [
- *     {
- *       "id": 101,
- *       "nombre": "Hamburguesa Clásica",
- *       "descripcion": "...",
- *       "precio": 12.50,
- *       "imagen": "assets/hamburguesa.jpg",
- *       "disponible": true
- *     },
- *     ...
- *   ]
- * }
- */
 public class MenuCategoriaDTO {
 
     private Long categoriaId;
     private String categoriaNombre;
     private String categoriaDescripcion;
     private List<Producto> productos;
-
-    // ===========================
-    // CONSTRUCTORES
-    // ===========================
 
     public MenuCategoriaDTO() {
     }
@@ -48,10 +19,6 @@ public class MenuCategoriaDTO {
         this.categoriaDescripcion = categoriaDescripcion;
         this.productos = productos;
     }
-
-    // ===========================
-    // GETTERS Y SETTERS
-    // ===========================
 
     public Long getCategoriaId() {
         return categoriaId;
