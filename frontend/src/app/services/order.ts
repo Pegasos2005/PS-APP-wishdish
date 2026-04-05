@@ -39,4 +39,17 @@ export class OrderService {
       console.error("No se ha podido añadir el producto", error);
     }
   }
+
+  decreaseProduct(productToRemove: Product){
+    const index = this.order.findIndex(item => item.product.id === productToRemove.id);
+
+    if(index != -1){
+      this.order[index].quantity --;
+      this.totalItems--;
+
+      if(this.order[index].quantity === 0){
+        this.order.splice(index, 1);
+      }
+    }
+  }
 }

@@ -16,7 +16,7 @@
           {{ category.category_name}}
         </button>
       }
-      <button class="show-order-btn">
+      <button class="show-order-btn" routerLink="/summary">
         show order
 
         @if (orderService.totalItems >= 0) {

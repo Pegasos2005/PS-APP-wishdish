@@ -1,30 +1,40 @@
-<div class="summary-container">
+<header class="head">
+  <img src="../../../assets/logo.png" alt="logo">
+  <button class="return-button" routerLink="/">&lt;</button>
+  <div class="image-logo"></div>
+</header>
 
-  <h2>Tu pedido</h2>
+<div class="summary-wrapper">
 
-  @for (item of orderService.order; track item.product.id){
+  <div class="summary-container">
 
-    <div class="summary-card">
-      <img [src]="item.product.image" alt="foto de {{ item.product.product_name }}">
+    <h2>Tu pedido</h2>
 
-      <div class="product-info">
-        <h3>{{ item.product.product_name }}</h3>
-        <p>{{ item.product.description }}</p>
+    @for (item of orderService.order; track item.product.id){
 
-        <button class="btn-editar">editar</button>
-      </div>
+      <div class="summary-card">
+        <img [src]="item.product.image" alt="foto de {{ item.product.product_name }}">
 
-      <div class="controles-derecha">
-        <span class="price">{{ item.product.price }} €</span>
+        <div class="product-info">
+          <h3>{{ item.product.product_name }}</h3>
+          <p>{{ item.product.description }}</p>
 
-        <div class="botones-cantidad">
-          <button>-</button>
-          <span class="cantidad">{{ item.quantity }}</span>
-          <button>+</button>
+          <button class="edit-btn">editar</button>
+        </div>
+
+        <div class="right-zone">
+          <span class="price">{{ item.product.price }} €</span>
+
+          <div class="total-buttons">
+            <button class="btn-circle" (click)="decrement(item.product)">-</button>
+            <span class="quantity">{{ item.quantity }}</span>
+            <button class="btn-circle" (click)="increment(item.product)">+</button>
+          </div>
         </div>
       </div>
-    </div>
-  }
+    }
+
+  </div>
+  <button class="btn-finish">Finish</button>
 
 </div>
-<button class="btn-finish">Finish</button>

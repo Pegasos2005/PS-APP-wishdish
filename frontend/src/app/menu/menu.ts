@@ -3,16 +3,17 @@ import { CommonModule } from '@angular/common';           // Importante para que
 import { DATA_MENU } from './menu.mock';                  // Importar el json
 import { ProductCard } from './product-card/product-card';
 import { OrderService } from '../services/order';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
-  imports: [CommonModule, ProductCard],
+  imports: [CommonModule, ProductCard, RouterLink],
   templateUrl: './menu.html',
   styleUrl: './menu.css',
 })
 export class Menu {
   menuCategories = DATA_MENU;
-  selectedCategory: number | null=null;
+  selectedCategory: number | null = null;
 
   constructor(public orderService: OrderService) {}
 
@@ -21,17 +22,15 @@ export class Menu {
     this.selectedCategory = categoryId;
 
     // Para buscar el elemento section de esa categoría
-    const element = document.querySelector(
-      `[data-category-id="${categoryId}"]`
-    ) as HTMLElement;
+    const element = document.querySelector(`[data-category-id="${categoryId}"]`) as HTMLElement;
 
-    if(element) {
-      element.scrollIntoView({ behavior: 'smooth'});
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
   // Al hacer scroll en la derecha
-  onScroll(event: Event){
+  onScroll(event: Event) {
     const container = event.target as HTMLElement;
 
     const categories = document.querySelectorAll('.section-title');
@@ -40,7 +39,7 @@ export class Menu {
       const rect = section.getBoundingClientRect();
       if (rect.top < 300) {
         const categoryId = (section as HTMLElement).getAttribute('data-category-id');
-        if(categoryId){
+        if (categoryId) {
           this.selectedCategory = parseInt(categoryId);
         }
       }
