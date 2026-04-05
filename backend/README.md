@@ -49,11 +49,11 @@ El servidor arrancará en: **http://localhost:8080**
 
 ### Funcionamiento Automático
 
-Al iniciar el backend, se ejecuta automáticamente el script `src/main/resources/data.sql` que carga:
+Al iniciar el backend, se ejecuta automáticamente la clase `DataLoader.java` que carga:
 - 5 categorías
 - 19 productos
 
-**Importante:** El script solo se ejecuta si la base de datos está vacía. Si ya hay datos, no se vuelven a cargar.
+**Importante:** DataLoader solo carga datos si la base de datos está vacía. Si ya hay datos, no se vuelven a cargar.
 
 ### Verificar si la BD tiene datos
 
@@ -118,11 +118,11 @@ backend/
 │   ├── dto/                 # DTOs para respuestas
 │   │   └── MenuCategoriaDTO.java
 │   ├── config/              # Configuración
-│   │   └── WebConfig.java  # CORS
+│   │   ├── WebConfig.java   # CORS
+│   │   └── DataLoader.java  # Población automática de datos
 │   └── BackendApplication.java
 └── src/main/resources/
-    ├── application.properties  # Configuración
-    └── data.sql               # Script de población automática
+    └── application.properties  # Configuración
 ```
 
 ## API Endpoints
@@ -242,8 +242,8 @@ taskkill /PID <PID> /F
 ### Datos no se cargan
 
 - Verificar que las tablas estén vacías
-- Revisar el log del backend al arrancar
-- Verificar que `data.sql` existe en `src/main/resources/`
+- Revisar el log del backend al arrancar (debe mostrar "🔄 Cargando datos...")
+- Verificar que `DataLoader.java` existe en `src/main/java/.../config/` y tiene el `@Bean` activo
 
 ## CORS
 

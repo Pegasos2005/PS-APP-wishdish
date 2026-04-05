@@ -104,7 +104,7 @@ DROP DATABASE wishdish;
 CREATE DATABASE wishdish CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-Después de borrar los datos, al reiniciar el backend se ejecutará automáticamente `data.sql`.
+Después de borrar los datos, al reiniciar el backend se ejecutará automáticamente el `DataLoader`.
 
 ### Verificar el Estado de la BD
 
@@ -175,8 +175,7 @@ PS-APP-dishWish/
 │   │   ├── entity/         # Entidades JPA (definen las tablas)
 │   │   └── dto/            # DTOs para respuestas
 │   └── src/main/resources/
-│       ├── application.properties
-│       └── data.sql        # Script de población inicial
+│       └── application.properties
 ├── frontend/
 │   └── src/app/
 │       ├── menu/           # Componente principal del menú
