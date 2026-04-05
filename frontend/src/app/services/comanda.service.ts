@@ -15,7 +15,7 @@ export class ComandaService {
     return this.http.get<ComandaResponseDTO[]>(`${this.apiUrl}/activas`);
   }
 
-  crearComanda(request: { mesaId: number, productosIds: number[] }): Observable<any> {
+  crearComanda(request: { numeroMesa: number, productosIds: number[] }): Observable<any> {
     return this.http.post(this.apiUrl, request);
   }
 

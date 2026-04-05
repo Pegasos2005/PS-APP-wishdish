@@ -27,7 +27,7 @@ public class ComandaController {
 
     @PostMapping
     public Comanda crearComanda(@RequestBody ComandaRequestDTO request) {
-        return comandaService.crearComanda(request.getMesaId(), request.getProductosIds());
+        return comandaService.crearComanda(request.getNumeroMesa(), request.getProductosIds());
     }
 
     @PutMapping("/items/{itemId}/avanzar")

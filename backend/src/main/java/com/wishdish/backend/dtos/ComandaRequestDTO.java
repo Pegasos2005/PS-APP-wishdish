@@ -4,18 +4,18 @@ import java.util.List;
 
 public class ComandaRequestDTO {
 
-    private Long mesaId;
+    private Long numeroMesa;
     private List<Long> productosIds;
 
     public ComandaRequestDTO() {
     }
 
-    public Long getMesaId() {
-        return mesaId;
+    public Long getNumeroMesa() {
+        return numeroMesa;
     }
 
-    public void setMesaId(Long mesaId) {
-        this.mesaId = mesaId;
+    public void setNumeroMesa(Long numeroMesa) {
+        this.numeroMesa = numeroMesa;
     }
 
     public List<Long> getProductosIds() {

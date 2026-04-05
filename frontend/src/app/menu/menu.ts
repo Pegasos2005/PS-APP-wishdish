@@ -61,7 +61,7 @@ export class Menu implements OnInit {
     }
 
     const comandaRequest = {
-      mesaId: 1, // Mesa por defecto para desarrollo
+      numeroMesa: 1, // Mesa por defecto para desarrollo
       productosIds: this.cartProductIds
     };
 
@@ -70,7 +70,7 @@ export class Menu implements OnInit {
     this.comandaService.crearComanda(comandaRequest).subscribe({
       next: (comanda: any) => {
         console.log('✅ Comanda creada:', comanda);
-        alert(`Comanda creada exitosamente para mesa ${comandaRequest.mesaId}`);
+        alert(`Comanda creada exitosamente para mesa ${comandaRequest.numeroMesa}`);
         // Limpiar carrito
         this.cartProductIds = [];
         this.cartCount = 0;
