@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Producto } from '../../models/producto.model';
+import { OrderService } from '../../services/order';
 
 @Component({
   selector: 'app-product-card',
@@ -9,9 +10,10 @@ import { Producto } from '../../models/producto.model';
 })
 export class ProductCard {
   @Input() product!: Producto;
-  @Output() addToCart = new EventEmitter<Producto>();
+
+  constructor(private orderService: OrderService) {}
 
   onAddClick(){
-    this.addToCart.emit(this.product);
+    this.orderService.addProduct(this.product)
   }
 }

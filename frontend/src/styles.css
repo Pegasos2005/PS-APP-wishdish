@@ -1,1 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
+.head {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid #ddd;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: linear-gradient(90deg, #ffffff 0%, #f8f9fa 100%);
+
+  img{
+
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 70%;
+    object-fit: contain;
+  }
+
+  .return-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 40px;
+    color: #2c3e50;
+    transition: color 0.3s;
+  }
+
+  .return-button:hover {
+    color: #e31b23;
+  }
+}

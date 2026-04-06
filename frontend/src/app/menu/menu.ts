@@ -4,24 +4,24 @@ import { ProductCard } from './product-card/product-card';
 import { MenuService } from '../services/menu.service';
 import { MenuCategoria } from '../models/menu-categoria.model';
 import { ComandaService } from '../services/comanda.service';
-import { Router } from '@angular/router';
+import { OrderService } from '../services/order';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
-  imports: [CommonModule, ProductCard],
+  imports: [CommonModule, ProductCard, RouterLink],
   templateUrl: './menu.html',
   styleUrl: './menu.css',
 })
 export class Menu implements OnInit {
   menuCategories = signal<MenuCategoria[]>([]);
   selectedCategory: number | null = null;
-  cartCount: number = 0;
-  cartProductIds: number[] = [];
   isLoading = signal<boolean>(false);
 
   constructor(
     private menuService: MenuService,
     private comandaService: ComandaService,
+    public orderService: OrderService,
     private router: Router
   ) {}
 
@@ -29,9 +29,6 @@ export class Menu implements OnInit {
     this.loadMenu();
   }
 
-  /**
-   * Carga el menú desde el backend
-   */
   private loadMenu(): void {
     this.isLoading.set(true);
 
@@ -39,47 +36,38 @@ export class Menu implements OnInit {
       next: (data) => {
         this.menuCategories.set(data);
         this.isLoading.set(false);
-        console.log('✅ Menú cargado correctamente', data);
+        console.log('Menú cargado correctamente', data);
       },
       error: (error) => {
-        console.error('❌ Error al cargar el menú:', error);
+        console.error('Error al cargar el menú:', error);
         this.isLoading.set(false);
       }
     });
   }
 
-  onAddToCart(product: any) {
-    this.cartCount++;
-    this.cartProductIds.push(product.id);
-    console.log(`Añadiste ${product.nombre} al carrito`);
-  }
-
   sendOrder() {
-    if (this.cartProductIds.length === 0) {
+    if (this.orderService.totalItems() === 0) {
       alert('El carrito está vacío');
       return;
     }
 
-    const comandaRequest = {
-      numeroMesa: 1, // Mesa por defecto para desarrollo
-      productosIds: this.cartProductIds
-    };
+    const productosIds = this.orderService.order.flatMap(item =>
+      Array(item.quantity).fill(item.product.id)
+    );
 
-    console.log('📤 Enviando comanda:', comandaRequest);
+    const comandaRequest = {
+      numeroMesa: 1,
+      productosIds
+    };
 
     this.comandaService.crearComanda(comandaRequest).subscribe({
       next: (comanda: any) => {
-        console.log('✅ Comanda creada:', comanda);
+        console.log('Comanda creada:', comanda);
         alert(`Comanda creada exitosamente para mesa ${comandaRequest.numeroMesa}`);
-        // Limpiar carrito
-        this.cartProductIds = [];
-        this.cartCount = 0;
+        this.orderService.clear();
       },
       error: (error: any) => {
-        console.error('❌ Error completo al crear comanda:', error);
-        console.error('❌ Mensaje de error:', error.message);
-        console.error('❌ Status:', error.status);
-        console.error('❌ Error del servidor:', error.error);
+        console.error('Error al crear comanda:', error);
 
         let errorMessage = 'Error al crear la comanda';
         if (error.status === 0) {
@@ -105,12 +93,12 @@ export class Menu implements OnInit {
       `[data-category-id="${categoryId}"]`
     ) as HTMLElement;
 
-    if(element) {
-      element.scrollIntoView({ behavior: 'smooth'});
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
-  onScroll(event: Event){
+  onScroll(event: Event) {
     const container = event.target as HTMLElement;
     const categories = document.querySelectorAll('.section-title');
 
@@ -118,7 +106,7 @@ export class Menu implements OnInit {
       const rect = section.getBoundingClientRect();
       if (rect.top < 300) {
         const categoryId = (section as HTMLElement).getAttribute('data-category-id');
-        if(categoryId){
+        if (categoryId) {
           this.selectedCategory = parseInt(categoryId);
         }
       }

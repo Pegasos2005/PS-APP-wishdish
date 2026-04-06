@@ -17,7 +17,7 @@ public class Comanda {
     @JoinColumn(name = "mesa_id", nullable = false)
     private Mesa mesa;
 
-    @Column(name = "fecha_comanda", insertable = false, updatable = false)
+    @Column(name = "fecha_comanda")
     private LocalDateTime fechaComanda;
 
     @Enumerated(EnumType.STRING)
@@ -37,6 +37,11 @@ public class Comanda {
     }
 
     public Comanda() {
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        fechaComanda = LocalDateTime.now();
     }
 
     public Long getId() {

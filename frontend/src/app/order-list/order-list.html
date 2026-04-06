@@ -1,0 +1,40 @@
+<header class="head">
+  <img src="../../../assets/logo.png" alt="logo">
+  <button class="return-button" routerLink="/">&lt;</button>
+  <div class="image-logo"></div>
+</header>
+
+<div class="summary-wrapper">
+
+  <div class="summary-container">
+
+    <h2>Tu pedido</h2>
+
+    @for (item of orderService.order; track item.product.id){
+
+      <div class="summary-card">
+        <img [src]="item.product.imagen" alt="foto de {{ item.product.nombre }}">
+
+        <div class="product-info">
+          <h3>{{ item.product.nombre }}</h3>
+          <p>{{ item.product.descripcion }}</p>
+
+          <button class="edit-btn">editar</button>
+        </div>
+
+        <div class="right-zone">
+          <span class="price">{{ item.product.precio }} €</span>
+
+          <div class="total-buttons">
+            <button class="btn-circle" (click)="decrement(item.product)">-</button>
+            <span class="quantity">{{ item.quantity }}</span>
+            <button class="btn-circle" (click)="increment(item.product)">+</button>
+          </div>
+        </div>
+      </div>
+    }
+
+  </div>
+  <button class="btn-finish" (click)="sendOrder()">Finish</button>
+
+</div>

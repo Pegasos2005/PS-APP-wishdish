@@ -18,14 +18,15 @@
       }
       <button class="send-order-btn" (click)="sendOrder()">
         Send Order
-        @if(cartCount > 0) {
-          <span class="cart-count">{{ cartCount }}</span>
+        @if(orderService.totalItems() > 0) {
+          <span class="cart-count">{{ orderService.totalItems() }}</span>
         }
       </button>
-      <button class="show-order-btn">
+      <button class="show-order-btn" routerLink="/summary">
         show order
-        @if(cartCount > 0) {
-          <span class="cart-count">{{ cartCount }}</span>
+
+        @if (orderService.totalItems() > 0) {
+          <span class="cart-count">{{ orderService.totalItems() }}</span>
         }
       </button>
       <button class="waiter-view-btn" (click)="navigateToPedido()">
@@ -47,8 +48,7 @@
 
           @for (p of category.productos; track p.id){
             <app-product-card
-              [product]="p"
-              (addToCart)="onAddToCart($event)">
+              [product]="p">
             </app-product-card>
           }
         </section>

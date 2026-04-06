@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ComandaService } from '../services/comanda.service';
@@ -15,8 +15,8 @@ import { of } from 'rxjs';
   standalone: true
 })
 export class Pedido implements OnInit, OnDestroy {
-  comandas: ComandaResponseDTO[] = [];
-  errorConexion = false;
+  comandas = signal<ComandaResponseDTO[]>([]);
+  errorConexion = signal(false);
   private pollingSubscription?: Subscription;
 
   constructor(
@@ -42,14 +42,14 @@ export class Pedido implements OnInit, OnDestroy {
       .pipe(
         catchError(error => {
           console.error('❌ Error al cargar comandas:', error);
-          this.errorConexion = true;
+          this.errorConexion.set(true);
           return of([]);
         })
       )
       .subscribe(comandas => {
         console.log('✅ Comandas recibidas:', comandas);
-        this.comandas = comandas;
-        this.errorConexion = false;
+        this.comandas.set(comandas);
+        this.errorConexion.set(false);
       });
   }
 
@@ -59,13 +59,13 @@ export class Pedido implements OnInit, OnDestroy {
         switchMap(() => this.comandaService.getComandasActivas()),
         catchError(error => {
           console.error('Error en polling:', error);
-          this.errorConexion = true;
+          this.errorConexion.set(true);
           return of([]);
         })
       )
       .subscribe(comandas => {
-        this.comandas = comandas;
-        this.errorConexion = false;
+        this.comandas.set(comandas);
+        this.errorConexion.set(false);
       });
   }
 
