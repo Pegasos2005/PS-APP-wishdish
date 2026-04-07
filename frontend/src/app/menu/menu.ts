@@ -38,7 +38,7 @@ export class Menu implements OnInit {
       next: (data) => {
         this.menuCategories.set(data);
         if (data.length > 0) {
-          this.selectedCategory = data[0].categoriaId;
+          this.selectedCategory = data[0].categoryId;
         }
       },
       error: (err) => console.error('Error cargando el menú', err)
