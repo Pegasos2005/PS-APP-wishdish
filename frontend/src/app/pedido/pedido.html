@@ -19,11 +19,6 @@
   </div>
   }
 
-  @if (comandas().length === 0 && !errorConexion()) {
-  <div class="mensaje-vacio">
-    <h2>No hay pedidos pendientes. Buen trabajo.</h2>
-  </div>
-  }
 
   @if (comandas().length > 0) {
   <div class="grid-comandas">

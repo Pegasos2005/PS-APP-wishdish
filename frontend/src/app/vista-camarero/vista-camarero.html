@@ -1,0 +1,50 @@
+<div class="principal-container">
+  <header class="head">
+    <img src="../../../assets/logo.png" alt="logo">
+    <button class="return-button" routerLink="/">&lt;</button>
+    <div class="image-logo"></div>
+  </header>
+
+  <div class="body-camarero">
+    <div class="sub-header">
+      Employee - ComandsList
+    </div>
+
+    <main class="content-area">
+      <div class="grid-comandas">
+        @for (comanda of comandas(); track comanda.id) {
+        <section class="comanda-card">
+          <header class="comanda-header">
+            <span>Comand: {{ comanda.id }} - Table: {{ comanda.numeroMesa }}</span>
+
+            <button class="check-circle master-check"
+                    [class.prepared]="isComandaCompleta(comanda)"
+                    (click)="toggleComandaCompleta(comanda)">
+              @if (isComandaCompleta(comanda)) { ✓ }
+            </button>
+          </header>
+
+          <div class="dishes-grid">
+            @for (item of comanda.items; track item.id) {
+            <article class="dish-card">
+              <div class="dish-header">
+                <span class="dish-name">Dish: {{ item.producto.nombre }}</span>
+                <button class="check-circle"
+                        [class.prepared]="item.estado === 'preparado'"
+                        (click)="marcarPlatoPreparado(comanda, item)">
+                  @if (item.estado === 'preparado') { ✓ }
+                </button>
+              </div>
+              <ul class="comments-list">
+                <li>• Coment</li>
+                <li>• Coment</li>
+              </ul>
+            </article>
+            }
+          </div>
+        </section>
+        }
+      </div>
+    </main>
+  </div>
+</div>

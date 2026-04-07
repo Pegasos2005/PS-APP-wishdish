@@ -1,0 +1,143 @@
+/* --- Área de contenido con scroll --- */
+.content-area {
+  flex: 1;
+  padding: 0 40px 40px 40px;
+  overflow-y: auto;
+}
+
+.grid-comandas {
+  display: flex;
+  flex-direction: column;
+  gap: 35px; /* Espacio entre comandas */
+  align-items: center;
+}
+
+/* --- La Tarjeta de Comanda (La grande gris claro) --- */
+.comanda-card { /* Gris claro de tu dibujo */
+  border: 1px solid #b0b0b0;
+  border-radius: 20px; /* Bordes muy redondeados */
+  padding: 25px;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* Subtítulo (Employee - ComandsList) */
+.sub-header {
+  padding: 20px 40px; /* Alineado con el estilo de Menu */
+  color: #666; /* Color sacado de tu OrderList */
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.comanda-header {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* --- Grid de platos (2 columnas como en la foto) --- */
+.dishes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* --- La Tarjeta de Plato (La gris oscuro) --- */
+.dish-card {
+  background-color: #007bff;
+  border-radius: 12px;
+  padding: 18px;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  color: white;
+}
+
+.dish-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.dish-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+}
+
+/* --- Botón Check PE-08-03 --- */
+.check-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid white;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  transition: all 0.2s ease;
+  flex-shrink: 0; /* Que no se encoja el botón */
+}
+
+.check-circle.prepared {
+  background-color: #007bff;
+  border-color: white;
+  color: white;
+}
+
+/* --- Lista de Comentarios --- */
+.comments-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: white;
+}
+
+.comments-list li {
+  margin-bottom: 4px;
+}
+
+.principal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f5f6f9 0%, #eef0f5 100%);
+  overflow: hidden;
+}
+
+.comanda-header {
+  display: flex;
+  justify-content: space-between; /* Texto a la izquierda, botón a la derecha */
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #333;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #b0b0b0;
+}
+
+/* Estilo del check maestro (un poco diferente para distinguirlo) */
+.master-check {
+  background: white;
+  border: 2px solid #b0b0b0 !important; /* Borde oscuro para que resalte en el gris claro */
+  width: 35px !important; /* Un pelín más grande que los de los platos */
+  height: 35px !important;
+}
+
+.master-check.prepared {
+  background-color: #007bff !important; /* Verde cuando está todo OK */
+  border-color: white !important;
+}
+
