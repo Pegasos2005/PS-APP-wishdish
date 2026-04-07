@@ -11,6 +11,7 @@ public class MenuCategoryDTO {
     private String categoryDescription;
     private List<ProductDTO> products; // Agora é uma lista segura de DTOs
 
+    //public MenuCategoryDTO(Integer id, String name, String description, List<Product> products) {}
 
     public MenuCategoryDTO(Integer categoryId, String categoryName, String categoryDescription, List<ProductDTO> products) {
         this.categoryId = categoryId;

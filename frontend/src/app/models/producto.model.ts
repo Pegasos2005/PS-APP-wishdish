@@ -3,11 +3,11 @@
  */
 export interface Producto {
   id: number;
-  nombre: string;
-  descripcion: string;
-  precio: number;
-  imagen: string;
-  disponible: boolean;
+  name: string;
+  description: string;
+  price: number;
+  picture: string;
+  available: boolean;
   categoria?: Categoria;
   fechaCreacion?: string;
   fechaActualizacion?: string;
@@ -18,6 +18,6 @@ export interface Producto {
  */
 export interface Categoria {
   id: number;
-  nombre: string;
-  descripcion: string;
+  name: string;
+  description: string;
 }

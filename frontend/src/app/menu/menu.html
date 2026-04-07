@@ -9,12 +9,12 @@
   <div class="body-menu">
 
     <aside class="category-column">
-      @for(category of menuCategories(); track category.categoriaId){
-      <button class="category-btn"
-              [class.active]="selectedCategory === category.categoriaId"
-              (click)="scrollToCategory(category.categoriaId)">
-        {{ category.categoriaNombre }}
-      </button>
+      @for(category of menuCategories(); track category.categoryId){
+        <button class="category-btn"
+          [class.active]="selectedCategory === category.categoryId"
+          (click)="scrollToCategory(category.categoryId)">
+          {{ category.categoryName}}
+        </button>
       }
 
       <app-pedido
@@ -38,20 +38,20 @@
           #productColumn
           (scroll)="onScroll($event)">
 
-      @for (category of menuCategories(); track category.categoriaId){
-      <section [attr.data-category-id]="category.categoriaId">
-        <h2
-          class="section-title"
-          [attr.data-category-id]="category.categoriaId">
-          {{ category.categoriaNombre }}
-        </h2>
+      @for (category of menuCategories(); track category.categoryId){
+        <section [attr.data-category-id]="category.categoryId">
+          <h2
+            class="section-title"
+            [attr.data-category-id]="category.categoryId">
+            {{ category.categoryName }}
+          </h2>
 
-        @for (p of category.productos; track p.id){
-        <app-product-card
-          [product]="p">
-        </app-product-card>
-        }
-      </section>
+          @for (producto of category.products; track producto.id){
+            <app-product-card
+              [product]="producto">
+            </app-product-card>
+          }
+        </section>
       }
 
     </main>

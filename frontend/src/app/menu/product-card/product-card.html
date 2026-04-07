@@ -1,10 +1,10 @@
 <div class="product-card">
-  <img [src]="product.imagen" alt="Foto de {{ product.nombre }}" class="dish-image">
+  <img [src]="product.picture" alt="Foto de {{ product.name }}" class="dish-image">
 
   <div class="product-info">
-    <h3>{{ product.nombre }}</h3>
-    <p>{{ product.descripcion }}</p>
-    <span class="price"> {{ product.precio }} €</span>
+    <h3>{{ product.name }}</h3>
+    <p>{{ product.description }}</p>
+    <span class="price"> {{ product.price }} €</span>
   </div>
 
   <button class="add-btn" (click)="onAddClick()">+</button>

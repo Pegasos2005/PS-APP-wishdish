@@ -28,8 +28,8 @@ public class MenuService {
                 .map(category -> {
                     List<Product> products = productRepository.findByCategoryId(category.getId());
 
-                    /* Traducimos los productos de la BD a DTOs limpios */
-                    List<ProductDTO> productDTOS = products.stream()
+                    // Traducimos los productos de la BD a DTOs limpios
+                    List<ProductDTO> productDTOs = products.stream()
                             .map(ProductDTO::new)
                             .collect(Collectors.toList());
 
@@ -37,7 +37,7 @@ public class MenuService {
                             category.getId(),
                             category.getName(),
                             category.getDescription(),
-                            productDTOS
+                            productDTOs
                             //products
                     );
                 })
@@ -52,8 +52,8 @@ public class MenuService {
                     List<Product> availableProducts = productRepository
                             .findByCategoryIdAndAvailableTrue(category.getId());
 
-                    /* Traducimos otra vez */
-                    List<ProductDTO> productDTOS = availableProducts.stream()
+                    // Traducimos los productos de la BD a DTOs limpios
+                    List<ProductDTO> productDTOs = availableProducts.stream()
                             .map(ProductDTO::new)
                             .collect(Collectors.toList());
 
@@ -61,7 +61,7 @@ public class MenuService {
                             category.getId(),
                             category.getName(),
                             category.getDescription(),
-                            productDTOS
+                            productDTOs
                             //availableProducts
                     );
                 })
@@ -76,8 +76,8 @@ public class MenuService {
 
         List<Product> products = productRepository.findByCategoryId(categoryId);
 
-        /* Traducimos*/
-        List<ProductDTO> productDTOS = products.stream()
+        /* traducimos */
+        List<ProductDTO> productDTOs = products.stream()
                 .map(ProductDTO::new)
                 .collect(Collectors.toList());
 
@@ -85,7 +85,7 @@ public class MenuService {
                 category.getId(),
                 category.getName(),
                 category.getDescription(),
-                productDTOS
+                productDTOs
                 //products
         );
     }
@@ -97,7 +97,7 @@ public class MenuService {
         List<Product> availableProducts = productRepository.findByCategoryIdAndAvailableTrue(categoryId);
 
         /* Traducimos */
-        List<ProductDTO> productDTOS = availableProducts.stream()
+        List<ProductDTO> productDTOs = availableProducts.stream()
                 .map(ProductDTO::new)
                 .collect(Collectors.toList());
 
@@ -105,7 +105,7 @@ public class MenuService {
                 category.getId(),
                 category.getName(),
                 category.getDescription(),
-                productDTOS
+                productDTOs
                 //availableProducts
         );
     }

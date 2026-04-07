@@ -13,17 +13,17 @@
     @for (item of orderService.order; track item.product.id){
 
       <div class="summary-card">
-        <img [src]="item.product.imagen" alt="foto de {{ item.product.nombre }}">
+        <img [src]="item.product.picture" alt="foto de {{ item.product.name }}">
 
         <div class="product-info">
-          <h3>{{ item.product.nombre }}</h3>
-          <p>{{ item.product.descripcion }}</p>
+          <h3>{{ item.product.name }}</h3>
+          <p>{{ item.product.description }}</p>
 
           <button class="edit-btn">editar</button>
         </div>
 
         <div class="right-zone">
-          <span class="price">{{ item.product.precio }} €</span>
+          <span class="price">{{ item.product.price }} €</span>
 
           <div class="total-buttons">
             <button class="btn-circle" (click)="decrement(item.product)">-</button>
