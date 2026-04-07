@@ -81,7 +81,7 @@ export class Menu implements OnInit {
     }
   }
 
-  navigateToPedido(): void {
-    this.router.navigate(['/pedido']);
+  navigateToCamarero(): void {
+    this.router.navigate(['/camarero']);
   }
 }
