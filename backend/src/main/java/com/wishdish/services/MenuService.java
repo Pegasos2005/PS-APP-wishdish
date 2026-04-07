@@ -1,6 +1,7 @@
 package com.wishdish.services;
 
 import com.wishdish.dtos.MenuCategoryDTO;
+import com.wishdish.dtos.ProductDTO;
 import com.wishdish.models.Category;
 import com.wishdish.models.Product;
 import com.wishdish.repositories.CategoryRepository;
@@ -26,11 +27,18 @@ public class MenuService {
         return categories.stream()
                 .map(category -> {
                     List<Product> products = productRepository.findByCategoryId(category.getId());
+
+                    /* Traducimos los productos de la BD a DTOs limpios */
+                    List<ProductDTO> productDTOS = products.stream()
+                            .map(ProductDTO::new)
+                            .collect(Collectors.toList());
+
                     return new MenuCategoryDTO(
                             category.getId(),
                             category.getName(),
                             category.getDescription(),
-                            products
+                            productDTOS
+                            //products
                     );
                 })
                 .collect(Collectors.toList());
@@ -44,11 +52,17 @@ public class MenuService {
                     List<Product> availableProducts = productRepository
                             .findByCategoryIdAndAvailableTrue(category.getId());
 
+                    /* Traducimos otra vez */
+                    List<ProductDTO> productDTOS = availableProducts.stream()
+                            .map(ProductDTO::new)
+                            .collect(Collectors.toList());
+
                     return new MenuCategoryDTO(
                             category.getId(),
                             category.getName(),
                             category.getDescription(),
-                            availableProducts
+                            productDTOS
+                            //availableProducts
                     );
                 })
                 // Filtramos para no mostrar categorías que se hayan quedado sin productos
@@ -62,11 +76,17 @@ public class MenuService {
 
         List<Product> products = productRepository.findByCategoryId(categoryId);
 
+        /* Traducimos*/
+        List<ProductDTO> productDTOS = products.stream()
+                .map(ProductDTO::new)
+                .collect(Collectors.toList());
+
         return new MenuCategoryDTO(
                 category.getId(),
                 category.getName(),
                 category.getDescription(),
-                products
+                productDTOS
+                //products
         );
     }
 
@@ -76,11 +96,17 @@ public class MenuService {
 
         List<Product> availableProducts = productRepository.findByCategoryIdAndAvailableTrue(categoryId);
 
+        /* Traducimos */
+        List<ProductDTO> productDTOS = availableProducts.stream()
+                .map(ProductDTO::new)
+                .collect(Collectors.toList());
+
         return new MenuCategoryDTO(
                 category.getId(),
                 category.getName(),
                 category.getDescription(),
-                availableProducts
+                productDTOS
+                //availableProducts
         );
     }
 }
