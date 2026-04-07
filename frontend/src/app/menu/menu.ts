@@ -1,26 +1,30 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProductCard } from './product-card/product-card';
+import { Router, RouterModule } from '@angular/router';
 import { MenuService } from '../services/menu.service';
-import { MenuCategoria } from '../models/menu-categoria.model';
-import { ComandaService } from '../services/comanda.service';
 import { OrderService } from '../services/order';
-import { Router, RouterLink } from '@angular/router';
+import { Pedido } from '../pedido/pedido';
+
+// IMPORTANTE: Asegúrate de que esta ruta y el nombre de la clase sean correctos
+// Si la clase dentro del archivo se llama ProductCardComponent, cámbialo aquí abajo también
+import { ProductCard } from './product-card/product-card';
 
 @Component({
   selector: 'app-menu',
-  imports: [CommonModule, ProductCard, RouterLink],
+  standalone: true,
+  imports: [CommonModule, RouterModule, Pedido, ProductCard],
   templateUrl: './menu.html',
-  styleUrl: './menu.css',
+  styleUrl: './menu.css'
 })
 export class Menu implements OnInit {
-  menuCategories = signal<MenuCategoria[]>([]);
+  @ViewChild('productColumn') productColumn!: ElementRef;
+
+  menuCategories = signal<any[]>([]);
   selectedCategory: number | null = null;
-  isLoading = signal<boolean>(false);
+  private isManualScroll = false;
 
   constructor(
     private menuService: MenuService,
-    private comandaService: ComandaService,
     public orderService: OrderService,
     private router: Router
   ) {}
@@ -29,87 +33,56 @@ export class Menu implements OnInit {
     this.loadMenu();
   }
 
-  private loadMenu(): void {
-    this.isLoading.set(true);
-
+  loadMenu(): void {
     this.menuService.getMenu().subscribe({
       next: (data) => {
         this.menuCategories.set(data);
-        this.isLoading.set(false);
-        console.log('Menú cargado correctamente', data);
-      },
-      error: (error) => {
-        console.error('Error al cargar el menú:', error);
-        this.isLoading.set(false);
-      }
-    });
-  }
-
-  sendOrder() {
-    if (this.orderService.totalItems() === 0) {
-      alert('El carrito está vacío');
-      return;
-    }
-
-    const productosIds = this.orderService.order.flatMap(item =>
-      Array(item.quantity).fill(item.product.id)
-    );
-
-    const comandaRequest = {
-      numeroMesa: 1,
-      productosIds
-    };
-
-    this.comandaService.crearComanda(comandaRequest).subscribe({
-      next: (comanda: any) => {
-        console.log('Comanda creada:', comanda);
-        alert(`Comanda creada exitosamente para mesa ${comandaRequest.numeroMesa}`);
-        this.orderService.clear();
-      },
-      error: (error: any) => {
-        console.error('Error al crear comanda:', error);
-
-        let errorMessage = 'Error al crear la comanda';
-        if (error.status === 0) {
-          errorMessage = 'No se puede conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
-        } else if (error.error?.message) {
-          errorMessage = `Error: ${error.error.message}`;
-        } else if (error.message) {
-          errorMessage = error.message;
+        if (data.length > 0) {
+          this.selectedCategory = data[0].categoriaId;
         }
-
-        alert(errorMessage);
-      }
+      },
+      error: (err) => console.error('Error cargando el menú', err)
     });
   }
 
-  navigateToPedido() {
-    this.router.navigate(['/pedido']);
+  obtenerIdsParaComanda(): number[] {
+    const ids: number[] = [];
+    this.orderService.order.forEach(item => {
+      for (let i = 0; i < item.quantity; i++) {
+        ids.push(item.product.id);
+      }
+    });
+    return ids;
   }
 
-  scrollToCategory(categoryId: number) {
+  scrollToCategory(categoryId: number): void {
+    this.isManualScroll = true;
     this.selectedCategory = categoryId;
-    const element = document.querySelector(
-      `[data-category-id="${categoryId}"]`
-    ) as HTMLElement;
-
+    const element = document.querySelector(`section[data-category-id="${categoryId}"]`);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    setTimeout(() => { this.isManualScroll = false; }, 1000);
+  }
+
+  onScroll(event: Event): void {
+    if (this.isManualScroll) return;
+    const container = event.target as HTMLElement;
+    const sections = container.querySelectorAll('section');
+    let currentCategory: number | null = null;
+    sections.forEach((section: any) => {
+      const rect = section.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      if (rect.top <= containerRect.top + 50) {
+        currentCategory = Number(section.getAttribute('data-category-id'));
+      }
+    });
+    if (currentCategory) {
+      this.selectedCategory = currentCategory;
     }
   }
 
-  onScroll(event: Event) {
-    const container = event.target as HTMLElement;
-    const categories = document.querySelectorAll('.section-title');
-
-    for (let section of categories) {
-      const rect = section.getBoundingClientRect();
-      if (rect.top < 300) {
-        const categoryId = (section as HTMLElement).getAttribute('data-category-id');
-        if (categoryId) {
-          this.selectedCategory = parseInt(categoryId);
-        }
-      }
-    }
+  navigateToPedido(): void {
+    this.router.navigate(['/pedido']);
   }
 }
