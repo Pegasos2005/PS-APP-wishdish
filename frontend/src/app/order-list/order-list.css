@@ -165,3 +165,9 @@
 .btn-finish:active {
   transform: translateY(-1px);
 }
+
+app-pedido {
+  display: block;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}

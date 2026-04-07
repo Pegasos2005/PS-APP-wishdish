@@ -34,7 +34,10 @@
       </div>
     }
 
-  </div>
-  <button class="btn-finish" (click)="sendOrder()">Finish</button>
+    <app-pedido
+      [productosSeleccionados]="obtenerIdsParaComanda()"
+      [isMenuView]="true">
+    </app-pedido>
 
+  </div>
 </div>

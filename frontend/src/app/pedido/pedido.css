@@ -32,17 +32,19 @@
 
 /* El circulito negro con el número de platos */
 .cart-count {
-  background-color: #dc3545;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #0a0a0a;
   color: white;
-  font-size: 0.8rem;
-  padding: 2px 8px;
   border-radius: 50%;
-  min-width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 13px;
   font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MenuService } from '../services/menu.service';
 import { OrderService } from '../services/order';
-import { Pedido } from '../pedido/pedido';
 
 // IMPORTANTE: Asegúrate de que esta ruta y el nombre de la clase sean correctos
 // Si la clase dentro del archivo se llama ProductCardComponent, cámbialo aquí abajo también
@@ -12,7 +11,7 @@ import { ProductCard } from './product-card/product-card';
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule, Pedido, ProductCard],
+  imports: [CommonModule, RouterModule, ProductCard],
   templateUrl: './menu.html',
   styleUrl: './menu.css'
 })
