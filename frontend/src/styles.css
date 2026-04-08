@@ -31,10 +31,3 @@
     color: #e31b23;
   }
 }
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden; /* Prohibido el scroll en toda la web */
-}

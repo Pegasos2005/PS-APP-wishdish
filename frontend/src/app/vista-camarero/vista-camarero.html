@@ -10,10 +10,10 @@
     <main class="content-area">
       <div class="grid-comandas">
         @for (comanda of comandas(); track comanda.id) {
-        <section class="comanda-card">
+        <section class="comanda-card" [class.comanda-amago-salida]="comanda.isExiting">
           <header class="comanda-header">
-            <span><strong>Comand: {{ comanda.id }} - Table: {{ comanda.numeroMesa }}</strong></span>
-            <button class="check-circle"
+            <span>Comand: {{ comanda.id }} - Table: {{ comanda.numeroMesa }}</span>
+            <button class="check-circle master-check"
                     [class.prepared]="isOrderComplete(comanda)"
                     (click)="toggleComandaCompleta(comanda)">
               @if (isOrderComplete(comanda)) { ✓ }
@@ -31,7 +31,9 @@
                   @if (item.status === 'prepared') { ✓ }
                 </button>
               </div>
-              <p class="notes">{{ item.notas || 'No notes' }}</p>
+              <ul class="comments-list">
+                <li>• {{ item.notas || 'No notes' }}</li>
+              </ul>
             </article>
             }
           </div>

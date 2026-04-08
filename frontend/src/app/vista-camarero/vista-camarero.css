@@ -141,3 +141,19 @@
   border-color: white !important;
 }
 
+.comanda-completada {
+  opacity: 0.4;
+  transform: scale(0.98);
+  pointer-events: none; /* Evita doble click mientras desaparece */
+  transition: all 0.5s ease;
+}
+
+.comanda-card {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.comanda-amago-salida {
+  opacity: 0 !important; /* Cambiado a 0 para que el pop sea más limpio */
+  transform: scale(0.9) translateY(-20px);
+  pointer-events: none;
+}
