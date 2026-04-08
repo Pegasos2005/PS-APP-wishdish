@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -44,5 +45,16 @@ public class OrderController {
         OrderItem advancedItem = orderService.advanceItemStatus(itemId);
         // Transformamos la entidad pura a DTO antes de enviarla
         return ResponseEntity.ok(new OrderItemDTO(advancedItem));
+    }
+
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<OrderResponseDTO> updateOrderStatus(
+            @PathVariable Integer orderId,
+            @RequestBody Map<String, String> statusMap) {
+
+        String newStatus = statusMap.get("status");  // "served", "paid", etc.
+        Order updatedOrder = orderService.updateOrderStatus(orderId, newStatus);
+
+        return ResponseEntity.ok(new OrderResponseDTO(updatedOrder));
     }
 }

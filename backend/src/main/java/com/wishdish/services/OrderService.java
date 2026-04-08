@@ -97,4 +97,20 @@ public class OrderService {
             orderRepository.save(order);
         }
     }
+
+    @Transactional
+    public Order updateOrderStatus(Integer orderId, String newStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Comanda no encontrada: " + orderId));
+
+        try {
+            Order.OrderStatus status = Order.OrderStatus.valueOf(newStatus);
+            order.setStatus(status);
+            orderRepository.save(order);  // ← GUARDA EN BD
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Estado inválido: " + newStatus);
+        }
+
+        return order;
+    }
 }

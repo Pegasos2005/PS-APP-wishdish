@@ -7,12 +7,12 @@ import { ComandaResponseDTO } from '../models/comanda.model';
   providedIn: 'root'
 })
 export class ComandaService {
-  private apiUrl = 'http://localhost:8080/api/comandas';
+  private apiUrl = 'http://localhost:8080/api/orders';
 
   constructor(private http: HttpClient) {}
 
   getComandasActivas(): Observable<ComandaResponseDTO[]> {
-    return this.http.get<ComandaResponseDTO[]>(`${this.apiUrl}/activas`);
+    return this.http.get<ComandaResponseDTO[]>(`${this.apiUrl}/active`);
   }
 
   crearComanda(request: { numeroMesa: number, productosIds: number[] }): Observable<any> {
@@ -20,6 +20,10 @@ export class ComandaService {
   }
 
   avanzarEstadoItem(itemId: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/items/${itemId}/avanzar`, {});
+    return this.http.put(`${this.apiUrl}/items/${itemId}/advance`, {});
+  }
+
+  updateComandaStatus(comandaId: number, status: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${comandaId}/status`, { status });
   }
 }

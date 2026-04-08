@@ -12,37 +12,50 @@
 
     <main class="content-area">
       <div class="grid-comandas">
+        <!-- PE-08-04: Solo mostrar comandas que NO estén servidas -->
         @for (comanda of comandas(); track comanda.id) {
-        <section class="comanda-card">
-          <header class="comanda-header">
-            <span>Comand: {{ comanda.id }} - Table: {{ comanda.numeroMesa }}</span>
+          @if (comanda.estado !== 'served') {
+            <section class="comanda-card">
+              <header class="comanda-header">
+                <span>Comand: {{ comanda.id }} - Table: {{ comanda.numeroMesa }}</span>
 
-            <button class="check-circle master-check"
-                    [class.prepared]="isComandaCompleta(comanda)"
-                    (click)="toggleComandaCompleta(comanda)">
-              @if (isComandaCompleta(comanda)) { ✓ }
-            </button>
-          </header>
-
-          <div class="dishes-grid">
-            @for (item of comanda.items; track item.id) {
-            <article class="dish-card">
-              <div class="dish-header">
-                <span class="dish-name">Dish: {{ item.producto.nombre }}</span>
-                <button class="check-circle"
-                        [class.prepared]="item.estado === 'preparado'"
-                        (click)="marcarPlatoPreparado(comanda, item)">
-                  @if (item.estado === 'preparado') { ✓ }
+                <button class="check-circle master-check"
+                        [class.prepared]="isComandaCompleta(comanda)"
+                        (click)="toggleComandaCompleta(comanda)">
+                  @if (isComandaCompleta(comanda)) { ✓ }
                 </button>
+              </header>
+
+              <div class="dishes-grid">
+                @for (item of comanda.items; track item.id) {
+                  <article class="dish-card">
+                    <div class="dish-header">
+                      <span class="dish-name">{{ item.producto.nombre }}</span>
+                      <button class="check-circle"
+                              [class.prepared]="item.estado === 'prepared'"
+                              (click)="marcarPlatoPreparado(comanda, item)">
+                        @if (item.estado === 'prepared') { ✓ }
+                      </button>
+                    </div>
+
+                    <!-- Mostrar notas si existen -->
+                    @if (item.notasItem) {
+                      <ul class="comments-list">
+                        <li> {{ item.notasItem }}</li>
+                      </ul>
+                    }
+                  </article>
+                }
               </div>
-              <ul class="comments-list">
-                <li>• Coment</li>
-                <li>• Coment</li>
-              </ul>
-            </article>
-            }
+            </section>
+          }
+        }
+
+        <!-- Mensaje si no hay comandas pendientes -->
+        @if (!hayComandasPendientes()) {
+          <div class="sin-comandas">
+            <p>No hay comandas pendientes. ¡Buen trabajo!</p>
           </div>
-        </section>
         }
       </div>
     </main>

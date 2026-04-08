@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ComandaService } from '../services/comanda.service';
 import { ComandaResponseDTO } from '../models/comanda.model';
-import { interval, Subscription, of } from 'rxjs';
+import { timer, Subscription, of } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
 
 @Component({
@@ -17,9 +17,6 @@ export class VistaCamarero implements OnInit, OnDestroy {
   comandas = signal<ComandaResponseDTO[]>([]);
   private pollingSub?: Subscription;
 
-  // Memoria para restaurar estados previos al desmarcar el Master Check
-  private memoriaEstados = new Map<number, string[]>();
-
   constructor(private comandaService: ComandaService) {}
 
   ngOnInit() {
@@ -31,10 +28,10 @@ export class VistaCamarero implements OnInit, OnDestroy {
   }
 
   /**
-   * Consulta al backend cada 3 segundos las comandas activas
+   * Consulta al backend Ya y luego repite cada 3 segundos
    */
   startPolling() {
-    this.pollingSub = interval(3000)
+    this.pollingSub = timer(0, 3000)
       .pipe(
         switchMap(() => this.comandaService.getComandasActivas()),
         catchError((error) => {
@@ -50,64 +47,79 @@ export class VistaCamarero implements OnInit, OnDestroy {
   /**
    * Marca un plato individualmente y verifica si la comanda se completa
    */
-  marcarPlatoPreparado(comanda: any, item: any) {
-    item.estado = (item.estado === 'preparado') ? 'en_cocina' : 'preparado';
+  marcarPlatoPreparado(comanda: ComandaResponseDTO, item: any) {
 
-    // Si se modifica manualmente, invalidamos la memoria de restauración
-    this.memoriaEstados.delete(comanda.id);
+    this.comandaService.avanzarEstadoItem(item.id).subscribe({
+      next: (itemActualizado) => {
+        console.log("Item marcado como preparado en BD:", itemActualizado);
 
-    if (this.isComandaCompleta(comanda)) {
-      this.finalizarComanda(comanda);
-    }
+        item.status = 'prepared';
+
+        if(this.isComandaCompleta(comanda)){
+
+          console.log("Todos los items estan preparados. Comanda cmabiará a served");
+          // EL backend ya cambió la comanda a 'served' automaticamente pero
+          // actualizamos localmente para que el polling no tarde 3 segundos
+          comanda.estado = 'served';
+        }
+      },
+      error: (err) => {
+        console.error("Error al marcar plato", err);
+        alert("Error al actualizar el estado del plato");
+      }
+    });
   }
 
   /**
    * Determina visualmente si todos los platos están en estado 'preparado'
    */
-  isComandaCompleta(comanda: any): boolean {
+  isComandaCompleta(comanda: ComandaResponseDTO): boolean {
     if (!comanda.items || comanda.items.length === 0) return false;
-    return comanda.items.every((item: any) => item.estado === 'preparado');
+    return comanda.items.every((item: any) => item.status === 'prepared');
   }
 
   /**
    * Lógica del Master Check: Completa todo o restaura el estado anterior
    */
-  toggleComandaCompleta(comanda: any) {
+  toggleComandaCompleta(comanda: ComandaResponseDTO) {
     const yaEstaCompleta = this.isComandaCompleta(comanda);
 
     if (!yaEstaCompleta) {
-      // Guardar instantánea antes de marcar todo
-      const instantanea = comanda.items.map((i: any) => i.estado);
-      this.memoriaEstados.set(comanda.id, instantanea);
-
-      // Marcar todos como preparados
-      comanda.items.forEach((item: any) => item.estado = 'preparado');
-      this.finalizarComanda(comanda);
-    } else {
-      // Restaurar desde memoria
-      const estadoAnterior = this.memoriaEstados.get(comanda.id);
-
-      if (estadoAnterior) {
-        comanda.items.forEach((item: any, index: number) => {
-          item.estado = estadoAnterior[index];
-        });
-      } else {
-        comanda.items.forEach((item: any) => item.estado = 'en_cocina');
-      }
-      comanda.estado = 'pendiente';
+      // Marcar TODOS LOS ITEMS uno por uno
+      comanda.items.forEach((item: any) => {
+        if (item.status !== 'prepared') {
+          this.marcarPlatoPreparado(comanda, item);  // ← Avisa al backend por cada uno
+        }
+      });
     }
+    else {
+      // si ya esta completa
+      console.log("La comanda ya está completa")
+    }
+
   }
 
   /**
    * Envía la señal al backend para avanzar el estado de la comanda
    */
   finalizarComanda(comanda: any) {
-    comanda.estado = 'servida';
-    this.comandaService.avanzarEstadoItem(comanda.id).pipe(
-      catchError((err) => {
-        console.error("No se pudo actualizar el estado en el servidor", err);
-        return of(null);
-      })
-    ).subscribe();
+    this.comandaService.updateComandaStatus(comanda.id, 'servida').subscribe({
+      next: (response) => {
+        console.log('✅ Comanda marcada como servida en BD:', response);
+        comanda.estado = 'servida';
+        // El polling recargaráy desaparecerá de la lista automáticamente
+      },
+      error: (err) => {
+        console.error('❌ Error al actualizar comanda:', err);
+      }
+    });
+  }
+
+  /**
+   * Comprueba si hay alguna comanda que no esté servida
+   */
+  hayComandasPendientes(): boolean {
+    // Aquí TypeScript sí nos deja usar la flechita sin quejarse
+    return this.comandas().some(c => c.estado !== 'served');
   }
 }

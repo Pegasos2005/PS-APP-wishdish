@@ -36,5 +36,6 @@ html, body {
   padding: 0;
   height: 100%;
   width: 100%;
+
   overflow: hidden; /* Prohibido el scroll en toda la web */
 }

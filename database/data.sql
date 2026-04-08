@@ -76,3 +76,13 @@ INSERT INTO products (id, name, description, price, picture, category_id, availa
 (117, 'Appletiser', 'Botella de zumo de manzana con gas.', 2.90, 'assets/appletiser.jpg', 5, true),
 (118, 'Agua Con Gas (1.5L)', 'Botella grande', 3.00, 'assets/botella_agua_1.50.jpg', 5, true),
 (119, 'Agua Con Gas (50cl)', 'Botella pequeña', 1.50, 'assets/botella_agua_0.50.jpg', 5, true);
+
+
+
+-- 4. INSERTAR COMANDA DE PRUEBA
+INSERT INTO orders (table_id, status) VALUES (1, 'in_kitchen');
+
+-- Le ponemos unos Nachos (ID 101) y una Hamburguesa Smash (ID 104) a esa comanda
+INSERT INTO order_items (order_id, product_id, quantity, status) VALUES
+                                                                     (LAST_INSERT_ID(), 101, 1, 'in_kitchen'),
+                                                                     (LAST_INSERT_ID(), 104, 1, 'in_kitchen');
