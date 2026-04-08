@@ -3,37 +3,31 @@ package com.wishdish.dtos;
 import com.wishdish.models.OrderItem;
 
 public class OrderItemDTO {
-
     private Integer id;
-    private ProductDTO product; // Usamos o ProductDTO e não a Entidade!
-    private Integer quantity;
+    private String productName; // Extraído de product.getName()
     private String status;
     private String itemNotes;
+    private Integer quantity;
 
-    public OrderItemDTO() {
-    }
+    public OrderItemDTO() {}
 
     public OrderItemDTO(OrderItem item) {
         this.id = item.getId();
-        // Convertemos o produto real num DTO para o Frontend
-        this.product = new ProductDTO(item.getProduct());
-        this.quantity = item.getQuantity();
-        this.status = item.getStatus() != null ? item.getStatus().name() : null;
+        this.productName = item.getProduct() != null ? item.getProduct().getName() : "Plato desconocido";
+        this.status = item.getStatus().name();
         this.itemNotes = item.getItemNotes();
+        this.quantity = item.getQuantity();
     }
 
+    // Getters y Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
-
-    public ProductDTO getProduct() { return product; }
-    public void setProduct(ProductDTO product) { this.product = product; }
-
-    public Integer getQuantity() { return quantity; }
-    public void setQuantity(Integer quantity) { this.quantity = quantity; }
-
+    public String getProductName() { return productName; }
+    public void setProductName(String productName) { this.productName = productName; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-
     public String getItemNotes() { return itemNotes; }
     public void setItemNotes(String itemNotes) { this.itemNotes = itemNotes; }
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
 }
