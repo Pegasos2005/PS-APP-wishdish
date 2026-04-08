@@ -1,4 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { HttpClient } from '@angular/common/http'; // <--- IMPORTANTE
+import { Observable } from 'rxjs'; // <--- IMPORTANTE
 import { Producto } from '../models/producto.model';
 import { OrderItem } from './orderItem.interface';
 
@@ -6,9 +8,25 @@ import { OrderItem } from './orderItem.interface';
   providedIn: 'root',
 })
 export class OrderService {
+  // Ajusta esta URL a la de tu API de Spring Boot
+  private apiUrl = 'http://localhost:8080/api/orders';
+
   order: OrderItem[] = [];
   private _totalItems = signal(0);
   totalItems = computed(() => this._totalItems());
+
+  // Añadimos el HttpClient al constructor
+  constructor(private http: HttpClient) {}
+
+  /**
+   * ESTE ES EL MÉTODO QUE TE FALTABA
+   * Envía el objeto de la comanda al servidor
+   */
+  crearPedido(pedido: any): Observable<any> {
+    return this.http.post(this.apiUrl, pedido);
+  }
+
+  // --- LÓGICA DE GESTIÓN DE CARRITO (YA LA TENÍAS) ---
 
   addProduct(productToAdd: Producto) {
     const existingItem = this.order.find(item => item.product.id === productToAdd.id);
@@ -41,5 +59,10 @@ export class OrderService {
   clear() {
     this.order = [];
     this._totalItems.set(0);
+  }
+
+  // Método útil para que el componente Pedido obtenga los productos actuales
+  getSelectedProducts(): OrderItem[] {
+    return this.order;
   }
 }

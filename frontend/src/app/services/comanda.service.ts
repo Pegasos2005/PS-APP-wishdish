@@ -7,19 +7,30 @@ import { ComandaResponseDTO } from '../models/comanda.model';
   providedIn: 'root'
 })
 export class ComandaService {
-  private apiUrl = 'http://localhost:8080/api/comandas';
+  // La base es /api/orders
+  private apiUrl = 'http://localhost:8080/api/orders';
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Coincide con @GetMapping("/active") en Java
+   */
   getComandasActivas(): Observable<ComandaResponseDTO[]> {
-    return this.http.get<ComandaResponseDTO[]>(`${this.apiUrl}/activas`);
+    return this.http.get<ComandaResponseDTO[]>(`${this.apiUrl}/active`);
   }
 
-  crearComanda(request: { numeroMesa: number, productosIds: number[] }): Observable<any> {
+  /**
+   * Coincide con @PostMapping en Java
+   */
+  crearComanda(request: any): Observable<any> {
     return this.http.post(this.apiUrl, request);
   }
 
+  /**
+   * Coincide con @PutMapping("/items/{itemId}/advance") en Java
+   * OJO: He cambiado 'avanzar' por 'advance' para que coincida con tu OrderController
+   */
   avanzarEstadoItem(itemId: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/items/${itemId}/avanzar`, {});
+    return this.http.put(`${this.apiUrl}/items/${itemId}/advance`, {});
   }
 }

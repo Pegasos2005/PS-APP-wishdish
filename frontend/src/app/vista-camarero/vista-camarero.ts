@@ -14,16 +14,18 @@ import { switchMap, catchError } from 'rxjs/operators';
   styleUrl: './vista-camarero.css'
 })
 export class VistaCamarero implements OnInit, OnDestroy {
-  comandas = signal<ComandaResponseDTO[]>([]);
+  comandas = signal<any[]>([]); // Usamos any para los mocks
   private pollingSub?: Subscription;
-
-  // Memoria para restaurar estados previos al desmarcar el Master Check
   private memoriaEstados = new Map<number, string[]>();
 
   constructor(private comandaService: ComandaService) {}
 
   ngOnInit() {
-    this.startPolling();
+    // 1. Cargamos datos de prueba inmediatamente
+    this.cargarMocks();
+
+    // 2. Comentamos el polling real para que no sobreescriba los mocks con errores del server
+    // this.startPolling();
   }
 
   ngOnDestroy() {
@@ -31,15 +33,39 @@ export class VistaCamarero implements OnInit, OnDestroy {
   }
 
   /**
-   * Consulta al backend cada 3 segundos las comandas activas
+   * DATOS MOCK para pruebas de interfaz
    */
+  cargarMocks() {
+    const mockData = [
+      {
+        id: 1,
+        numeroMesa: 5,
+        estado: 'pendiente',
+        items: [
+          { id: 101, producto: { nombre: 'Hamburguesa Especial' }, estado: 'en_cocina', itemNotes: 'Sin cebolla' },
+          { id: 102, producto: { nombre: 'Patatas Bravas' }, estado: 'preparado', itemNotes: '' }
+        ]
+      },
+      {
+        id: 2,
+        numeroMesa: 12,
+        estado: 'pendiente',
+        items: [
+          { id: 201, producto: { nombre: 'Pizza Carbonara' }, estado: 'en_cocina', itemNotes: 'Extra de queso' },
+          { id: 202, producto: { nombre: 'Coca-Cola' }, estado: 'en_cocina', itemNotes: '' }
+        ]
+      }
+    ];
+    this.comandas.set(mockData);
+  }
+
   startPolling() {
     this.pollingSub = interval(3000)
       .pipe(
         switchMap(() => this.comandaService.getComandasActivas()),
         catchError((error) => {
           console.error("Error conectando con el servidor:", error);
-          return of([]); // Si falla, devuelve array vacío para no romper la vista
+          return of([]);
         })
       )
       .subscribe(data => {
@@ -47,46 +73,32 @@ export class VistaCamarero implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   * Marca un plato individualmente y verifica si la comanda se completa
-   */
   marcarPlatoPreparado(comanda: any, item: any) {
     item.estado = (item.estado === 'preparado') ? 'en_cocina' : 'preparado';
-
-    // Si se modifica manualmente, invalidamos la memoria de restauración
     this.memoriaEstados.delete(comanda.id);
 
     if (this.isComandaCompleta(comanda)) {
       this.finalizarComanda(comanda);
+    } else {
+      comanda.estado = 'pendiente';
     }
   }
 
-  /**
-   * Determina visualmente si todos los platos están en estado 'preparado'
-   */
   isComandaCompleta(comanda: any): boolean {
     if (!comanda.items || comanda.items.length === 0) return false;
     return comanda.items.every((item: any) => item.estado === 'preparado');
   }
 
-  /**
-   * Lógica del Master Check: Completa todo o restaura el estado anterior
-   */
   toggleComandaCompleta(comanda: any) {
     const yaEstaCompleta = this.isComandaCompleta(comanda);
 
     if (!yaEstaCompleta) {
-      // Guardar instantánea antes de marcar todo
       const instantanea = comanda.items.map((i: any) => i.estado);
       this.memoriaEstados.set(comanda.id, instantanea);
-
-      // Marcar todos como preparados
       comanda.items.forEach((item: any) => item.estado = 'preparado');
       this.finalizarComanda(comanda);
     } else {
-      // Restaurar desde memoria
       const estadoAnterior = this.memoriaEstados.get(comanda.id);
-
       if (estadoAnterior) {
         comanda.items.forEach((item: any, index: number) => {
           item.estado = estadoAnterior[index];
@@ -98,16 +110,11 @@ export class VistaCamarero implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Envía la señal al backend para avanzar el estado de la comanda
-   */
   finalizarComanda(comanda: any) {
     comanda.estado = 'servida';
-    this.comandaService.avanzarEstadoItem(comanda.id).pipe(
-      catchError((err) => {
-        console.error("No se pudo actualizar el estado en el servidor", err);
-        return of(null);
-      })
-    ).subscribe();
+    // Solo intentamos llamar al servicio si no estamos en modo manual/mock completo
+    if (comanda.id > 1000) { // Un check tonto para no llamar al server con mocks
+      this.comandaService.avanzarEstadoItem(comanda.id).subscribe();
+    }
   }
 }
