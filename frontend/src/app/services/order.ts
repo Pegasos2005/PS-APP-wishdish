@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http'; // <--- IMPORTANTE
 import { Observable } from 'rxjs'; // <--- IMPORTANTE
 import { Producto } from '../models/producto.model';
 import { OrderItem } from './orderItem.interface';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OrderService {
   // Ajusta esta URL a la de tu API de Spring Boot
-  private apiUrl = 'http://localhost:8080/api/orders';
+  private apiUrl = environment.apiUrl + 'orders';
 
   order: OrderItem[] = [];
   private _totalItems = signal(0);

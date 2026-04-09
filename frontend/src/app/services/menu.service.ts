@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { MenuCategoria } from '../models/menu-categoria.model';
+import { environment } from '../../environments/environment';
 
 /**
  * Servicio para obtener el menú desde el backend.
@@ -10,7 +11,7 @@ import { MenuCategoria } from '../models/menu-categoria.model';
   providedIn: 'root'
 })
 export class MenuService {
-  private readonly API_URL = 'http://localhost:8080/api/menu';
+  private readonly API_URL = environment.apiUrl + 'menu';
 
   constructor(private http: HttpClient) { }
 
@@ -26,7 +27,7 @@ export class MenuService {
    * Obtiene solo productos disponibles.
    * @returns Observable con array de categorías con productos disponibles
    */
-  getMenuDisponible(): Observable<MenuCategoria[]> {
-    return this.http.get<MenuCategoria[]>(`${this.API_URL}/disponibles`);
+  getAvailableMenu(): Observable<MenuCategoria[]> {
+    return this.http.get<MenuCategoria[]>(this.API_URL + 'menu/available');
   }
 }
