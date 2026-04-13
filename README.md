@@ -59,6 +59,46 @@ cd frontend
 npm install
 ```
 
+## Configurar el acceso público mediante la red privada
+
+### Backend
+En la carpeta /config, el archivo CorsConfig, cambiar en la línea .allowedOrigins("http://192.168.68.102:4200", "http://localhost:4200")
+la IP asignada por la ip del PC que soportará la app, manteniendo el puerto. -> allowedOrigins("http://192.168.x.x:4200", "http://localhost:4200")
+
+Para saber la dirección ip asignada de tu dispositivo, ejecutar en la terminal:
+> En Mac:
+```bash
+ifconfig
+```
+> En Windows:
+```bash
+ipconfig
+```
+> En Linux:
+```bash
+ip a
+```
+
+Con esto, lo que hacemos es que el frontend se comunique con el backend a través de la red. Lo que permite que si abres el front
+desde otro dispositivo, pueda recibir los mensajes por el mismo puerto que el front del propio PC o portátil.
+
+## Frontend
+Dentro de la carpeta /src/environmets, modifica el archivo environmet.ts. La línea apiUrl: 'http://192.168.68.102:8080/api/' cambia la ip por
+la del equipo local, como en el apartado anterior.
+
+Esto permite que los usuarios que el frontend reciba y mande los datos con el backend a través del puerto del servidor, y no del localhost.
+
+## Configuración
+> Para Windows:
+En el menú de configuración, entra en Red e Internet -> Propiedades de tu WiFi. Y habilitado en Privada
+Luego busca en el menú de inicio: "Permitir una aplicación a través del Firewall de Windows". Pulsa "Cambiar la configuración" arriba a la derecha
+y busca "Java(TM) Platform SE binary" o "OpenJDK Platform binary" y marca tanto la casilla privada como pública
+
+Y por último ejecuta en la PowerShell *Como administrador*
+```bash
+New-NetFirewallRule -DisplayName "App Local" -Direction Inbound -Protocol TCP -LocalPort 8080,4200 -Action Allow
+```
+
 ## Ejecutar la Aplicación
 
 ### Backend (puerto 8080)
@@ -72,7 +112,7 @@ cd backend
 
 ```bash
 cd frontend
-npm start
+ng serve --host 0.0.0.0
 ```
 
 **Acceder a:** http://localhost:4200
@@ -122,7 +162,8 @@ SELECT * FROM productos;
 
 ## Gestión del Esquema de Base de Datos
 
-**IMPORTANTE:** Este proyecto usa JPA/Hibernate para gestionar las tablas automáticamente.
+> _[!IMPORTANT]_
+> Este proyecto usa JPA/Hibernate para gestionar las tablas automáticamente.
 
 - Las tablas se crean/actualizan desde las entidades Java en `backend/src/main/java/com/wishdish/backend/entity/`
 - **NO ejecutes scripts SQL** para crear o modificar tablas
