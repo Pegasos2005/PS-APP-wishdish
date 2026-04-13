@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { MenuCategoria } from '../models/menu-categoria.model';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 /**
  * Servicio para obtener el menú desde el backend.

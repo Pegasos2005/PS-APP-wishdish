@@ -1,56 +1,43 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http'; // <--- IMPORTANTE
-import { Observable } from 'rxjs'; // <--- IMPORTANTE
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Producto } from '../models/producto.model';
-import { OrderItem } from './orderItem.interface';
-import { environment } from '../../environments/environment';
+import { OrderItem } from '../interfaces/order-item.interface'; // Fíjate en el nuevo nombre
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
-export class OrderService {
-  // Ajusta esta URL a la de tu API de Spring Boot
+export class CustomerOrderService {
   private apiUrl = environment.apiUrl + 'orders';
 
   order: OrderItem[] = [];
   private _totalItems = signal(0);
   totalItems = computed(() => this._totalItems());
 
-  // Añadimos el HttpClient al constructor
   constructor(private http: HttpClient) {}
 
-  /**
-   * ESTE ES EL MÉTODO QUE TE FALTABA
-   * Envía el objeto de la comanda al servidor
-   */
+  // 1. EL BOTÓN DE PAGAR (Envía a la base de datos)
   crearPedido(pedido: any): Observable<any> {
     return this.http.post(this.apiUrl, pedido);
   }
 
-  // --- LÓGICA DE GESTIÓN DE CARRITO (YA LA TENÍAS) ---
-
+  // 2. GESTIÓN DEL CARRITO EN MEMORIA
   addProduct(productToAdd: Producto) {
     const existingItem = this.order.find(item => item.product.id === productToAdd.id);
-
     if (existingItem) {
       existingItem.quantity++;
     } else {
-      this.order.push({
-        product: productToAdd,
-        quantity: 1
-      });
+      this.order.push({ product: productToAdd, quantity: 1 });
     }
-
     this._totalItems.update(val => val + 1);
   }
 
   decreaseProduct(productToRemove: Producto) {
     const index = this.order.findIndex(item => item.product.id === productToRemove.id);
-
     if (index !== -1) {
       this.order[index].quantity--;
       this._totalItems.update(val => val - 1);
-
       if (this.order[index].quantity === 0) {
         this.order.splice(index, 1);
       }
@@ -62,7 +49,6 @@ export class OrderService {
     this._totalItems.set(0);
   }
 
-  // Método útil para que el componente Pedido obtenga los productos actuales
   getSelectedProducts(): OrderItem[] {
     return this.order;
   }
