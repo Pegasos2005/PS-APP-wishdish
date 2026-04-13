@@ -1,0 +1,56 @@
+<div class="principal-container">
+  <header class="head">
+    <img src="assets/logo.png" alt="Restaurant Logo" style="height: 40px;">
+    <button class="return-button" routerLink="/join-as" aria-label="Go back">&lt;</button>
+  </header>
+
+  <div class="body-camarero">
+    <div class="sub-header">Staff - Kitchen Display System</div>
+
+    <main class="content-area">
+      <div class="grid-comandas">
+
+        @for (order of orders(); track order.id) {
+        <section class="comanda-card" [class.comanda-amago-salida]="order.isExiting">
+          <header class="comanda-header">
+            <span>Order: #{{ order.id }} - Table: {{ order.tableNumber }}</span>
+            <button class="check-circle master-check"
+                    [class.prepared]="isOrderComplete(order)"
+                    (click)="toggleOrderComplete(order)"
+                    aria-label="Mark whole order as prepared">
+              @if (isOrderComplete(order)) { ✓ }
+            </button>
+          </header>
+
+          <div class="dishes-grid">
+            @for (item of order.items; track item.id) {
+            <article class="dish-card" [class.item-prepared]="item.status === 'prepared'">
+              <div class="dish-header">
+                <span class="dish-name">{{ item.productName }}</span>
+                <button class="check-circle"
+                        [class.prepared]="item.status === 'prepared'"
+                        (click)="toggleItemStatus(order, item)"
+                        aria-label="Mark item as prepared">
+                  @if (item.status === 'prepared') { ✓ }
+                </button>
+              </div>
+              <ul class="comments-list">
+                <li>• {{ item.notes || 'No notes' }}</li>
+              </ul>
+            </article>
+            }
+          </div>
+        </section>
+        }
+
+        @if (orders().length === 0) {
+        <div class="empty-state">
+          <h3>No active orders</h3>
+          <p>Waiting for new incoming tickets...</p>
+        </div>
+        }
+
+      </div>
+    </main>
+  </div>
+</div>

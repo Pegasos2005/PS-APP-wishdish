@@ -1,0 +1,32 @@
+<div class="home-background">
+  <div class="overlay"></div>
+
+  <main class="home-content">
+
+    <header class="home-header">
+      <h1 class="restaurant-title">{{ restaurantName() }}</h1>
+      <p class="welcome-text">Welcome! What would you like to do?</p>
+    </header>
+
+    <div class="action-group">
+
+      <button
+        class="home-button primary-action"
+        (click)="startOrdering()"
+        aria-label="Start a new order and view menu">
+        <span class="button-icon">🍽️</span>
+        <span class="button-text">Start to order</span>
+      </button>
+
+      <button
+        class="home-button secondary-action"
+        (click)="watchOrders()"
+        aria-label="View current active orders or proceed to payment">
+        <span class="button-icon">🧾</span>
+        <span class="button-text">Watch orders or pay</span>
+      </button>
+    </div>
+
+  </main>
+
+</div>

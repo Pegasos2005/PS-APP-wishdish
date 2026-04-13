@@ -1,12 +1,13 @@
 // src/app/features/customer/customer.routes.ts
-/*import { Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 
 export const CUSTOMER_ROUTES: Routes = [
-  { path: '', redirectTo: 'select-table', pathMatch: 'full' },
+  { path: '', redirectTo: 'customer-home', pathMatch: 'full' },
   {
-    path: 'select-table',
-    loadComponent: () => import('./select-table/select-table.component').then(c => c.SelectTableComponent)
+    path: 'customer-home',
+    loadComponent: () => import('./customer-home/customer-home.component').then(c => c.CustomerHomeComponent)
   },
+/*
   {
     path: 'home',
     loadComponent: () => import('./home/home.component').then(c => c.HomeComponent)
@@ -27,5 +28,5 @@ export const CUSTOMER_ROUTES: Routes = [
   {
     path: 'ticket-view',
     loadComponent: () => import('./ticket-view/ticket-view.component').then(c => c.TicketViewComponent)
-  }
-];*/
+  }*/
+];

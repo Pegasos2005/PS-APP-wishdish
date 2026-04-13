@@ -1,0 +1,138 @@
+/* src/app/features/customer/customer-home/customer-home.component.css */
+
+/* 1. Contenedor principal con la imagen de fondo apetitosa */
+.home-background {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('../../../../../public/assets/customer-menu-background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden; /* Evita scrolls extraños */
+}
+
+/* 2. Capa superpuesta (Overlay) para legibilidad */
+/* Un Senior sabe que la imagen de fondo nunca debe competir con la UI */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.35); /* Capa oscura semi-transparente */
+  z-index: 1; /* Por debajo del contenido */
+}
+
+/* 3. Contenedor del contenido (Centrado) */
+.home-content {
+  position: relative;
+  z-index: 2; /* Por encima del overlay */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centrado vertical */
+  align-items: center;     /* Centrado horizontal */
+  height: 100%;
+  padding: 2rem;
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente moderna y comercial */
+  text-align: center;
+}
+
+/* 4. Cabecera (Título y Bienvenida) */
+.home-header {
+  margin-bottom: 4rem; /* Espacio antes de los botones */
+}
+
+.restaurant-title {
+  font-size: 3.5rem; /* Muy grande y prominent */
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Sombra para resaltar sobre el fondo */
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+.welcome-text {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 0.5rem;
+  font-weight: 400;
+}
+
+/* 5. Grupo de acciones (Stack vertical) */
+.action-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Espacio uniforme entre los botones */
+  width: 90%;
+  max-width: 400px; /* Ancho máximo para tablets */
+}
+
+/* 6. Estilo base de los botones (Grandes, táctiles, modernos) */
+.home-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Icono a la izquierda, texto centrado */
+  gap: 1.5rem;
+  padding: 1.2rem 2rem;
+  border: none;
+  border-radius: 50px; /* Completamente redondeados (estilo pastilla) */
+  cursor: pointer;
+  transition: all 0.25s ease; /* Transición suave para hover */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidad */
+  width: 100%;
+}
+
+/* Efectos al pasar el ratón */
+.home-button:hover {
+  transform: translateY(-3px); /* Se eleva ligeramente */
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+}
+
+/* Efecto activo al pulsar */
+.home-button:active {
+  transform: translateY(1px); /* Se "hunde" al pulsar */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.button-icon {
+  font-size: 1.8rem; /* Icono grande */
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem;
+  border-radius: 50%; /* Icono dentro de un círculo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-text {
+  font-size: 1.3rem; /* Texto grande y claro */
+  font-weight: 600;
+  flex: 1; /* Ocupa el espacio restante para centrarse */
+  text-align: center;
+}
+
+/* 7. Variaciones de color (Jerarquía visual) */
+
+/* Acción Principal: Naranja apetitoso (color "comida") */
+.primary-action {
+  background: linear-gradient(135deg, #ff9f43 0%, #ff6b6b 100%); /* Gradiente moderno */
+  color: #ffffff;
+}
+.primary-action:hover {
+  background: linear-gradient(135deg, #ffab5c 0%, #ff7c7c 100%);
+}
+
+/* Acción Secundaria: Blanco limpio y elegante */
+.secondary-action {
+  background-color: #ffffff;
+  color: #333333;
+  border: 2px solid #ffffff;
+}
+.secondary-action:hover {
+  background-color: #f0f0f0;
+  border-color: #f0f0f0;
+}
+.secondary-action .button-icon {
+  background-color: rgba(0, 0, 0, 0.05); /* Círculo de icono más sutil en fondo blanco */
+}

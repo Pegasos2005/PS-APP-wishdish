@@ -1,0 +1,40 @@
+<div class="access-container">
+
+  <div class="access-card">
+    <h1 class="access-title">Admin Access</h1>
+    <p class="access-subtitle">Enter master password to continue</p>
+
+    <div class="input-group">
+      <input
+        #pwdInput
+        type="password"
+        class="access-input"
+        [class.error-shake]="passwordError()"
+        placeholder="••••••••"
+        aria-label="Master Password"
+        (keyup.enter)="verifyPassword(pwdInput.value)"
+        autofocus
+      >
+
+      <p class="error-text" *ngIf="passwordError()">
+        Incorrect password. Try again.
+      </p>
+    </div>
+
+    <div class="button-group">
+      <button
+        class="access-button primary-btn"
+        (click)="verifyPassword(pwdInput.value)">
+        Unlock
+      </button>
+
+      <button
+        class="access-button secondary-btn"
+        (click)="goBack()">
+        Cancel
+      </button>
+    </div>
+
+  </div>
+
+</div>

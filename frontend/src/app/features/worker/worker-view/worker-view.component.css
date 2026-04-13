@@ -1,0 +1,183 @@
+/* src/app/features/worker/worker-view/worker-view.component.css */
+
+.principal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f5f6f9 0%, #eef0f5 100%);
+  overflow: hidden;
+}
+
+/* --- Cabecera --- */
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.return-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  padding: 5px 15px;
+  border-radius: 8px;
+}
+.return-button:hover { background-color: #f0f0f0; }
+
+/* --- Área de contenido con scroll --- */
+.content-area {
+  flex: 1;
+  padding: 0 40px 40px 40px;
+  overflow-y: auto;
+  height: calc(100vh - 120px); /* Ajuste para el scroll correcto */
+}
+
+.sub-header {
+  padding: 20px 40px;
+  color: #666;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.grid-comandas {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  align-items: center;
+}
+
+/* --- La Tarjeta de Comanda --- */
+.comanda-card {
+  border: 1px solid #b0b0b0;
+  border-radius: 20px;
+  padding: 25px;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  background-color: #fdfdfd;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.comanda-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #333;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #b0b0b0;
+}
+
+/* --- Grid de platos --- */
+.dishes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* --- La Tarjeta de Plato --- */
+.dish-card {
+  background-color: #007bff;
+  border-radius: 12px;
+  padding: 18px;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+/* Cuando el plato está preparado, cambiaremos su color a un azul muy oscuro o verde */
+.item-prepared {
+  background-color: #2c3e50;
+}
+
+.dish-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.dish-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+}
+
+/* --- Botón Check --- */
+.check-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid white;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  color: transparent;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.check-circle.prepared {
+  background-color: white;
+  color: #007bff;
+}
+.item-prepared .check-circle.prepared {
+  color: #2c3e50;
+}
+
+.master-check {
+  border: 2px solid #b0b0b0;
+  width: 35px;
+  height: 35px;
+}
+
+.master-check.prepared {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+/* --- Lista de Comentarios --- */
+.comments-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.comments-list li {
+  margin-bottom: 4px;
+}
+
+/* --- Animaciones --- */
+.comanda-amago-salida {
+  opacity: 0 !important;
+  transform: scale(0.9) translateY(-20px);
+  pointer-events: none;
+}
+
+/* --- Estado vacío --- */
+.empty-state {
+  text-align: center;
+  color: #888;
+  margin-top: 50px;
+}

@@ -1,0 +1,43 @@
+<div class="dashboard-layout">
+
+  <header class="dashboard-header">
+    <button class="back-btn" (click)="logout()" aria-label="Log out and go back">
+      <span class="icon">❮</span> Exit Admin
+    </button>
+    <h1 class="dashboard-title">Admin Dashboard</h1>
+    <div style="width: 120px;"></div>
+  </header>
+
+  <main class="main-content">
+
+    <button
+      class="nav-arrow left-arrow"
+      [class.hidden]="currentPage() === 0"
+      (click)="prevPage()">
+      ❮
+    </button>
+
+    <div class="button-grid">
+      @for (item of visibleItems(); track item.id) {
+      <button class="action-card" (click)="handleItemClick(item.action)">
+        <div class="card-icon">{{ item.icon }}</div>
+        <span class="card-title">{{ item.title }}</span>
+      </button>
+      }
+    </div>
+
+    <button
+      class="nav-arrow right-arrow"
+      [class.hidden]="(currentPage() + 1) * itemsPerPage >= menuItems.length"
+      (click)="nextPage()">
+      ❯
+    </button>
+
+  </main>
+
+  <footer class="pagination-dots">
+    <span class="dot" [class.active]="currentPage() === 0"></span>
+    <span class="dot" [class.active]="currentPage() === 1"></span>
+  </footer>
+
+</div>

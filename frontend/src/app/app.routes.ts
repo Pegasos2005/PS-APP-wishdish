@@ -18,16 +18,16 @@ export const routes: Routes = [
   },
 
   // ROL: Worker (Lazy Load)
-  //{
-  //  path: 'worker',
-  //  loadChildren: () => import('./features/worker/worker.routes').then(r => r.WORKER_ROUTES)
-  //},
+  {
+    path: 'worker',
+    loadChildren: () => import('./features/worker/worker.routes').then(r => r.WORKER_ROUTES)
+  },
 
   // ROL: Customer (Lazy Load)
-  //{
-  //  path: 'customer',
-  //  loadChildren: () => import('./features/customer/customer.routes').then(r => r.CUSTOMER_ROUTES)
-  //},
+  {
+    path: 'customer',
+    loadChildren: () => import('./features/customer/customer.routes').then(r => r.CUSTOMER_ROUTES)
+  },
 
   // Fallback para rutas no encontradas (404)
   { path: '**', redirectTo: 'join-as' } // U otra página NotFound específica

@@ -1,0 +1,62 @@
+/* src/app/features/public/landing-access.component.css */
+
+/* 1. Contenedor principal que ocupa toda la pantalla y centra el contenido */
+.access-container {
+  display: flex;
+  justify-content: center; /* Centrado horizontal */
+  align-items: center;     /* Centrado vertical */
+  min-height: 100vh;        /* Altura de toda la vista */
+  background-color: #f5f5f5; /* Un gris muy tenue para el fondo de la página, como en la imagen */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Tipografía limpia */
+}
+
+/* 2. La tarjeta central (el borde blanco sutil de la imagen) */
+.access-card {
+  background-color: #ffffff; /* Fondo blanco de la tarjeta */
+  padding: 3rem 2rem;      /* Espaciado interno generoso */
+  border-radius: 12px;     /* Bordes redondeados sutiles */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Una sombra muy leve para dar profundidad */
+  width: 90%;             /* Ancho adaptable a móviles */
+  max-width: 480px;        /* Pero con un límite de ancho */
+  text-align: center;      /* Centrar texto interno */
+}
+
+/* 3. El título "Join As" */
+.access-title {
+  font-size: 2rem;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 2.5rem;   /* Espacio debajo del título */
+  margin-top: 0;
+}
+
+/* 4. Grupo de botones para el espaciado entre ellos */
+.button-group {
+  display: flex;
+  flex-direction: column;  /* Botones uno debajo de otro */
+  gap: 1.25rem;            /* Espacio uniforme entre los botones */
+}
+
+/* 5. Estilo de los botones (la "pastilla" gris) */
+.access-button {
+  background-color: #e0e0e0; /* El gris medio del botón de la imagen */
+  color: #333333;           /* Texto gris oscuro/negro */
+  border: none;              /* Sin bordes de botón por defecto */
+  padding: 1.2rem;          /* Mucho espaciado interno para un aspecto táctil (fácil de pulsar) */
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 50px;       /* El radio de "pastilla" (completamente redondeado) de la imagen */
+  cursor: pointer;          /* Puntero de mano al pasar por encima */
+  transition: background-color 0.2s ease, transform 0.1s ease; /* Pequeñas transiciones */
+  width: 100%;               /* Que ocupe todo el ancho del contenedor */
+}
+
+/* 6. Efecto hover para interactividad (Mejora profesional sobre la imagen estática) */
+.access-button:hover {
+  background-color: #d0d0d0; /* Un gris un poco más oscuro al pasar el ratón */
+}
+
+/* 7. Efecto activo al pulsar (Un Senior siempre piensa en el feedback visual) */
+.access-button:active {
+  transform: translateY(1px); /* Se "hunde" 1px al pulsar */
+}
