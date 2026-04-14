@@ -23,6 +23,7 @@ export class KitchenOrdersSystemService {
 
   // Avisa de que toda la mesa ya tiene su comida lista
   finalizarComanda(orderId: number): Observable<any> {
+    // Apuntamos al nuevo endpoint del controlador
     return this.http.put(`${this.apiUrl}/${orderId}/advance`, {});
   }
 }

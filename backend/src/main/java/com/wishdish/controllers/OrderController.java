@@ -45,4 +45,12 @@ public class OrderController {
         // Transformamos la entidad pura a DTO antes de enviarla
         return ResponseEntity.ok(new OrderItemDTO(advancedItem));
     }
+
+    // PUT http://localhost:8080/api/orders/{orderId}/advance
+    // Nuevo endpoint para que el camarero finalice la comanda entera
+    @PutMapping("/{orderId}/advance")
+    public ResponseEntity<OrderResponseDTO> advanceOrderStatus(@PathVariable Integer orderId) {
+        Order updatedOrder = orderService.advanceOrderStatus(orderId);
+        return ResponseEntity.ok(new OrderResponseDTO(updatedOrder));
+    }
 }

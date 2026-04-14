@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,12 +62,9 @@ public class OrderService {
     }
 
     public List<OrderResponseDTO> getActiveOrders() {
-        List<Order.OrderStatus> activeStatuses = Arrays.asList(
-                Order.OrderStatus.in_kitchen,
-                Order.OrderStatus.served
-        );
-
-        List<Order> orders = orderRepository.findByStatusIn(activeStatuses);
+        // CORRECCIÓN: Filtramos para que SOLO devuelva las que están en cocina.
+        // Si incluimos 'served', volverán a aparecer al recargar la vista.
+        List<Order> orders = orderRepository.findByStatusIn(Collections.singletonList(Order.OrderStatus.in_kitchen));
 
         return orders.stream()
                 .map(OrderResponseDTO::new)
@@ -86,6 +83,16 @@ public class OrderService {
         checkAndAdvanceOrder(item.getOrder());
 
         return item;
+    }
+
+    // Método para forzar el avance de la comanda completa desde el controlador
+    @Transactional
+    public Order advanceOrderStatus(Integer orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Error: La orden " + orderId + " no existe."));
+
+        order.setStatus(Order.OrderStatus.served);
+        return orderRepository.save(order);
     }
 
     private void checkAndAdvanceOrder(Order order) {
