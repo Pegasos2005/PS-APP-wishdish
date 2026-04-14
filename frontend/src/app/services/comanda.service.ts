@@ -22,6 +22,7 @@ export class ComandaService {
   // PE-08-04: Avanza el estado de la comanda completa (in_kitchen -> served)
   // Esto hará que desaparezca de la lista de "active"
   finalizarComanda(orderId: number): Observable<any> {
+    // Apuntamos al nuevo endpoint del controlador
     return this.http.put(`${this.apiUrl}/${orderId}/advance`, {});
   }
 }
