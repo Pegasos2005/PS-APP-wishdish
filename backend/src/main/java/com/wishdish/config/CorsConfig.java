@@ -15,7 +15,7 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Aplica a todos los endpoints
                         // Permitir tu IP local explícitamente
-                        .allowedOrigins("http://192.168.68.102:4200", "http://localhost:4200")
+                        .allowedOrigins("http://*:*", "http://localhost:*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
