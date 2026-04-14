@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { OrderService } from '../services/order';
 import { Pedido } from '../pedido/pedido';
-import { Producto } from '../models/producto.model'; // Verifica que la ruta sea correcta
+import { Producto } from '../models/producto.model';
 
 @Component({
   selector: 'app-order-list',
@@ -26,8 +26,8 @@ export class OrderList {
     this.orderService.decreaseProduct(product);
   }
 
-  // ESTA ES LA FUNCIÓN QUE TE DABA EL ERROR
-  // Transforma el carrito en una lista de IDs para el componente Pedido
+  // Esta función es la que genera la lista de IDs repetidos [12, 12, 12...]
+  // Se la pasamos al componente <app-pedido> en el HTML
   obtenerIdsParaComanda(): number[] {
     const ids: number[] = [];
     this.orderService.order.forEach(item => {

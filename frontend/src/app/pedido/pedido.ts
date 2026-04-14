@@ -57,40 +57,43 @@ export class Pedido implements OnInit, OnDestroy {
   /**
    * Procesa el envío del pedido al Backend (Spring Boot)
    */
-  enviarComanda() {
-    console.log("Iniciando proceso de envío...");
+  /**
+     * Procesa el envío del pedido al Backend (Spring Boot)
+     */
+    enviarComanda() {
+      console.log("Iniciando proceso de envío...");
 
-    // 1. Verificación de seguridad: ¿Hay algo que enviar?
-    if (this.orderService.order.length === 0) {
-      alert("El carrito está vacío. Por favor, añade productos.");
-      return;
-    }
-
-    // 2. Mapeo de datos: Ajustado a OrderRequestDTO de Java
-    // Java espera: { tableId: Integer, productIds: List<Integer> }
-    const pedidoParaEnviar = {
-      tableId: this.numeroMesa,
-      productIds: this.orderService.order.map(item => item.product.id)
-    };
-
-    console.log("JSON enviado al servidor:", pedidoParaEnviar);
-
-    // 3. Llamada al servicio HTTP
-    this.orderService.crearPedido(pedidoParaEnviar).subscribe({
-      next: (res: any) => {
-        console.log("Éxito en el servidor:", res);
-        alert("¡Pedido enviado correctamente! Volviendo al menú...");
-
-        // 4. Limpieza y navegación tras éxito
-        this.finalizarYRegresar();
-      },
-      error: (err: any) => {
-        console.error("Error detallado en el envío:", err);
-        // Posibles causas: CORS mal configurado en Java o URL incorrecta
-        alert("No se pudo conectar con el servidor. Revisa la consola (F12).");
+      // 1. Verificación de seguridad: ¿Hay algo que enviar?
+      if (this.orderService.order.length === 0) {
+        alert("El carrito está vacío. Por favor, añade productos.");
+        return;
       }
-    });
-  }
+
+      // 2. MAPE DE DATOS: CORREGIDO
+      // Antes: this.orderService.order.map(...) -> Enviaba un solo ID por producto (mal)
+      // Ahora: this.productosSeleccionados -> Usa el array [1, 1, 1] que viene del HTML (bien)
+      const pedidoParaEnviar = {
+        tableId: this.numeroMesa,
+        productIds: this.productosSeleccionados // <-- USAMOS EL INPUT DESENROLLADO
+      };
+
+      console.log("JSON enviado al servidor:", pedidoParaEnviar);
+
+      // 3. Llamada al servicio HTTP
+      this.orderService.crearPedido(pedidoParaEnviar).subscribe({
+        next: (res: any) => {
+          console.log("Éxito en el servidor:", res);
+          alert("¡Pedido enviado correctamente! Volviendo al menú...");
+
+          // 4. Limpieza y navegación tras éxito
+          this.finalizarYRegresar();
+        },
+        error: (err: any) => {
+          console.error("Error detallado en el envío:", err);
+          alert("No se pudo conectar con el servidor. Revisa la consola (F12).");
+        }
+      });
+    }
 
   /**
    * Limpia el estado de la aplicación y redirige al usuario

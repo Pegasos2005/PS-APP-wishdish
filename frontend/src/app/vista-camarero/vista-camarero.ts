@@ -18,7 +18,7 @@ export class VistaCamarero implements OnInit, OnDestroy {
   private manualStates = new Map<number, string>();
   private isBulkUpdating = false;
 
-  // ESCUDO DEFINITIVO: IDs de comandas que YA hemos finalizado y no queremos volver a ver
+  // Lista negra para evitar que el Polling recupere comandas que están animándose
   private excludedOrderIds = new Set<number>();
 
   constructor(private comandaService: ComandaService) {}
@@ -32,24 +32,29 @@ export class VistaCamarero implements OnInit, OnDestroy {
       map((data: any) => {
         if (!data) return this.comandas();
 
-        // FILTRADO CRÍTICO: Si el ID está en la lista negra, lo eliminamos del resultado
         return data
           .filter((order: any) => !this.excludedOrderIds.has(order.id))
-          .map((order: any) => ({
-            id: order.id,
-            numeroMesa: order.tableNumber,
-            status: order.status,
-            isExiting: false,
-            items: (order.items || []).map((item: any) => {
-              const savedStatus = this.manualStates.get(item.id);
-              return {
-                id: item.id,
-                status: savedStatus ? savedStatus : item.status,
-                nombrePlato: item.productName,
-                notas: item.itemNotes || ''
-              };
-            })
-          }));
+          .map((order: any) => {
+            // Buscamos si la comanda ya existía para mantener su estado de animación
+            const currentOrders = this.comandas();
+            const existingOrder = currentOrders.find(c => c.id === order.id);
+
+            return {
+              id: order.id,
+              numeroMesa: order.tableNumber,
+              status: order.status,
+              isExiting: existingOrder ? existingOrder.isExiting : false,
+              items: (order.items || []).map((item: any) => {
+                const savedStatus = this.manualStates.get(item.id);
+                return {
+                  id: item.id,
+                  status: savedStatus ? savedStatus : item.status,
+                  nombrePlato: item.productName,
+                  notas: item.itemNotes || ''
+                };
+              })
+            };
+          });
       }),
       catchError(() => of(this.comandas()))
     ).subscribe(res => this.comandas.set(res));
@@ -60,11 +65,13 @@ export class VistaCamarero implements OnInit, OnDestroy {
     this.manualStates.set(item.id, nuevoEstado);
     item.status = nuevoEstado;
 
+    // Si al marcar este plato la comanda se completa, disparamos la animación YA
+    if (this.isOrderComplete(comanda)) {
+      this.animarYBorrarComanda(comanda);
+    }
+
     this.comandaService.avanzarEstadoItem(item.id).subscribe({
       next: () => {
-        if (this.isOrderComplete(comanda)) {
-          this.animarYBorrarComanda(comanda);
-        }
         setTimeout(() => this.manualStates.delete(item.id), 7000);
       },
       error: () => {
@@ -75,16 +82,14 @@ export class VistaCamarero implements OnInit, OnDestroy {
   }
 
   private animarYBorrarComanda(comanda: any) {
-    // 1. Añadir a la lista negra para que el polling NO la vuelva a pintar
-    this.excludedOrderIds.add(comanda.id);
+    if (comanda.isExiting) return; // Evitar duplicar la animación
 
-    // 2. Iniciar animación visual
+    this.excludedOrderIds.add(comanda.id);
     comanda.isExiting = true;
 
-    // 3. Notificar al servidor
     this.comandaService.finalizarComanda(comanda.id).subscribe();
 
-    // 4. EL POP: Eliminar del signal local tras la animación
+    // Esperamos a que el CSS termine (500ms) antes de quitarla del signal
     setTimeout(() => {
       this.comandas.update(current => current.filter(c => c.id !== comanda.id));
     }, 500);
@@ -97,14 +102,12 @@ export class VistaCamarero implements OnInit, OnDestroy {
 
   toggleComandaCompleta(comanda: any) {
     this.isBulkUpdating = true;
-    if (!this.isOrderComplete(comanda)) {
-      comanda.items.forEach((item: any) => {
-        item.status = 'prepared';
-        this.manualStates.set(item.id, 'prepared');
-        this.comandaService.avanzarEstadoItem(item.id).subscribe();
-      });
-      this.animarYBorrarComanda(comanda);
-    }
+    comanda.items.forEach((item: any) => {
+      item.status = 'prepared';
+      this.manualStates.set(item.id, 'prepared');
+      this.comandaService.avanzarEstadoItem(item.id).subscribe();
+    });
+    this.animarYBorrarComanda(comanda);
     setTimeout(() => this.isBulkUpdating = false, 4000);
   }
 }
