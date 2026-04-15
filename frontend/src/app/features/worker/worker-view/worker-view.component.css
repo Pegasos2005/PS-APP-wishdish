@@ -3,11 +3,10 @@
 .principal-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
   width: 100vw;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #f5f6f9 0%, #eef0f5 100%);
-  overflow: hidden;
+  /* Eliminado overflow: hidden que bloqueaba el scroll */
 }
 
 /* --- Cabecera --- */
@@ -36,7 +35,8 @@
 .content-area {
   flex: 1;
   padding: 0 40px 40px 40px;
-  overflow-y: auto;
+  overflow-y: auto; /* Permite el scroll vertical */
+  min-height: 0;    /* Necesario para que el scroll funcione dentro de flex */
 }
 
 .grid-comandas {
@@ -54,6 +54,7 @@
   width: 100%;
   max-width: 900px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 /* Subtítulo (Employee - ComandsList) */
@@ -65,10 +66,15 @@
 }
 
 .comanda-header {
+  display: flex;
+  justify-content: space-between; /* Texto a la izquierda, botón a la derecha */
+  align-items: center;
   font-weight: bold;
   font-size: 1.2rem;
   margin-bottom: 20px;
   color: #333;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #b0b0b0;
 }
 
 /* --- Grid de platos (2 columnas como en la foto) --- */
@@ -140,54 +146,28 @@
   margin-bottom: 4px;
 }
 
-.principal-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100vw;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #f5f6f9 0%, #eef0f5 100%);
-  overflow: hidden;
-}
-
-.comanda-header {
-  display: flex;
-  justify-content: space-between; /* Texto a la izquierda, botón a la derecha */
-  align-items: center;
-  font-weight: bold;
-  font-size: 1.2rem;
-  margin-bottom: 20px;
-  color: #333;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #b0b0b0;
-}
-
-/* Estilo del check maestro (un poco diferente para distinguirlo) */
+/* Estilo del check maestro */
 .master-check {
   background: white;
-  border: 2px solid #b0b0b0 !important; /* Borde oscuro para que resalte en el gris claro */
-  width: 35px !important; /* Un pelín más grande que los de los platos */
+  border: 2px solid #b0b0b0 !important;
+  width: 35px !important;
   height: 35px !important;
 }
 
 .master-check.prepared {
-  background-color: #007bff !important; /* Verde cuando está todo OK */
+  background-color: #007bff !important;
   border-color: white !important;
 }
 
 .comanda-completada {
   opacity: 0.4;
   transform: scale(0.98);
-  pointer-events: none; /* Evita doble click mientras desaparece */
+  pointer-events: none;
   transition: all 0.5s ease;
 }
 
-.comanda-card {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
 .comanda-amago-salida {
-  opacity: 0 !important; /* Cambiado a 0 para que el pop sea más limpio */
+  opacity: 0 !important;
   transform: scale(0.9) translateY(-20px);
   pointer-events: none;
 }
