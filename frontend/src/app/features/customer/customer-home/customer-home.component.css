@@ -136,3 +136,11 @@
 .secondary-action .button-icon {
   background-color: rgba(0, 0, 0, 0.05); /* Círculo de icono más sutil en fondo blanco */
 }
+
+
+img{
+    filter: invert(1);
+    transform: scale(2.5);
+    transition: transform 0.3s ease;
+    object-fit: contain;
+  }

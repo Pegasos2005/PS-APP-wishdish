@@ -28,64 +28,79 @@ export class WorkerViewComponent implements OnInit {
   }
 
   startPolling() {
-    interval(3000).pipe(
-      // Se detiene automáticamente cuando el componente se destruye (al salir de la vista)
-      takeUntilDestroyed(this.destroyRef),
-      switchMap(() => this.isBulkUpdating ? of(null) : this.kitchenService.getComandasActivas()),
-      map((data: any) => {
-        if (!data) return this.orders();
+      interval(3000).pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(() => this.isBulkUpdating ? of(null) : this.kitchenService.getComandasActivas()),
+        map((data: any) => {
+          if (!data) return this.orders();
 
-        return data
-          .filter((order: any) => !this.excludedOrderIds.has(order.id))
-          .map((order: any) => ({
-            id: order.id,
-            tableNumber: order.tableNumber, // Traducido
-            status: order.status,
-            isExiting: false,
-            items: (order.items || []).map((item: any) => {
-              const savedStatus = this.manualStates.get(item.id);
+          return data
+            .filter((order: any) => !this.excludedOrderIds.has(order.id))
+            .map((order: any) => {
+              // --- CAMBIO CLAVE: Buscamos si la comanda ya existe en el signal actual ---
+              const existingOrder = this.orders().find(o => o.id === order.id);
+
               return {
-                id: item.id,
-                status: savedStatus ? savedStatus : item.status,
-                productName: item.productName, // Traducido
-                notes: item.itemNotes || ''    // Traducido
+                id: order.id,
+                tableNumber: order.tableNumber,
+                status: order.status,
+                // Si ya estaba saliendo (isExiting: true), mantenemos ese valor
+                isExiting: existingOrder ? existingOrder.isExiting : false,
+                items: (order.items || []).map((item: any) => {
+                  const savedStatus = this.manualStates.get(item.id);
+                  return {
+                    id: item.id,
+                    status: savedStatus ? savedStatus : item.status,
+                    productName: item.productName,
+                    notes: item.itemNotes || ''
+                  };
+                })
               };
-            })
-          }));
-      }),
-      catchError(() => of(this.orders()))
-    ).subscribe(res => this.orders.set(res));
-  }
+            });
+        }),
+        catchError(() => of(this.orders()))
+      ).subscribe(res => this.orders.set(res));
+    }
 
-  toggleItemStatus(order: any, item: any) { // Antes marcarPlatoPreparado
-    const newStatus = (item.status === 'prepared') ? 'in_kitchen' : 'prepared';
-    this.manualStates.set(item.id, newStatus);
-    item.status = newStatus;
+    toggleItemStatus(order: any, item: any) {
+      const newStatus = (item.status === 'prepared') ? 'in_kitchen' : 'prepared';
+      this.manualStates.set(item.id, newStatus);
+      item.status = newStatus;
 
-    this.kitchenService.avanzarEstadoItem(item.id).subscribe({
-      next: () => {
-        if (this.isOrderComplete(order)) {
-          this.animateAndRemoveOrder(order);
-        }
-        setTimeout(() => this.manualStates.delete(item.id), 7000);
-      },
-      error: () => {
-        this.manualStates.delete(item.id);
-        item.status = (newStatus === 'prepared') ? 'in_kitchen' : 'prepared';
+      // --- MEJORA: Animamos YA si detectamos que es el último plato ---
+      // Esto evita esperar a la respuesta del servidor para empezar el desvanecimiento
+      if (this.isOrderComplete(order)) {
+        this.animateAndRemoveOrder(order);
       }
-    });
-  }
 
-  private animateAndRemoveOrder(order: any) { // Antes animarYBorrarComanda
-    this.excludedOrderIds.add(order.id);
-    order.isExiting = true;
+      this.kitchenService.avanzarEstadoItem(item.id).subscribe({
+        next: () => {
+          // La lógica de eliminación ya se disparó arriba si era necesario
+          setTimeout(() => this.manualStates.delete(item.id), 7000);
+        },
+        error: () => {
+          // Si falla, revertimos estados (opcional pero recomendado)
+          this.excludedOrderIds.delete(order.id);
+          order.isExiting = false;
+          this.manualStates.delete(item.id);
+          item.status = (newStatus === 'prepared') ? 'in_kitchen' : 'prepared';
+        }
+      });
+    }
 
-    this.kitchenService.finalizarComanda(order.id).subscribe();
+    private animateAndRemoveOrder(order: any) {
+      if (order.isExiting) return; // Evitamos duplicar la animación
 
-    setTimeout(() => {
-      this.orders.update(current => current.filter(c => c.id !== order.id));
-    }, 500);
-  }
+      this.excludedOrderIds.add(order.id);
+      order.isExiting = true;
+
+      // Llamamos al servicio pero no necesitamos esperar su respuesta para animar
+      this.kitchenService.finalizarComanda(order.id).subscribe();
+
+      setTimeout(() => {
+        this.orders.update(current => current.filter(c => c.id !== order.id));
+      }, 500);
+    }
 
   isOrderComplete(order: any): boolean {
     if (!order.items || order.items.length === 0) return false;

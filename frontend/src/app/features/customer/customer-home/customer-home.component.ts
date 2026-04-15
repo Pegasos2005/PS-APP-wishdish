@@ -14,7 +14,7 @@ export class CustomerHomeComponent {
   private router = inject(Router);
 
   // Signal para el nombre del restaurante (fácilmente editable en el futuro)
-  restaurantName = signal<string>('El Delizioso');
+  restaurantName = signal<string>('WishDish');
 
   startOrdering(): void {
     console.log('Navegando al catálogo de menú');
