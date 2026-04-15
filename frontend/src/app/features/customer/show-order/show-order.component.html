@@ -36,7 +36,7 @@
       </div>
       } @else {
       <button class="send-order-btn" (click)="sendOrder()">
-        Send Order to Kitchen
+        <span>Send Order to Kitchen • {{ getTotalPrice() | number:'1.2-2' }} €</span>
         <span class="cart-count">{{ orderService.totalItems() }}</span>
       </button>
       }

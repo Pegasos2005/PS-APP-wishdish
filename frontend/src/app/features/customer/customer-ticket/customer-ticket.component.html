@@ -1,0 +1,54 @@
+<div class="principal-container">
+
+  <header class="head">
+    @if (!isPaymentRequested()) {
+    <button class="return-button" routerLink="/customer/customer-home" aria-label="Go back">&lt;</button>
+    } @else {
+    <div style="width: 40px;"></div>
+    }
+
+    @if (isPaymentRequested()) {
+    <h2 class="notify-message">Your order has been notified, wait for us, please :)</h2>
+    } @else {
+    <div style="flex: 1;"></div> }
+  </header>
+
+  <div class="ticket-wrapper">
+
+    <main class="ticket-paper">
+      <h1 class="table-title">Table: {{ tableId }}</h1>
+
+      @for (order of tableOrders(); track order.commandNumber) {
+      <div class="command-block">
+        <div class="command-header">
+          <span class="command-time">{{ order.time }}</span>
+          <span class="command-title">Command {{ order.commandNumber }}</span>
+        </div>
+
+        <div class="items-list">
+          @for (item of order.items; track item.name) {
+          <div class="item-row">
+            <span class="item-name">{{ item.quantity }}-{{ item.name }}</span>
+            <span class="leader-dots"></span> <span class="item-price">{{ (item.price * item.quantity) | number:'1.2-2' }}€</span>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <div class="ticket-footer">
+        <span class="total-label">Total:</span>
+        <span class="total-amount">{{ totalAmount() | number:'1.2-2' }}€</span>
+      </div>
+    </main>
+  </div>
+
+  <div class="actions-container">
+    @if (!isPaymentRequested()) {
+    <button class="pay-btn corner-btn" (click)="requestPayment()">Pay now</button>
+    } @else {
+    <button class="cancel-btn corner-btn" (click)="cancelPayment()">Cancel</button>
+    }
+  </div>
+
+</div>

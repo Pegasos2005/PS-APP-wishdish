@@ -12,11 +12,9 @@ import { CustomerOrderService } from '../../../core/services/customer-order.serv
   styleUrls: ['./show-order.component.css']
 })
 export class ShowOrderComponent {
-  // Inyectamos el servicio del carrito y el enrutador
   public orderService = inject(CustomerOrderService);
   private router = inject(Router);
 
-  // Por ahora, forzamos la mesa 1 (Más adelante lo cogeremos del inicio)
   public tableId = 1;
 
   increaseQuantity(product: any) {
@@ -27,7 +25,13 @@ export class ShowOrderComponent {
     this.orderService.decreaseProduct(product);
   }
 
-  // Transforma el carrito en una lista plana de IDs para Spring Boot
+  // --- NUEVA FUNCIÓN: Calcula el precio total del carrito ---
+  getTotalPrice(): number {
+    return this.orderService.order.reduce((total, item) => {
+      return total + (item.product.price * item.quantity);
+    }, 0);
+  }
+
   private getProductIds(): number[] {
     const ids: number[] = [];
     this.orderService.order.forEach(item => {
@@ -44,7 +48,6 @@ export class ShowOrderComponent {
       return;
     }
 
-    // Estructura exacta que espera tu Backend (OrderRequestDTO)
     const orderPayload = {
       tableId: this.tableId,
       productIds: this.getProductIds()
@@ -52,13 +55,10 @@ export class ShowOrderComponent {
 
     console.log("Sending to kitchen:", orderPayload);
 
-    // Llamada al servicio HTTP
     this.orderService.crearPedido(orderPayload).subscribe({
       next: () => {
         alert("Order sent to the kitchen successfully!");
-        this.orderService.clear(); // Vaciamos el carrito tras el éxito
-
-        // Navegamos a la vista home devuelta
+        this.orderService.clear();
         this.router.navigate(['/customer/customer-home']);
       },
       error: (err) => {

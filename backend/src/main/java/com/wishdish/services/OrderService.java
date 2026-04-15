@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -103,5 +104,21 @@ public class OrderService {
             order.advanceStatus(); // Pasará a 'served' automáticamente
             orderRepository.save(order);
         }
+    }
+
+    // Método auxiliar (si no lo tienes ya) para no devolver la entidad Order
+    @Transactional(readOnly = true)
+    public List<OrderResponseDTO> getActiveOrdersByTable(Integer tableNumber) {
+        // CORRECCIÓN DE ESTADOS: Queremos las que se están cocinando y las servidas.
+        // (En tu código habías puesto "paid" en lugar de "served", lo que hacía que
+        // desaparecieran al cocinarlas).
+        List<Order.OrderStatus> activeStatuses = Arrays.asList(Order.OrderStatus.in_kitchen, Order.OrderStatus.served);
+
+        List<Order> activeOrders = orderRepository.findByDiningTableIdAndStatusIn(tableNumber, activeStatuses);
+
+        // Usamos directamente tu constructor del DTO. ¡Mágia de Java 8!
+        return activeOrders.stream()
+                .map(OrderResponseDTO::new)
+                .collect(Collectors.toList());
     }
 }

@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "http://localhost:4200")
 public class OrderController {
 
     @Autowired
@@ -52,5 +51,12 @@ public class OrderController {
     public ResponseEntity<OrderResponseDTO> advanceOrderStatus(@PathVariable Integer orderId) {
         Order updatedOrder = orderService.advanceOrderStatus(orderId);
         return ResponseEntity.ok(new OrderResponseDTO(updatedOrder));
+    }
+
+    // NUEVO ENDPOINT: GET /api/orders/table/{tableId}
+    @GetMapping("/table/{tableId}")
+    public ResponseEntity<List<OrderResponseDTO>> getTableTicket(@PathVariable Integer tableId) {
+        List<OrderResponseDTO> orders = orderService.getActiveOrdersByTable(tableId);
+        return ResponseEntity.ok(orders);
     }
 }

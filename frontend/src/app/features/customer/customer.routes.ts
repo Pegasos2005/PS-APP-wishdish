@@ -15,22 +15,8 @@ export const CUSTOMER_ROUTES: Routes = [
     path: 'show-order',
     loadComponent: () => import('./show-order/show-order.component').then(c => c.ShowOrderComponent)
   },
-/*
   {
-    path: 'menu',
-    loadComponent: () => import('./menu/menu.component').then(c => c.MenuComponent)
-  },
-  {
-    // Fíjate en el /:id, vital para recuperar el ProductDTO correcto
-    path: 'product-details/:id',
-    loadComponent: () => import('./product-details/product-details.component').then(c => c.ProductDetailsComponent)
-  },
-  {
-    path: 'order-list',
-    loadComponent: () => import('./order-list/order-list.component').then(c => c.OrderListComponent)
-  },
-  {
-    path: 'ticket-view',
-    loadComponent: () => import('./ticket-view/ticket-view.component').then(c => c.TicketViewComponent)
-  }*/
+    path: 'customer-ticket',
+    loadComponent: () => import('./customer-ticket/customer-ticket.component').then(c => c.CustomerTicketComponent)
+  }
 ];

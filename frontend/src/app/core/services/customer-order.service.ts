@@ -17,6 +17,10 @@ export class CustomerOrderService {
 
   constructor(private http: HttpClient) {}
 
+  getTicketByTable(tableId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/table/${tableId}`);
+  }
+
   // 1. EL BOTÓN DE PAGAR (Envía a la base de datos)
   crearPedido(pedido: any): Observable<any> {
     return this.http.post(this.apiUrl, pedido);

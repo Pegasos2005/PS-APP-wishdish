@@ -2,12 +2,15 @@ package com.wishdish.dtos;
 
 import com.wishdish.models.OrderItem;
 
+import java.math.BigDecimal;
+
 public class OrderItemDTO {
     private Integer id;
     private String productName; // Extraído de product.getName()
     private String status;
     private String itemNotes;
     private Integer quantity;
+    private BigDecimal productPrice;
 
     public OrderItemDTO() {}
 
@@ -17,6 +20,10 @@ public class OrderItemDTO {
         this.status = item.getStatus().name();
         this.itemNotes = item.getItemNotes();
         this.quantity = item.getQuantity();
+        if (item.getProduct() != null) {
+            this.productName = item.getProduct().getName();
+            this.productPrice = item.getProduct().getPrice();
+        }
     }
 
     // Getters y Setters
@@ -24,6 +31,8 @@ public class OrderItemDTO {
     public void setId(Integer id) { this.id = id; }
     public String getProductName() { return productName; }
     public void setProductName(String productName) { this.productName = productName; }
+    public BigDecimal getProductPrice() { return productPrice; }
+    public void setProductPrice(BigDecimal productPrice) { this.productPrice = productPrice; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public String getItemNotes() { return itemNotes; }
