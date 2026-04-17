@@ -21,11 +21,12 @@ export class CustomerTicketComponent implements OnInit {
   // Nuestro Signal ahora empieza vacío
   tableOrders = signal<any[]>([]);
 
-  // El computed se actualiza solo en cuanto el backend nos devuelve los datos
+  // El total amount sumará correctamente los precios recibidos (Solo una declaración aquí)
   totalAmount = computed(() => {
     let total = 0;
     this.tableOrders().forEach(order => {
       order.items.forEach((item: any) => {
+        // Multiplicamos cantidad por el precio (que viene de BigDecimal)
         total += (item.price * item.quantity);
       });
     });
@@ -37,40 +38,27 @@ export class CustomerTicketComponent implements OnInit {
   }
 
   loadTicketData() {
-      this.orderService.getTicketByTable(this.tableId).subscribe({
-        next: (backendOrders) => {
-          const adaptedOrders = backendOrders.map((order, index) => {
-            const dateObj = order.orderDate ? new Date(order.orderDate) : new Date();
-            const timeString = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
+    this.orderService.getTicketByTable(this.tableId).subscribe({
+      next: (backendOrders) => {
+        const adaptedOrders = backendOrders.map((order, index) => {
+          const dateObj = order.orderDate ? new Date(order.orderDate) : new Date();
+          const timeString = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
 
-            return {
-              commandNumber: index + 1,
-              time: timeString,
-              items: order.items.map((item: any) => ({
-                quantity: item.quantity,
-                // Leemos las variables exactas del DTO: productName y productPrice
-                name: item.productName,
-                price: item.productPrice
-              }))
-            };
-          });
-
-          this.tableOrders.set(adaptedOrders);
-        },
-        error: (err) => console.error("Error loading ticket:", err)
-      });
-    }
-
-    // El total amount sumará correctamente los precios recibidos
-    totalAmount = computed(() => {
-      let total = 0;
-      this.tableOrders().forEach(order => {
-        order.items.forEach((item: any) => {
-          // Multiplicamos cantidad por el precio (que viene de BigDecimal)
-          total += (item.price * item.quantity);
+          return {
+            commandNumber: index + 1,
+            time: timeString,
+            items: order.items.map((item: any) => ({
+              quantity: item.quantity,
+              // Leemos las variables exactas del DTO: productName y productPrice
+              name: item.productName,
+              price: item.productPrice
+            }))
+          };
         });
-      });
-      return total;
+
+        this.tableOrders.set(adaptedOrders);
+      },
+      error: (err) => console.error("Error loading ticket:", err)
     });
   }
 
