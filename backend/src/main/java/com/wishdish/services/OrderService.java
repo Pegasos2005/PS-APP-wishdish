@@ -1,5 +1,6 @@
 package com.wishdish.services;
 
+import com.wishdish.dtos.OrderItemRequestDTO;
 import com.wishdish.dtos.OrderResponseDTO;
 import com.wishdish.models.DiningTable;
 import com.wishdish.models.Order;
@@ -35,7 +36,7 @@ public class OrderService {
 
     // @Transactional asegura que si falla un plato, no se guarde la comanda a medias
     @Transactional
-    public Order createOrder(Integer tableNumber, List<Integer> productIds) {
+    public Order createOrder(Integer tableNumber, List<OrderItemRequestDTO> items) {
         // Busca mesa por su número visual, no por su ID interno
         DiningTable table = diningTableRepository.findByTableNumber(tableNumber)
                 .orElseThrow(() -> new RuntimeException("Error: La mesa número " + tableNumber + " no existe."));
@@ -46,15 +47,29 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(newOrder);
 
-        for (Integer productId : productIds) {
-            Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new RuntimeException("Error: El producto " + productId + " no existe."));
+        for (OrderItemRequestDTO itemRequest : items) {
+            Product product = productRepository.findById(itemRequest.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Error: El producto " + itemRequest.getProductId() + " no existe."));
 
             OrderItem item = new OrderItem();
             item.setOrder(savedOrder);
             item.setProduct(product);
-            item.setQuantity(1);
+
+            item.setQuantity(itemRequest.getQuantity());
             item.setStatus(OrderItem.ItemStatus.in_kitchen);
+
+            // Traducimos las listas a un texto para la cocina
+            StringBuilder notes = new StringBuilder();
+
+            if (itemRequest.getAddedExtras() != null && !itemRequest.getAddedExtras().isEmpty()) {
+                notes.append("Extra: ").append(String.join(", ", itemRequest.getAddedExtras())).append(". ");
+            }
+            if (itemRequest.getRemovedDefaults() != null && !itemRequest.getRemovedDefaults().isEmpty()) {
+                notes.append("Sin: ").append(String.join(", ", itemRequest.getRemovedDefaults())).append(".");
+            }
+
+            // Guardamos el texto en el plato
+            item.setObservations(notes.toString().trim());
 
             orderItemRepository.save(item);
         }

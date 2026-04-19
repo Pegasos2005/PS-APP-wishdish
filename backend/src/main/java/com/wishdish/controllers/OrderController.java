@@ -31,7 +31,7 @@ public class OrderController {
     // Historia 2: El cliente le da a "Comandar" y nos envía la mesa y los platos
     @PostMapping
     public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody OrderRequestDTO request) {
-        Order newOrder = orderService.createOrder(request.getTableId(), request.getProductIds());
+        Order newOrder = orderService.createOrder(request.getTableId(), request.getItems());
         // Transformamos la entidad pura a DTO antes de enviarla al frontend
         return ResponseEntity.ok(new OrderResponseDTO(newOrder));
     }

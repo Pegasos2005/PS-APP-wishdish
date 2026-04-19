@@ -33,6 +33,12 @@ public class OrderItem {
     @Column(name = "item_notes", columnDefinition = "TEXT")
     private String itemNotes;
 
+    @Column(columnDefinition = "TEXT")
+    private String observations;
+
+    public String getObservations() { return observations; }
+    public void setObservations(String observations) { this.observations = observations; }
+
     // --- NUESTRO ENUM INTERNO (Las únicas opciones válidas) ---
     public enum ItemStatus {
         in_kitchen,

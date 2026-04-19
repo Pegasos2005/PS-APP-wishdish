@@ -47,10 +47,17 @@ export class ShowOrderComponent {
       alert("Your cart is empty. Please add some products.");
       return;
     }
+    // Preparamos los items con sus extras y quitados
+    const itemsPayload = this.orderService.order.map(item => ({
+      productId: item.product.id,
+      quantity: item.quantity,
+      addedExtras: item.product.addedExtras || [],
+      removedDefaults: item.product.removedDefaults || []
+    }));
 
     const orderPayload = {
       tableId: this.tableId,
-      productIds: this.getProductIds()
+      productIds: itemsPayload
     };
 
     console.log("Sending to kitchen:", orderPayload);
