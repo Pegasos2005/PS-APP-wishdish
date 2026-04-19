@@ -16,10 +16,15 @@ export class CustomerDishDetailComponent implements OnInit {
   selectedIngredients: Set<string> = new Set();
 
   ngOnInit() {
+
     if (this.product?.ingredients) {
-      // Por defecto, todos los ingredientes están seleccionados
+      // Solo marcamos por defecto los que tengan isDefault === true en Java
       this.product.ingredients.forEach((ing: any) => {
-        this.selectedIngredients.add(ing.id || ing.name);
+
+        // Busca isDefault, pero si le ha quitado el 'is' y lo llama 'default', le decimos que lo acepte tambien"
+        if (ing.isDefault === true || ing.default === true || String(ing.isDefault) === 'true') {
+          this.selectedIngredients.add(ing.id || ing.name);
+        }
       });
     }
   }

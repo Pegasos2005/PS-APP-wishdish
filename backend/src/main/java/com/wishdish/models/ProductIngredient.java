@@ -10,6 +10,7 @@ public class ProductIngredient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    // ManyToOne indica que estos campos representan relaciones entre las tablas
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;

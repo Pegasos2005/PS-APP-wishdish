@@ -6,6 +6,7 @@ public class IngredientDTO {
     private Integer id;
     private String name;
     private String description;
+    private Boolean isDefault;
 
     public IngredientDTO() {
     }
@@ -39,5 +40,12 @@ public class IngredientDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+    public Boolean getIsDefault() {
+        return isDefault;
+    }
+
+    public void setIsDefault(Boolean isDefault) {
+        this.isDefault = isDefault;
     }
 }

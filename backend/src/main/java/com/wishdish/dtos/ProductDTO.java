@@ -25,9 +25,13 @@ public class ProductDTO {
         this.price = product.getPrice();
         this.picture = product.getPicture();
 
-        // Para convertir ProductIngredients a IngredientDTOs
+        // Para convertir ProductIngredients a IngredientDTOs y no perder el isDefault
         this.ingredients = product.getProductIngredients().stream()
-                .map(pi -> new IngredientDTO(pi.getIngredient()))
+                .map(pi -> {
+                    IngredientDTO dto = new IngredientDTO(pi.getIngredient());
+                    dto.setIsDefault(pi.getIsDefault()); // valor de la tabla intermedia
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 

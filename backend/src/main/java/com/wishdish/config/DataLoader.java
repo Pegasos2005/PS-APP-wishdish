@@ -1,11 +1,11 @@
 package com.wishdish.config;
 
-import com.wishdish.models.Category;
-import com.wishdish.models.DiningTable;
-import com.wishdish.models.Product;
+import com.wishdish.models.*;
 import com.wishdish.repositories.CategoryRepository;
 import com.wishdish.repositories.DiningTableRepository;
+import com.wishdish.repositories.IngredientRepository;
 import com.wishdish.repositories.ProductRepository;
+import com.wishdish.repositories.ProductIngredientRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,9 @@ public class DataLoader {
     CommandLineRunner initDatabase(
             CategoryRepository categoryRepository,
             ProductRepository productRepository,
-            DiningTableRepository diningTableRepository) {
+            DiningTableRepository diningTableRepository,
+            IngredientRepository ingredientRepository,
+            ProductIngredientRepository productIngredientRepository) {
 
         return args -> {
             System.out.println("🔄 Verificando datos en la base de datos...");
@@ -78,60 +80,214 @@ public class DataLoader {
             // ===========================
             // CREAR PRODUCTOS - ENTRANTES
             // ===========================
-            crearProducto(productRepository, "Nachos con Queso", "Nachos crujientes con mezcla de quesos y guacamole.", "8.90", "assets/nachos.jpg", entrantes);
-            crearProducto(productRepository, "Tequeños", "Palitos de queso crujientes con salsa.", "7.90", "assets/tequeños.jpg", entrantes);
-            crearProducto(productRepository, "Aros de cebolla 10 uds", "Crujientes aros de cebolla fritos, acompañados de nuestra salsa Montana", "8.90", "assets/aros_cebolla.jpg", entrantes);
+            Product nachosConQueso = crearProducto(productRepository, "Nachos con Queso", "Nachos crujientes con mezcla de quesos y guacamole.", "8.90", "assets/nachos.jpg", entrantes);
+            Product tequeños = crearProducto(productRepository, "Tequeños", "Palitos de queso crujientes con salsa.", "7.90", "assets/tequeños.jpg", entrantes);
+            Product arosDeCebolla = crearProducto(productRepository, "Aros de cebolla 10 uds", "Crujientes aros de cebolla fritos, acompañados de nuestra salsa Montana", "8.90", "assets/aros_cebolla.jpg", entrantes);
             System.out.println("   ✓ 3 entrantes creados");
 
             // ===========================
             // CREAR PRODUCTOS - HAMBURGUESAS
             // ===========================
-            crearProducto(productRepository, "Hamburguesa smash con queso y bacon", "180 g. de carne 100% vaca gallega, sin aditivos ni conservantes, picada a diario", "13.50", "assets/hamburguesa_smash_bacon.jpg", hamburguesas);
-            crearProducto(productRepository, "Burger del Mes", "Pan Black Brioche, 200Gr de Carne Picada de Angus Américano, 80Gr de nuestra Pulled-Pork Casero, Cebolla Caramelizada, Queso Fundido y Salsa Emmy", "16.50", "assets/Burger_del_mes.jpg", hamburguesas);
-            crearProducto(productRepository, "Crispy chicken toro hot", "Nuestra hamburguesa 100% de pollo crispy", "12.90", "assets/crispy_chicken_toro_hot.jpg", hamburguesas);
-            crearProducto(productRepository, "Hamburguesa smash", "180 g. de carne 100% vaca gallega, sin aditivos ni conservantes, picada a diario", "13.50", "assets/hamburguesa_smash.jpg", hamburguesas);
+            Product hamburguesaBacon = crearProducto(productRepository, "Hamburguesa smash con queso y bacon", "180 g. de carne 100% vaca gallega, sin aditivos ni conservantes, picada a diario", "13.50", "assets/hamburguesa_smash_bacon.jpg", hamburguesas);
+            Product burgerDelMes = crearProducto(productRepository, "Burger del Mes", "Pan Black Brioche, 200Gr de Carne Picada de Angus Américano, 80Gr de nuestra Pulled-Pork Casero, Cebolla Caramelizada, Queso Fundido y Salsa Emmy", "16.50", "assets/Burger_del_mes.jpg", hamburguesas);
+            Product crispyChickenToroHot = crearProducto(productRepository, "Crispy chicken toro hot", "Nuestra hamburguesa 100% de pollo crispy", "12.90", "assets/crispy_chicken_toro_hot.jpg", hamburguesas);
+            Product hamburguesaSmash = crearProducto(productRepository, "Hamburguesa smash", "180 g. de carne 100% vaca gallega, sin aditivos ni conservantes, picada a diario", "13.50", "assets/hamburguesa_smash.jpg", hamburguesas);
             System.out.println("   ✓ 4 hamburguesas creadas");
 
             // ===========================
             // CREAR PRODUCTOS - GUARNICIONES
             // ===========================
-            crearProducto(productRepository, "Batatas Cajun", "batatas fritas cubiertas de nuestra mezcla de especias Cajun (contiene Sal).", "4.90", "assets/batatas_cajun.jpg", guarniciones);
-            crearProducto(productRepository, "Batata frita", "Boniato frito.", "4.90", "assets/batata_frita.jpg", guarniciones);
-            crearProducto(productRepository, "Papas cajún", "Papas fritas sazonadas con un mix de especias (la mezcla de especias contiene sal).", "3.50", "assets/papas_cajun.jpg", guarniciones);
-            crearProducto(productRepository, "Papas clásicas", "Patatas fritas", "3.60", "assets/papas_clasicas.jpg", guarniciones);
+
+            // Nota: para poder unir los productos con ingredientes, los guardamos en una variable
+            Product batataCajun = crearProducto(productRepository, "Batatas Cajun", "batatas fritas cubiertas de nuestra mezcla de especias Cajun (contiene Sal).", "4.90", "assets/batatas_cajun.jpg", guarniciones);
+            Product batataFrita = crearProducto(productRepository, "Batata frita", "Boniato frito.", "4.90", "assets/batata_frita.jpg", guarniciones);
+            Product papasCajun = crearProducto(productRepository, "Papas cajún", "Papas fritas sazonadas con un mix de especias (la mezcla de especias contiene sal).", "3.50", "assets/papas_cajun.jpg", guarniciones);
+            Product papasClasicas = crearProducto(productRepository, "Papas clásicas", "Patatas fritas", "3.60", "assets/papas_clasicas.jpg", guarniciones);
             System.out.println("   ✓ 4 guarniciones creadas");
 
             // ===========================
             // CREAR PRODUCTOS - POSTRES
             // ===========================
-            crearProducto(productRepository, "Chesscake de Pistacho Casera", "Deliciosa Cheesecake Casera con Topping de Pistacho.", "6.50", "assets/cheescake_pistacho.jpg", postres);
-            crearProducto(productRepository, "Cheesecake de galletas Lotus casera", "Deliciosa tarta casera de queso y galletas Oreo.", "5.85", "assets/cheescake_lotus.jpg", postres);
-            crearProducto(productRepository, "Cheesecake casera", "Deliciosa tarta de queso casera", "6.50", "assets/cheescake.jpg", postres);
-            crearProducto(productRepository, "Brownie De Chocolate", "Con helado de Vainilla y salsa de chocolate.", "5.50", "assets/brownie.jpg", postres);
+            Product cheesecakeDePistachoCasera = crearProducto(productRepository, "Cheesecake de Pistacho Casera", "Deliciosa Cheesecake Casera con Topping de Pistacho.", "6.50", "assets/cheescake_pistacho.jpg", postres);
+            Product cheesecakeDeGalletasLotusCasera = crearProducto(productRepository, "Cheesecake de galletas Lotus casera", "Deliciosa tarta casera de queso y galletas Oreo.", "5.85", "assets/cheescake_lotus.jpg", postres);
+            Product cheescakeCasera = crearProducto(productRepository, "Cheesecake casera", "Deliciosa tarta de queso casera", "6.50", "assets/cheescake.jpg", postres);
+            Product brownieDeChocolate = crearProducto(productRepository, "Brownie De Chocolate", "Con helado de Vainilla y salsa de chocolate.", "5.50", "assets/brownie.jpg", postres);
             System.out.println("   ✓ 4 postres creados");
 
             // ===========================
             // CREAR PRODUCTOS - BEBIDAS
             // ===========================
-            crearProducto(productRepository, "Nestea Té Negro Limón lata 330ml.", "", "2.50", "assets/nestea_te_negro.jpg", bebidas);
-            crearProducto(productRepository, "Appletiser Botella", "", "2.90", "assets/appletiser.jpg", bebidas);
-            crearProducto(productRepository, "Agua Con Gas (1.50 Lt.)", "", "3.00", "assets/botella_agua_1.50.jpg", bebidas);
-            crearProducto(productRepository, "Agua Con Gas (50 Cl.)", "", "1.50", "assets/botella_agua_0.50.jpg", bebidas);
+            Product nesteaNegro = crearProducto(productRepository, "Nestea Té Negro Limón lata 330ml.", "", "2.50", "assets/nestea_te_negro.jpg", bebidas);
+            Product appletiserBotella = crearProducto(productRepository, "Appletiser Botella", "", "2.90", "assets/appletiser.jpg", bebidas);
+            Product aguaConGas = crearProducto(productRepository, "Agua Con Gas (1.50 Lt.)", "", "3.00", "assets/botella_agua_1.50.jpg", bebidas);
+            Product aguaConGaspequeña = crearProducto(productRepository, "Agua Con Gas (50 Cl.)", "", "1.50", "assets/botella_agua_0.50.jpg", bebidas);
             System.out.println("   ✓ 4 bebidas creadas");
+
+
+            // =============================
+            // CREAR INGREDIENTES
+            // =============================
+            System.out.println("   🍅 Creando ingredientes...");
+
+            // Carnes y Proteínas
+            Ingredient carneVaca = crearIngrediente(ingredientRepository, "Carne 100% vaca gallega");
+            Ingredient carneAngus = crearIngrediente(ingredientRepository, "Carne picada de Angus");
+            Ingredient polloCrispy = crearIngrediente(ingredientRepository, "Pollo Crispy");
+            Ingredient pulledPork = crearIngrediente(ingredientRepository, "Pulled Pork casero");
+            Ingredient bacon = crearIngrediente(ingredientRepository, "Bacon crujiente");
+            Ingredient huevoFrito = crearIngrediente(ingredientRepository, "Huevo frito");
+
+            // Quesos
+            Ingredient mezclaQuesos = crearIngrediente(ingredientRepository, "Mezcla de quesos");
+            Ingredient quesoCheddar = crearIngrediente(ingredientRepository, "Queso Cheddar fundido");
+            Ingredient quesoBlanco = crearIngrediente(ingredientRepository, "Queso blanco hilado");
+
+            // Vegetales y Salsas
+            Ingredient guacamole = crearIngrediente(ingredientRepository, "Guacamole");
+            Ingredient jalapenos = crearIngrediente(ingredientRepository, "Jalapeños");
+            Ingredient cebollaCaramelizada = crearIngrediente(ingredientRepository, "Cebolla Caramelizada");
+            Ingredient cebollaMorada = crearIngrediente(ingredientRepository, "Cebolla Morada");
+            Ingredient salsaMontana = crearIngrediente(ingredientRepository, "Salsa Montana");
+            Ingredient salsaEmmy = crearIngrediente(ingredientRepository, "Salsa Emmy");
+            Ingredient salsaFrutosRojos = crearIngrediente(ingredientRepository, "Salsa de frutos rojos");
+
+            // Panes y Bases
+            Ingredient panBrioche = crearIngrediente(ingredientRepository, "Pan Brioche");
+            Ingredient panBlackBrioche = crearIngrediente(ingredientRepository, "Pan Black Brioche");
+            Ingredient totopos = crearIngrediente(ingredientRepository, "Nachos (Totopos)");
+            Ingredient especiasCajun = crearIngrediente(ingredientRepository, "Mix especias Cajún");
+
+            // Postres y Bebidas
+            Ingredient toppingPistacho = crearIngrediente(ingredientRepository, "Topping de Pistacho");
+            Ingredient galletaLotus = crearIngrediente(ingredientRepository, "Polvo de galleta Lotus");
+            Ingredient heladoVainilla = crearIngrediente(ingredientRepository, "Bola de helado de Vainilla");
+            Ingredient siropeChocolate = crearIngrediente(ingredientRepository, "Salsa de chocolate");
+            Ingredient hielo = crearIngrediente(ingredientRepository, "Hielo");
+            Ingredient rodajaLimon = crearIngrediente(ingredientRepository, "Rodaja de limón");
+
+            // ================================
+            // 2. UNIR INGREDIENTES CON PLATOS
+            // ================================
+
+            // Como al crear los productos los guardamos en una variable, unimos los productos con los ingredientes
+            // (true = Ingrediente Por Defecto, false = Ingrediente Extra)
+            System.out.println("   Conectando ingredientes a la carta...");
+
+            // --- ENTRANTES ---
+            // Nachos
+            aniadirIngredienteAPlato(productIngredientRepository, nachosConQueso, totopos, true);
+            aniadirIngredienteAPlato(productIngredientRepository, nachosConQueso, mezclaQuesos, true);
+            aniadirIngredienteAPlato(productIngredientRepository, nachosConQueso, guacamole, true);
+            aniadirIngredienteAPlato(productIngredientRepository, nachosConQueso, jalapenos, false);
+            aniadirIngredienteAPlato(productIngredientRepository, nachosConQueso, pulledPork, false);
+
+            // Tequeños
+            aniadirIngredienteAPlato(productIngredientRepository, tequeños, quesoBlanco, true);
+            aniadirIngredienteAPlato(productIngredientRepository, tequeños, salsaFrutosRojos, true);
+            aniadirIngredienteAPlato(productIngredientRepository, tequeños, salsaMontana, false);
+
+            // Aros de cebolla
+            aniadirIngredienteAPlato(productIngredientRepository, arosDeCebolla, salsaMontana, true);
+            aniadirIngredienteAPlato(productIngredientRepository, arosDeCebolla, bacon, false);
+
+
+            // --- HAMBURGUESAS ---
+            // Smash Bacon
+            aniadirIngredienteAPlato(productIngredientRepository, hamburguesaBacon, panBrioche, true);
+            aniadirIngredienteAPlato(productIngredientRepository, hamburguesaBacon, carneVaca, true);
+            aniadirIngredienteAPlato(productIngredientRepository, hamburguesaBacon, quesoCheddar, true);
+            aniadirIngredienteAPlato(productIngredientRepository, hamburguesaBacon, bacon, true);
+            aniadirIngredienteAPlato(productIngredientRepository, hamburguesaBacon, huevoFrito, false);
+            aniadirIngredienteAPlato(productIngredientRepository, hamburguesaBacon, cebollaCaramelizada, false);
+
+            // Burger del Mes
+            aniadirIngredienteAPlato(productIngredientRepository, burgerDelMes, panBlackBrioche, true);
+            aniadirIngredienteAPlato(productIngredientRepository, burgerDelMes, carneAngus, true);
+            aniadirIngredienteAPlato(productIngredientRepository, burgerDelMes, pulledPork, true);
+            aniadirIngredienteAPlato(productIngredientRepository, burgerDelMes, cebollaCaramelizada, true);
+            aniadirIngredienteAPlato(productIngredientRepository, burgerDelMes, mezclaQuesos, true);
+            aniadirIngredienteAPlato(productIngredientRepository, burgerDelMes, salsaEmmy, true);
+            aniadirIngredienteAPlato(productIngredientRepository, burgerDelMes, bacon, false);
+            aniadirIngredienteAPlato(productIngredientRepository, burgerDelMes, huevoFrito, false);
+
+            // Crispy Chicken
+            aniadirIngredienteAPlato(productIngredientRepository, crispyChickenToroHot, panBrioche, true);
+            aniadirIngredienteAPlato(productIngredientRepository, crispyChickenToroHot, polloCrispy, true);
+            aniadirIngredienteAPlato(productIngredientRepository, crispyChickenToroHot, quesoCheddar, true);
+            aniadirIngredienteAPlato(productIngredientRepository, crispyChickenToroHot, bacon, false);
+            aniadirIngredienteAPlato(productIngredientRepository, crispyChickenToroHot, guacamole, false);
+
+            // Smash Normal
+            aniadirIngredienteAPlato(productIngredientRepository, hamburguesaSmash, panBrioche, true);
+            aniadirIngredienteAPlato(productIngredientRepository, hamburguesaSmash, carneVaca, true);
+            aniadirIngredienteAPlato(productIngredientRepository, hamburguesaSmash, quesoCheddar, true);
+            aniadirIngredienteAPlato(productIngredientRepository, hamburguesaSmash, bacon, false);
+            aniadirIngredienteAPlato(productIngredientRepository, hamburguesaSmash, cebollaMorada, false);
+
+
+            // --- GUARNICIONES ---
+            // Batatas y Papas Cajun
+            aniadirIngredienteAPlato(productIngredientRepository, batataCajun, especiasCajun, true);
+            aniadirIngredienteAPlato(productIngredientRepository, papasCajun, especiasCajun, true);
+
+            // Opciones extra para todas las guarniciones
+            aniadirIngredienteAPlato(productIngredientRepository, batataCajun, salsaMontana, false);
+            aniadirIngredienteAPlato(productIngredientRepository, batataFrita, salsaMontana, false);
+            aniadirIngredienteAPlato(productIngredientRepository, papasCajun, salsaMontana, false);
+            aniadirIngredienteAPlato(productIngredientRepository, papasClasicas, salsaMontana, false);
+            aniadirIngredienteAPlato(productIngredientRepository, papasClasicas, mezclaQuesos, false);
+            aniadirIngredienteAPlato(productIngredientRepository, papasClasicas, bacon, false);
+
+
+            // --- POSTRES ---
+            aniadirIngredienteAPlato(productIngredientRepository, cheesecakeDePistachoCasera, toppingPistacho, true);
+            aniadirIngredienteAPlato(productIngredientRepository, cheesecakeDePistachoCasera, heladoVainilla, false);
+
+            aniadirIngredienteAPlato(productIngredientRepository, cheesecakeDeGalletasLotusCasera, galletaLotus, true);
+            aniadirIngredienteAPlato(productIngredientRepository, cheesecakeDeGalletasLotusCasera, siropeChocolate, false);
+
+            aniadirIngredienteAPlato(productIngredientRepository, brownieDeChocolate, heladoVainilla, true);
+            aniadirIngredienteAPlato(productIngredientRepository, brownieDeChocolate, siropeChocolate, true);
+            aniadirIngredienteAPlato(productIngredientRepository, brownieDeChocolate, toppingPistacho, false);
+
+
+            // --- BEBIDAS  ---
+            aniadirIngredienteAPlato(productIngredientRepository, nesteaNegro, hielo, true);
+            aniadirIngredienteAPlato(productIngredientRepository, nesteaNegro, rodajaLimon, true);
+
+            aniadirIngredienteAPlato(productIngredientRepository, aguaConGas, hielo, false);
+            aniadirIngredienteAPlato(productIngredientRepository, aguaConGas, rodajaLimon, false);
+
+            aniadirIngredienteAPlato(productIngredientRepository, aguaConGaspequeña, hielo, false);
+            aniadirIngredienteAPlato(productIngredientRepository, aguaConGaspequeña, rodajaLimon, false);
+
+            System.out.println("   ✓ Todos los ingredientes conectados");
+
 
             imprimirResumen(categoryRepository, productRepository, diningTableRepository);
         };
     }
 
     // Método auxiliar para no repetir código creando productos
-    private void crearProducto(ProductRepository repo, String nombre, String desc, String precio, String imagen, Category categoria) {
+    private Product crearProducto(ProductRepository repo, String nombre, String desc, String precio, String imagen, Category categoria) {
         Product p = new Product();
         p.setName(nombre);
         p.setDescription(desc);
         p.setPrice(new BigDecimal(precio));
         p.setPicture(imagen);
         p.setCategory(categoria);
-        repo.save(p);
+        return repo.save(p);
+    }
+
+    private Ingredient crearIngrediente(IngredientRepository repo, String nombre) {
+        Ingredient ing = new Ingredient(nombre);
+        return repo.save(ing);
+    }
+
+    // Para unir plato con el ingrediente
+    private void aniadirIngredienteAPlato(ProductIngredientRepository repo, Product producto, Ingredient ingrediente, boolean porDefecto) {
+        ProductIngredient relacion = new ProductIngredient(producto, ingrediente, porDefecto);
+        repo.save(relacion);
     }
 
     // Método auxiliar para el resumen final
