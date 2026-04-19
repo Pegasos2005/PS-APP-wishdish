@@ -11,6 +11,7 @@ public class OrderItemDTO {
     private String itemNotes;
     private Integer quantity;
     private BigDecimal productPrice;
+    private String observations;
 
     public OrderItemDTO() {}
 
@@ -20,6 +21,7 @@ public class OrderItemDTO {
         this.status = item.getStatus().name();
         this.itemNotes = item.getItemNotes();
         this.quantity = item.getQuantity();
+        this.observations = item.getObservations();
         if (item.getProduct() != null) {
             this.productName = item.getProduct().getName();
             this.productPrice = item.getProduct().getPrice();
@@ -39,4 +41,6 @@ public class OrderItemDTO {
     public void setItemNotes(String itemNotes) { this.itemNotes = itemNotes; }
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
+    public String getObservations() { return observations; }
+    public void setObservations(String observations) { this.observations = observations; }
 }

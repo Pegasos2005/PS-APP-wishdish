@@ -26,7 +26,8 @@
             @for (item of order.items; track item.id) {
             <article class="dish-card" [class.item-prepared]="item.status === 'prepared'">
               <div class="dish-header">
-                <span class="dish-name">{{ item.productName }}</span>
+                <span class="dish-name"><strong>{{ item.quantity }}x</strong> {{ item.productName }}</span>
+
                 <button class="check-circle"
                         [class.prepared]="item.status === 'prepared'"
                         (click)="toggleItemStatus(order, item)"
@@ -34,9 +35,18 @@
                   @if (item.status === 'prepared') { ✓ }
                 </button>
               </div>
-              <ul class="comments-list">
-                <li>• {{ item.notes || 'No notes' }}</li>
-              </ul>
+
+              @if (item.observations ) {
+                <div class="item-modifications">
+                  <p> {{ item.observations }}</p>
+                </div>
+              }
+
+              @if (item.itemNotes) {
+                <div class="customer-instructions">
+                  <p>💬 "{{ item.itemNotes }}"</p>
+                </div>
+              }
             </article>
             }
           </div>

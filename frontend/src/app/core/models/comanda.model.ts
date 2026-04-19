@@ -8,17 +8,19 @@ export interface ProductoDTO {
 
 export interface ItemComandaDTO {
   id: number;
-  producto: ProductoDTO;
-  cantidad: number;
-  estado: string;
-  notasItem?: string;
+  productName: string;
+  quantity: number;
+  status: string;
+  // Con extras o sin ...
+  observations?: string;
+  // Lo que escribe el cliente
+  itemNotes?: string;
 }
 
 export interface ComandaResponseDTO {
   id: number;
-  numeroMesa: number;
-  fechaComanda: string;
-  estado: string;
-  notasGenerales?: string;
+  tableNumber: number;
+  status: string;
   items: ItemComandaDTO[];
+  isExiting?: boolean;
 }

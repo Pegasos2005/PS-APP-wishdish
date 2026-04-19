@@ -5,20 +5,22 @@ import { interval, of } from 'rxjs';
 import { switchMap, catchError, map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { KitchenOrdersSystemService } from '../../../core/services/kitchen-orders-system.service';
+import { ComandaResponseDTO, ItemComandaDTO } from '../../../core/models/comanda.model';
 
 @Component({
   selector: 'app-worker-view',
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './worker-view.component.html',
-  styleUrls: ['./worker-view.component.css'] // <-- Ojo, styleUrls con 's'
+  styleUrls: ['./worker-view.component.css']
 })
 export class WorkerViewComponent implements OnInit {
   private kitchenService = inject(KitchenOrdersSystemService);
-  private destroyRef = inject(DestroyRef); // Nueva forma de destruir suscripciones
+  private destroyRef = inject(DestroyRef);
 
-  // Variables traducidas al inglés
-  orders = signal<any[]>([]);
+  // Signal tipado con tu interfaz para evitar el error de DataTransferItemList
+  orders = signal<ComandaResponseDTO[]>([]);
+
   private manualStates = new Map<number, string>();
   private isBulkUpdating = false;
   private excludedOrderIds = new Set<number>();
@@ -28,89 +30,87 @@ export class WorkerViewComponent implements OnInit {
   }
 
   startPolling() {
-      interval(3000).pipe(
-        takeUntilDestroyed(this.destroyRef),
-        switchMap(() => this.isBulkUpdating ? of(null) : this.kitchenService.getComandasActivas()),
-        map((data: any) => {
-          if (!data) return this.orders();
+    interval(3000).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      switchMap(() => this.isBulkUpdating ? of(null) : this.kitchenService.getComandasActivas()),
+      map((data: any) => {
+        if (!data) return this.orders();
 
-          return data
-            .filter((order: any) => !this.excludedOrderIds.has(order.id))
-            .map((order: any) => {
-              // --- CAMBIO CLAVE: Buscamos si la comanda ya existe en el signal actual ---
-              const existingOrder = this.orders().find(o => o.id === order.id);
+        return data
+          .filter((order: any) => !this.excludedOrderIds.has(order.id))
+          .map((order: any): ComandaResponseDTO => {
+            const existingOrder = this.orders().find(o => o.id === order.id);
 
-              return {
-                id: order.id,
-                tableNumber: order.tableNumber,
-                status: order.status,
-                // Si ya estaba saliendo (isExiting: true), mantenemos ese valor
-                isExiting: existingOrder ? existingOrder.isExiting : false,
-                items: (order.items || []).map((item: any) => {
-                  const savedStatus = this.manualStates.get(item.id);
-                  return {
-                    id: item.id,
-                    status: savedStatus ? savedStatus : item.status,
-                    productName: item.productName,
-                    notes: item.itemNotes || ''
-                  };
-                })
-              };
-            });
-        }),
-        catchError(() => of(this.orders()))
-      ).subscribe(res => this.orders.set(res));
-    }
-
-    toggleItemStatus(order: any, item: any) {
-      const newStatus = (item.status === 'prepared') ? 'in_kitchen' : 'prepared';
-      this.manualStates.set(item.id, newStatus);
-      item.status = newStatus;
-
-      // --- MEJORA: Animamos YA si detectamos que es el último plato ---
-      // Esto evita esperar a la respuesta del servidor para empezar el desvanecimiento
-      if (this.isOrderComplete(order)) {
-        this.animateAndRemoveOrder(order);
-      }
-
-      this.kitchenService.avanzarEstadoItem(item.id).subscribe({
-        next: () => {
-          // La lógica de eliminación ya se disparó arriba si era necesario
-          setTimeout(() => this.manualStates.delete(item.id), 7000);
-        },
-        error: () => {
-          // Si falla, revertimos estados (opcional pero recomendado)
-          this.excludedOrderIds.delete(order.id);
-          order.isExiting = false;
-          this.manualStates.delete(item.id);
-          item.status = (newStatus === 'prepared') ? 'in_kitchen' : 'prepared';
-        }
-      });
-    }
-
-    private animateAndRemoveOrder(order: any) {
-      if (order.isExiting) return; // Evitamos duplicar la animación
-
-      this.excludedOrderIds.add(order.id);
-      order.isExiting = true;
-
-      // Llamamos al servicio pero no necesitamos esperar su respuesta para animar
-      this.kitchenService.finalizarComanda(order.id).subscribe();
-
-      setTimeout(() => {
-        this.orders.update(current => current.filter(c => c.id !== order.id));
-      }, 500);
-    }
-
-  isOrderComplete(order: any): boolean {
-    if (!order.items || order.items.length === 0) return false;
-    return order.items.every((i: any) => i.status === 'prepared');
+            return {
+              id: order.id,
+              tableNumber: order.tableNumber,
+              status: order.status,
+              isExiting: existingOrder ? existingOrder.isExiting : false,
+              // Mapeamos los platos asegurando que lleguen todas las notas y cantidades
+              items: (order.items || []).map((item: any): ItemComandaDTO => {
+                const savedStatus = this.manualStates.get(item.id);
+                return {
+                  id: item.id,
+                  status: savedStatus ? savedStatus : item.status,
+                  productName: item.productName,
+                  quantity: item.quantity,       // <-- Importante para el HTML
+                  observations: item.observations, // <-- Los "Extras/Sin"
+                  itemNotes: item.itemNotes || ''  // <-- Nota del cliente
+                };
+              })
+            };
+          });
+      }),
+      catchError(() => of(this.orders()))
+    ).subscribe(res => {
+      if (res) this.orders.set(res);
+    });
   }
 
-  toggleOrderComplete(order: any) { // Antes toggleComandaCompleta
+  toggleItemStatus(order: ComandaResponseDTO, item: ItemComandaDTO) {
+    const newStatus = (item.status === 'prepared') ? 'in_kitchen' : 'prepared';
+    this.manualStates.set(item.id, newStatus);
+    item.status = newStatus;
+
+    if (this.isOrderComplete(order)) {
+      this.animateAndRemoveOrder(order);
+    }
+
+    this.kitchenService.avanzarEstadoItem(item.id).subscribe({
+      next: () => {
+        setTimeout(() => this.manualStates.delete(item.id), 7000);
+      },
+      error: () => {
+        this.excludedOrderIds.delete(order.id);
+        order.isExiting = false;
+        this.manualStates.delete(item.id);
+        item.status = (newStatus === 'prepared') ? 'in_kitchen' : 'prepared';
+      }
+    });
+  }
+
+  private animateAndRemoveOrder(order: ComandaResponseDTO) {
+    if (order.isExiting) return;
+
+    this.excludedOrderIds.add(order.id);
+    order.isExiting = true;
+
+    this.kitchenService.finalizarComanda(order.id).subscribe();
+
+    setTimeout(() => {
+      this.orders.update(current => current.filter(c => c.id !== order.id));
+    }, 500);
+  }
+
+  isOrderComplete(order: ComandaResponseDTO): boolean {
+    if (!order.items || order.items.length === 0) return false;
+    return order.items.every((i: ItemComandaDTO) => i.status === 'prepared');
+  }
+
+  toggleOrderComplete(order: ComandaResponseDTO) {
     this.isBulkUpdating = true;
     if (!this.isOrderComplete(order)) {
-      order.items.forEach((item: any) => {
+      order.items.forEach((item: ItemComandaDTO) => {
         item.status = 'prepared';
         this.manualStates.set(item.id, 'prepared');
         this.kitchenService.avanzarEstadoItem(item.id).subscribe();

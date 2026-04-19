@@ -171,3 +171,29 @@
   transform: scale(0.9) translateY(-20px);
   pointer-events: none;
 }
+.item-modifications {
+  background-color: #fff3cd; /* Amarillo suave */
+  border-left: 4px solid #ffc107;
+  padding: 6px 10px;
+  margin-top: 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #856404;
+  font-weight: 500;
+}
+
+.customer-instructions {
+  background-color: #e1f5fe; /* Azul muy clarito */
+  border-left: 4px solid #03a9f4;
+  padding: 6px 10px;
+  margin-top: 5px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #01579b;
+  font-style: italic;
+}
+
+.dish-name strong {
+  color: #e67e22; /* Color para que la cantidad (2x, 1x) resalte */
+  margin-right: 5px;
+}
