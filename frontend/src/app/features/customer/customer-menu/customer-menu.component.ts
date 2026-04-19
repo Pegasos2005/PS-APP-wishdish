@@ -5,11 +5,12 @@ import { RouterLink } from '@angular/router';
 import { MenuService } from '../../../core/services/menu.service';
 import { CustomerOrderService } from '../../../core/services/customer-order.service';
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card.component';
+import {CustomerDishDetailComponent} from '../customer-dish-detail/customer-dish-detail.component';
 
 @Component({
   selector: 'app-customer-menu',
   standalone: true,
-  imports: [CommonModule, RouterLink, ProductCardComponent],
+  imports: [CommonModule, RouterLink, ProductCardComponent, CustomerDishDetailComponent],
   templateUrl: './customer-menu.component.html',
   styleUrls: ['./customer-menu.component.css']
 })
@@ -22,7 +23,10 @@ export class CustomerMenuComponent implements OnInit {
 
   menuCategories = signal<any[]>([]);
   selectedCategory: number | null = null;
+  selectedProduct = signal<any>(null); // para mostrar el modal
+
   private isManualScroll = false;
+
 
   ngOnInit(): void {
     this.loadMenu();
@@ -38,6 +42,28 @@ export class CustomerMenuComponent implements OnInit {
       },
       error: (err) => console.error('Error loading menu', err)
     });
+  }
+
+  // Cuando se clickea un producto
+  onProductSelected(product: any) {
+    console.log('Producto seleccionado:', product);
+    this.selectedProduct.set(product);
+  }
+
+  // Cuando se confirma el producto con ingredientes
+  onAddToCart(productWithIngredients: any) {
+    console.log('Añadiendo al carrito con ingredientes:', productWithIngredients);
+
+    // Añadir al carrito
+    this.orderService.addProduct(productWithIngredients);
+
+    // Cerrar modal
+    this.selectedProduct.set(null);
+  }
+
+  // Cerrar modal
+  closeProductDetails() {
+    this.selectedProduct.set(null);
   }
 
   scrollToCategory(categoryId: number): void {

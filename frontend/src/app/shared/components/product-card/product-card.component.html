@@ -1,4 +1,5 @@
-<div class="product-card">
+<!-- Hacer que el producto se clickeable -->
+<div class="product-card" (click)="onProductClick()">
   <img [src]="product.picture" alt="Photo of {{ product.name }}" class="dish-image">
 
   <div class="product-info">
@@ -7,5 +8,5 @@
     <span class="price">{{ product.price }} €</span>
   </div>
 
-  <button class="add-btn" (click)="onAddClick()" aria-label="Add to order">+</button>
+  <button class="add-btn" (click)="onAddClick($event)" aria-label="Add to order">+</button>
 </div>

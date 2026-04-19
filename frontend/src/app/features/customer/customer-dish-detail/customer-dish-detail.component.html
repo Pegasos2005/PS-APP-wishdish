@@ -1,0 +1,51 @@
+
+<div class="modal-overlay" (click)="closeModal()"></div>
+
+
+<div class="modal-content">
+
+  <button class="close-btn" (click)="closeModal()">✕</button>
+
+  <div class="modal-body">
+
+    <div class="product-image">
+      <img [src]="product.picture" [alt]="product.name" />
+    </div>
+
+    <div class="product-info">
+
+      <h2 class="product-name">{{ product.name }}</h2>
+      <p class="product-description">{{ product.description }}</p>
+
+      <div class="price-section">
+        <span class="price">€ {{ product.price }}</span>
+      </div>
+
+      <!-- Ingredientes / Preferences -->
+      @if (product.ingredients && product.ingredients.length > 0) {
+        <div class="preferences-section">
+          <h3>Preferences</h3>
+
+          <div class="ingredients-list">
+            @for (ingredient of product.ingredients; track ingredient.id || ingredient.name) {
+              <label class="ingredient-checkbox">
+                <input
+                  type="checkbox"
+                  [checked]="isIngredientSelected(ingredient.id || ingredient.name)"
+                  (change)="toggleIngredient(ingredient.id || ingredient.name)">
+                <span>{{ ingredient.name }}</span>
+              </label>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Botón confirmar -->
+      <button class="confirm-btn" (click)="confirmAddToCart()">
+        Confirm
+      </button>
+    </div>
+
+  </div>
+
+</div>

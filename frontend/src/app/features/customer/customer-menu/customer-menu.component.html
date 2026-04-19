@@ -21,6 +21,7 @@
         <span class="cart-count">{{ orderService.totalItems() }}</span>
         }
       </button>
+
     </aside>
 
     <main class="product-column" #productColumn (scroll)="onScroll($event)">
@@ -31,10 +32,26 @@
         </h2>
 
         @for (product of category.products; track product.id) {
-        <app-product-card [product]="product"></app-product-card>
+
+          <!-- Emitir evento cuando se selecciona -->
+        <app-product-card
+          [product]="product"
+          (selectProduct)="onProductSelected($event)" >
+        </app-product-card>
         }
+
       </section>
       }
+
     </main>
   </div>
+
+  <!-- Modal del producto -->
+  @if (selectedProduct()) {
+    <app-customer-dish-detail
+      [product]="selectedProduct()"
+      (close)="closeProductDetails()"
+      (addToCart)="onAddToCart($event)">
+    </app-customer-dish-detail>
+  }
 </div>

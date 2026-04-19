@@ -30,4 +30,9 @@ export class MenuService {
   getAvailableMenu(): Observable<MenuCategoria[]> {
     return this.http.get<MenuCategoria[]>(this.API_URL + 'menu/available');
   }
+
+  getProductInfo(productId: number | null): Observable<any> {
+    const url = `${this.API_URL}/products/${productId}`;
+    return this.http.get(url);
+  }
 }
