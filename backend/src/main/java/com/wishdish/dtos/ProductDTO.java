@@ -2,6 +2,8 @@ package com.wishdish.dtos;
 
 import com.wishdish.models.Product;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProductDTO {
 
@@ -10,6 +12,7 @@ public class ProductDTO {
     private String description;
     private BigDecimal price;
     private String picture;
+    private List<IngredientDTO> ingredients;
 
     public ProductDTO() {
     }
@@ -21,6 +24,11 @@ public class ProductDTO {
         this.description = product.getDescription();
         this.price = product.getPrice();
         this.picture = product.getPicture();
+
+        // Para convertir ProductIngredients a IngredientDTOs
+        this.ingredients = product.getProductIngredients().stream()
+                .map(pi -> new IngredientDTO(pi.getIngredient()))
+                .collect(Collectors.toList());
     }
 
     public Integer getId() { return id; }
@@ -37,4 +45,7 @@ public class ProductDTO {
 
     public String getPicture() { return picture; }
     public void setPicture(String picture) { this.picture = picture; }
+
+    public List<IngredientDTO> getIngredients() { return ingredients; }
+    public void setIngredients(List<IngredientDTO> ingredients) { this.ingredients = ingredients; }
 }

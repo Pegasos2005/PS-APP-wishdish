@@ -2,6 +2,8 @@ package com.wishdish.models;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -87,6 +89,19 @@ public class Product {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    // Se añade la relación para tener la tabla intermedia entre Ingredient y Product
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<ProductIngredient> productIngredients = new ArrayList<>();
+
+    // Getter
+    public List<ProductIngredient> getProductIngredients() {
+        return productIngredients;
+    }
+
+    public void setProductIngredients(List<ProductIngredient> productIngredients) {
+        this.productIngredients = productIngredients;
     }
 
     @Override
