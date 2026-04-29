@@ -2,6 +2,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { CustomerOrderService } from '../../../core/services/customer-order.service';
 
 @Component({
   selector: 'app-customer-home',
@@ -12,6 +13,7 @@ import { Router } from '@angular/router';
 })
 export class CustomerHomeComponent {
   private router = inject(Router);
+  public orderService = inject(CustomerOrderService);
 
   // Signal para el nombre del restaurante (fácilmente editable en el futuro)
   restaurantName = signal<string>('WishDish');

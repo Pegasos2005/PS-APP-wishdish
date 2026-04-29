@@ -12,6 +12,21 @@
   overflow: hidden; /* Evita scrolls extraños */
 }
 
+.table-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #e0e0e0; /* Color gris claro según tu diseño */
+  color: #333;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  z-index: 10; /* Asegura que esté por encima del overlay oscuro */
+  border-bottom-right-radius: 12px;
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+}
+
 /* 2. Capa superpuesta (Overlay) para legibilidad */
 /* Un Senior sabe que la imagen de fondo nunca debe competir con la UI */
 .overlay {

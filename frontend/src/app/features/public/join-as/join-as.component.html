@@ -1,31 +1,36 @@
 <div class="access-container">
-
   <div class="access-card">
     <h1 class="access-title">Join As</h1>
-
     <div class="button-group">
-      <button
-        class="access-button"
-        (click)="joinAsAdmin()"
-        aria-label="Join as Administrator">
-        Admin
-      </button>
-
-      <button
-        class="access-button"
-        (click)="joinAsWorker()"
-        aria-label="Join as Worker Staff">
-        Worker
-      </button>
-
-      <button
-        class="access-button"
-        (click)="joinAsUser()"
-        aria-label="Join as Customer">
-        User
-      </button>
+      <button class="access-button" (click)="joinAsAdmin()">Admin</button>
+      <button class="access-button" (click)="joinAsWorker()">Worker</button>
+      <button class="access-button" (click)="joinAsUser()">User</button>
     </div>
-
   </div>
 
+  @if (isTableModalOpen()) {
+  <div class="modal-overlay">
+    <div class="modal-card">
+      <h2 class="modal-title">Enter Table Number</h2>
+
+      <input
+        #tableInput
+        type="number"
+        class="table-input"
+        [class.error-shake]="tableError()"
+        placeholder="Ej. Num 5"
+        (keyup.enter)="confirmTable(tableInput.value)"
+        autofocus>
+
+      @if (tableError()) {
+      <p class="error-text">{{ errorMessage() }}</p>
+      }
+
+      <div class="modal-buttons">
+        <button class="access-button confirm-btn" (click)="confirmTable(tableInput.value)">Confirm</button>
+        <button class="access-button cancel-btn" (click)="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  }
 </div>
