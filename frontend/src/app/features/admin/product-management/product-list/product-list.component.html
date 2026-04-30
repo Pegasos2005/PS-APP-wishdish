@@ -1,7 +1,7 @@
 <div class="principal-container">
   <header class="head">
     <button class="return-button" routerLink="/admin/dashboard">&lt;</button>
-    <img src="assets/logo.png" alt="Restaurant Logo">
+    <img src="assets/logo.png" alt="logo">
   </header>
 
   <div class="body-admin">
@@ -9,8 +9,8 @@
 
     <main class="content-area">
       <div class="admin-toolbar">
-        <input type="text" class="search-field" placeholder="🔍 Search...">
-        <button class="add-btn" (click)="addProduct()">+ Add Product</button>
+        <input type="text" class="search-field" placeholder="🔍 Search products...">
+        <button class="add-btn" (click)="addNewProduct()">+ Add Product</button>
       </div>
 
       <div class="grid-comandas">
@@ -18,13 +18,21 @@
         <section class="comanda-card">
           <div class="product-row">
             <span class="product-name"><strong>{{ product.name }}</strong></span>
-            <span class="product-price">{{ product.price }}€</span>
-            <div class="actions">
-              <button class="btn-modify" (click)="editProduct(product)">Modify</button>
-              <button class="btn-delete" (click)="deleteProduct(product)">Delete</button>
+
+            <div class="product-controls">
+              <span class="product-price">{{ product.price | number:'1.2-2' }}€</span>
+              <div class="actions">
+                <button class="btn-modify" (click)="editProduct(product)">Modify</button>
+                <button class="btn-delete" (click)="deleteProduct(product)">Delete</button>
+              </div>
             </div>
+
           </div>
         </section>
+        } @empty {
+        <div class="empty-state">
+          <p>No products found in the database.</p>
+        </div>
         }
       </div>
     </main>

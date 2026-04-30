@@ -1,0 +1,44 @@
+<div class="principal-container">
+  <header class="head">
+    <button type="button" class="return-button" (click)="goBack()">&lt;</button>
+    <img src="assets/logo.png" alt="Logo">
+  </header>
+
+  <div class="body-admin">
+    <div class="sub-header">
+      Admin - {{ isEditMode ? 'Edit Product' : 'Add Product' }}
+    </div>
+
+    <main class="content-area">
+      <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="comanda-card form-layout">
+
+        <div class="form-column">
+          <h3 class="column-title">Preferences</h3>
+          <div class="preferences-list">
+            <label class="checkbox-item"><input type="checkbox"> <span>Sin gluten</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Extra queso</span></label>
+            <button type="button" class="add-circle-btn">+</button>
+          </div>
+        </div>
+
+        <div class="form-column right-align">
+          <div class="image-placeholder"></div>
+
+          <div class="product-details">
+            <input type="text" formControlName="name" placeholder="Dish name" class="dish-name-input">
+
+            <textarea formControlName="description" placeholder="Description: Enter product details..." class="description-text"></textarea>
+
+            <div class="price-container">
+              <label>Price:</label>
+              <input type="number" formControlName="price" placeholder="0.00" class="price-input">
+            </div>
+          </div>
+
+          <button type="submit" class="confirm-btn">Confirm</button>
+        </div>
+
+      </form>
+    </main>
+  </div>
+</div>

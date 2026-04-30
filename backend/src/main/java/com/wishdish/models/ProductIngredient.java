@@ -1,5 +1,6 @@
 package com.wishdish.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,6 +12,7 @@ public class ProductIngredient {
     private Integer id;
 
     // ManyToOne indica que estos campos representan relaciones entre las tablas
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;

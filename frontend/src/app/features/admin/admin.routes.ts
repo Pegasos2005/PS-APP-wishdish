@@ -1,4 +1,3 @@
-// src/app/features/admin/admin.routes.ts
 import { Routes } from '@angular/router';
 import { adminGuard } from '../../core/guards/admin.guard';
 
@@ -16,10 +15,21 @@ export const ADMIN_ROUTES: Routes = [
         path: 'dashboard',
         loadComponent: () => import('./dashboard/dashboard.component').then(c => c.DashboardComponent)
       },
-      // Nueva ruta para gestionar productos
       {
         path: 'products',
         loadComponent: () => import('./product-management/product-list/product-list.component').then(c => c.ProductListComponent)
+      },
+      {
+        path: 'products/new',
+        loadComponent: () => import('./product-management/product-form/product-form.component').then(c => c.ProductFormComponent)
+      },
+      {
+        path: 'products/edit/:id',
+        loadComponent: () => import('./product-management/product-form/product-form.component').then(c => c.ProductFormComponent)
+      },
+      {
+        path: 'ingredients/new',
+        loadComponent: () => import('./product-management/ingredient-form/ingredient-form.component').then(c => c.IngredientFormComponent)
       }
     ]
   }
