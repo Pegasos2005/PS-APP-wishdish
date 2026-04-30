@@ -1,15 +1,15 @@
+// src/app/features/admin/admin.routes.ts
 import { Routes } from '@angular/router';
 import { adminGuard } from '../../core/guards/admin.guard';
 
 export const ADMIN_ROUTES: Routes = [
-  { path: '', redirectTo: 'passwd-admin', pathMatch: 'full' },
-  {
-    path: 'passwd-admin',
-    loadComponent: () => import('./passwd-admin/passwd-admin.component').then(c => c.PasswdAdminComponent)
-  },
+  // Redirigimos la entrada base directamente al dashboard
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+
+  // Agrupamos TODAS las rutas del admin bajo el Guard[cite: 36]
   {
     path: '',
-    canActivate: [adminGuard],
+    canActivate: [adminGuard], // <--- EL PORTERO: Solo entra el rol ADMIN
     children: [
       {
         path: 'dashboard',
