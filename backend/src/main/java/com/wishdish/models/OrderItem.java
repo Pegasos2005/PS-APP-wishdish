@@ -42,6 +42,19 @@ public class OrderItem {
     @Column(name = "unit_price", precision = 10, scale = 2, nullable = false)
     private BigDecimal unitPrice = BigDecimal.ZERO;
 
+    // --- NUEVAS COLUMNAS PARA EL TICKET ---
+    @Column(name = "added_extras", columnDefinition = "TEXT")
+    private String addedExtras; // Se guardará como "Queso:1.00;Bacon:1.50"
+
+    @Column(name = "removed_defaults", columnDefinition = "TEXT")
+    private String removedDefaults; // Se guardará como "Cebolla;Tomate"
+
+    public String getAddedExtras() { return addedExtras; }
+    public void setAddedExtras(String addedExtras) { this.addedExtras = addedExtras; }
+
+    public String getRemovedDefaults() { return removedDefaults; }
+    public void setRemovedDefaults(String removedDefaults) { this.removedDefaults = removedDefaults; }
+
     public String getObservations() { return observations; }
     public void setObservations(String observations) { this.observations = observations; }
 

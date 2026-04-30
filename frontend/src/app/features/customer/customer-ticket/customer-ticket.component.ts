@@ -13,13 +13,17 @@ import { CustomerOrderService } from '../../../core/services/customer-order.serv
 })
 export class CustomerTicketComponent implements OnInit {
   private router = inject(Router);
-  public orderService = inject(CustomerOrderService); // <--- Público para el HTML
+  public orderService = inject(CustomerOrderService);
 
   isPaymentRequested = signal<boolean>(false);
-
-  // Nuestro Signal ahora empieza vacío
   tableOrders = signal<any[]>([]);
 
+  restaurantName = signal<string>("WISH DISH RESTAURANT");
+  currentDate = signal<Date>(new Date());
+
+  // --- CÁLCULOS MATEMÁTICOS DEL TICKET ---
+
+  // 1. Total Final (Con IGIC incluido)
   totalAmount = computed(() => {
     let total = 0;
     this.tableOrders().forEach(order => {
@@ -30,12 +34,22 @@ export class CustomerTicketComponent implements OnInit {
     return total;
   });
 
+  // 2. Subtotal (Base imponible sin el 7% de IGIC)
+  subtotalAmount = computed(() => {
+    // Si el TOTAL es 107%, el subtotal es TOTAL / 1.07
+    return this.totalAmount() / 1.07;
+  });
+
+  // 3. El importe exacto del IGIC
+  taxAmount = computed(() => {
+    return this.totalAmount() - this.subtotalAmount();
+  });
+
   ngOnInit() {
     this.loadTicketData();
   }
 
   loadTicketData() {
-    // AHORA LEEMOS LA MESA REAL DEL SERVICIO GLOBAL
     const currentTable = this.orderService.tableId();
 
     if (currentTable) {
@@ -48,11 +62,24 @@ export class CustomerTicketComponent implements OnInit {
             return {
               commandNumber: index + 1,
               time: timeString,
-              items: order.items.map((item: any) => ({
-                quantity: item.quantity,
-                name: item.productName,
-                price: item.productPrice
-              }))
+              items: order.items.map((item: any) => {
+
+                // ¡CORRECCIÓN AQUÍ! Leemos 'extras' (como lo envía el nuevo DTO de Java)
+                const extrasDelBackend = item.extras || [];
+                const quitadosDelBackend = item.removedDefaults || [];
+
+                const mappedExtras = extrasDelBackend.map((extra: any) => {
+                  return { name: extra.name, price: extra.price };
+                });
+
+                return {
+                  quantity: item.quantity,
+                  name: item.productName || item.product?.name,
+                  price: item.productPrice || item.unitPrice || item.product?.price,
+                  extras: mappedExtras,
+                  removed: quitadosDelBackend
+                };
+              })
             };
           });
 

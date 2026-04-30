@@ -1,53 +1,118 @@
-<div class="principal-container">
+<div class="principal-container" style="background-color: #1a1a1a; min-height: 100vh;">
 
-  <header class="head">
+  <header class="ticket-dark-header">
     @if (!isPaymentRequested()) {
-    <button class="return-button" routerLink="/customer/customer-home" aria-label="Go back">&lt;</button>
+      <button class="return-button" routerLink="/customer/customer-home" aria-label="Go back">&lt;</button>
     } @else {
-    <div style="width: 40px;"></div>
+      <div style="width: 40px;"></div>
     }
 
     @if (isPaymentRequested()) {
-    <h2 class="notify-message">Your order has been notified, wait for us, please :)</h2>
+      <h2 class="notify-message">Your order has been notified, wait for us, please :)</h2>
     } @else {
-    <div style="flex: 1;"></div> }
+      <div style="flex: 1;"></div>
+    }
   </header>
 
   <div class="ticket-wrapper">
+    <!-- FORMATO DE IMPRESORA TÉRMICA -->
+    <main class="thermal-receipt">
 
-    <main class="ticket-paper">
-      <h1 class="table-title">Table: {{ orderService.tableId() }}</h1>
+      <!-- CABECERA DEL TICKET -->
+      <div class="receipt-header">
+        <p class="divider">==========================================</p>
+        <h2 class="receipt-restaurant-name">{{ restaurantName() }}</h2>
+        <p class="divider">==========================================</p>
 
-      @for (order of tableOrders(); track order.commandNumber) {
-      <div class="command-block">
-        <div class="command-header">
-          <span class="command-time">{{ order.time }}</span>
-          <span class="command-title">Command {{ order.commandNumber }}</span>
+        <div class="receipt-info-row">
+          <span>FECHA: {{ currentDate() | date:'dd/MM/yyyy' }}</span>
+          <span>MESA: {{ orderService.tableId() }}</span>
         </div>
+        <p class="divider">------------------------------------------</p>
 
-        <div class="items-list">
-          @for (item of order.items; track item.name) {
-          <div class="item-row">
-            <span class="item-name">{{ item.quantity }}-{{ item.name }}</span>
-            <span class="leader-dots"></span> <span class="item-price">{{ (item.price * item.quantity) | number:'1.2-2' }}€</span>
+        <!-- NOMBRES DE COLUMNAS -->
+        <div class="receipt-grid receipt-grid-header">
+          <span class="col-uds">UDS</span>
+          <span class="col-desc">DESCRIPCION</span>
+          <span class="col-pvp">PVP</span>
+          <span class="col-importe">IMPORTE</span>
+        </div>
+        <p class="divider">------------------------------------------</p>
+      </div>
+
+      <!-- CUERPO DEL TICKET (COMANDAS Y PLATOS) -->
+      <div class="receipt-body">
+        @for (order of tableOrders(); track order.commandNumber) {
+
+          <div class="command-section">
+            <p class="command-title">* COMANDA {{ order.commandNumber }} ({{ order.time }}) *</p>
+
+            @for (item of order.items; track item.name) {
+              <!-- Fila del producto principal -->
+              <div class="receipt-grid item-row">
+                <span class="col-uds">{{ item.quantity }}</span>
+                <span class="col-desc">{{ item.name | uppercase }}</span>
+                <span class="col-pvp">{{ item.price | number:'1.2-2' }}</span>
+                <span class="col-importe">{{ (item.price * item.quantity) | number:'1.2-2' }} €</span>
+              </div>
+
+              <!-- Fila de los EXTRAS -->
+              @for (extra of item.extras; track extra.name) {
+                <div class="receipt-grid extra-row">
+                  <span class="col-uds"></span>
+                  <span class="col-desc">+ {{ extra.name | uppercase }}</span>
+                  <span class="col-pvp">{{ extra.price > 0 ? (extra.price | number:'1.2-2') : '' }}</span>
+                  <span class="col-importe">{{ extra.price > 0 ? ((extra.price * item.quantity) | number:'1.2-2') + ' €' : '' }}</span>
+                </div>
+              }
+
+              <!-- Fila de los QUITADOS -->
+              @for (rem of item.removed; track rem) {
+                <div class="receipt-grid extra-row">
+                  <span class="col-uds"></span>
+                  <span class="col-desc">- SIN {{ rem | uppercase }}</span>
+                  <span class="col-pvp"></span>
+                  <span class="col-importe"></span>
+                </div>
+              }
+            }
           </div>
-          }
-        </div>
+        }
       </div>
-      }
 
-      <div class="ticket-footer">
-        <span class="total-label">Total:</span>
-        <span class="total-amount">{{ totalAmount() | number:'1.2-2' }}€</span>
+      <!-- PIE DEL TICKET (TOTALES) -->
+      <div class="receipt-footer">
+        <p class="divider">------------------------------------------</p>
+        <div class="totals-section">
+          <div class="total-line">
+            <span class="total-label">SUBTOTAL:</span>
+            <span class="total-value">{{ subtotalAmount() | number:'1.2-2' }} €</span>
+          </div>
+          <div class="total-line">
+            <span class="total-label">IGIC/IVA (7%):</span>
+            <span class="total-value">{{ taxAmount() | number:'1.2-2' }} €</span>
+          </div>
+          <p class="divider">------------------------------------------</p>
+          <div class="total-line grand-total">
+            <span class="total-label">TOTAL:</span>
+            <span class="total-value">{{ totalAmount() | number:'1.2-2' }} €</span>
+          </div>
+        </div>
+
+        <p class="tax-note">El importe de los extras vienen<br>incluidos en el precio del producto</p>
+        <p class="divider">------------------------------------------</p>
+        <p class="receipt-thanks">¡Gracias por su visita!</p>
+        <p class="divider">==========================================</p>
       </div>
+
     </main>
   </div>
 
   <div class="actions-container">
     @if (!isPaymentRequested()) {
-    <button class="pay-btn corner-btn" (click)="requestPayment()">Pay now</button>
+      <button class="pay-btn corner-btn" (click)="requestPayment()">Pay now</button>
     } @else {
-    <button class="cancel-btn corner-btn" (click)="cancelPayment()">Cancel</button>
+      <button class="cancel-btn corner-btn" (click)="cancelPayment()">Cancel</button>
     }
   </div>
 

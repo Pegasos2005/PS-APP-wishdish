@@ -1,204 +1,173 @@
-/* src/app/features/customer/customer-ticket/customer-ticket.component.css */
-
+/* Contenedor Principal Oscuro */
 .principal-container {
-  min-height: 100vh;
-  background-color: #f8f9fa; /* Fondo gris muy claro para resaltar el ticket blanco */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   flex-direction: column;
-  position: relative; /* Necesario para el posicionamiento absoluto de los botones */
-  padding-bottom: 120px; /* Espacio extra abajo para que el ticket no se tape con los botones fijos */
+  height: 100vh;
+  background-color: #1a1a1a !important; /* Gris súper oscuro */
+  color: white !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* --- HEADER --- */
-.head {
+/* La Nueva Cabecera Negra Pura y Aislada */
+.ticket-dark-header {
   display: flex;
   align-items: center;
-  padding: 1.5rem 2rem;
-  height: 80px;
+  padding: 15px 20px;
+  background-color: #101010; /* Negro absoluto */
+  color: white;
+  border-bottom: 2px solid #333333; /* Línea separadora */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+  z-index: 10;
 }
 
+/* Botón de retroceso */
 .return-button {
   background: none;
   border: none;
-  font-size: 2rem;
-  font-weight: bold;
-  color: #333;
+  color: #ffffff !important;
+  font-size: 28px;
   cursor: pointer;
-  padding: 0 15px;
+  font-weight: bold;
+  transition: transform 0.2s;
 }
+.return-button:hover { color: #ff9f43 !important; transform: scale(1.1); }
 
 .notify-message {
-  flex: 1;
+  color: #4caf50;
+  font-size: 1.1rem;
   text-align: center;
-  font-size: 1.3rem;
-  font-weight: 500;
-  color: #2c3e50;
+  flex: 1;
   margin: 0;
 }
 
-/* --- TICKET WRAPPER --- */
+/* --- ESTILOS DEL TICKET TÉRMICO --- */
 .ticket-wrapper {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
+  justify-content: center;
+  padding: 30px 20px;
+  overflow-y: auto;
 }
 
-/* --- EL PAPEL DEL TICKET --- */
-.ticket-paper {
-  background-color: #ffffff;
+.thermal-receipt {
+  background-color: #fdfbf7; /* Color papel térmico */
+  color: #111;
+  font-family: 'Courier New', Courier, monospace; /* Fuente de ticket */
   width: 100%;
-  max-width: 600px;
-  border-radius: 12px;
-  padding: 40px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Sombra de documento */
-  border-top: 6px solid #3498db; /* Un toque sutil de color formal en la cabecera */
+  max-width: 400px;
+  padding: 20px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  font-size: 0.9rem;
+  line-height: 1.2;
 }
 
-.table-title {
+/* Elementos comunes del ticket */
+.divider {
+  text-align: center;
+  margin: 5px 0;
+  white-space: pre; /* Evita que los guiones se rompan */
+  overflow: hidden;
+}
+
+.receipt-restaurant-name {
   text-align: center;
   font-size: 1.2rem;
-  font-weight: 600;
-  color: #333;
-  margin-top: 0;
-  margin-bottom: 30px;
+  font-weight: bold;
+  margin: 10px 0;
 }
 
-/* --- COMANDAS (Órdenes iteradas) --- */
-.command-block {
-  margin-bottom: 25px;
-}
-
-.command-header {
+.receipt-info-row {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+/* El Grid para alinear las columnas perfectas */
+.receipt-grid {
+  display: grid;
+  grid-template-columns: 2.5em 1fr 3.5em 5em; /* Anchos fijos para alinear */
+  gap: 5px;
+  align-items: start;
+}
+
+.receipt-grid-header {
+  font-weight: bold;
+}
+
+.col-uds { text-align: left; }
+.col-desc { text-align: left; word-break: break-word; }
+.col-pvp { text-align: right; }
+.col-importe { text-align: right; }
+
+/* Comandas y Filas */
+.command-section {
+  margin-top: 15px;
   margin-bottom: 10px;
 }
 
-.command-time {
-  font-size: 0.9rem;
-  color: #666;
-  width: 60px; /* Ancho fijo para alinear perfectamente */
-}
-
 .command-title {
-  flex: 1;
   text-align: center;
-  font-weight: 600;
-  color: #555;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 4px;
-}
-
-/* --- MAGIA CSS: LOS PUNTOS SUSPENSIVOS --- */
-.items-list {
-  padding-left: 60px; /* Alineado a la derecha de la hora */
+  font-weight: bold;
+  margin-bottom: 8px;
 }
 
 .item-row {
+  margin-bottom: 2px;
+}
+
+.extra-row {
+  font-size: 0.85rem;
+  color: #444;
+}
+
+/* Totales (Pie del ticket) */
+.totals-section {
   display: flex;
-  align-items: flex-end; /* Alinea los puntos con la base del texto */
-  width: 100%;
-  margin-bottom: 8px;
-  font-size: 1.05rem;
-  color: #333;
+  flex-direction: column;
+  align-items: flex-end; /* Alineamos los totales a la derecha */
+  margin: 10px 0;
 }
 
-.item-name {
-  white-space: nowrap; /* Evita que el nombre se rompa si es corto */
-}
-
-.leader-dots {
-  flex-grow: 1; /* Ocupa todo el espacio restante disponible */
-  border-bottom: 2px dotted #bdc3c7; /* Puntos grises formales */
-  margin: 0 10px;
-  position: relative;
-  top: -6px; /* Sube los puntos un poquito para centrarlos visualmente */
-  min-width: 20px; /* Asegura que siempre haya algún punto */
-}
-
-.item-price {
-  white-space: nowrap;
-  font-weight: 500;
-}
-
-/* --- FOOTER DEL TICKET (Total) --- */
-.ticket-footer {
-  margin-top: 40px;
-  padding-top: 20px;
-  border-top: 2px solid #333; /* Línea negra gruesa formal */
+.total-line {
   display: flex;
-  justify-content: flex-end;
-  align-items: baseline;
-  gap: 15px;
+  justify-content: space-between;
+  width: 70%; /* Ocupa solo la mitad derecha del ticket */
+  margin-bottom: 3px;
 }
 
-.total-label {
-  font-size: 1.4rem;
-  color: #333;
-}
+.total-label { text-align: left; flex: 1; }
+.total-value { text-align: right; width: 6em; }
 
-.total-amount {
-  font-size: 1.8rem;
+.grand-total {
   font-weight: bold;
-  color: #000;
+  font-size: 1.1rem;
+  margin-top: 5px;
 }
 
-/* --- ZONA DE BOTONES CORNER (Fijos abajo) --- */
+.tax-note {
+  text-align: center;
+  font-size: 0.75rem;
+  margin: 15px 0 5px 0;
+  color: #555;
+}
+
+.receipt-thanks {
+  text-align: center;
+  margin: 10px 0;
+}
+
+/* --- BOTONES INFERIORES --- */
 .actions-container {
-  position: fixed; /* Fijo en la pantalla, no en el ticket */
-  bottom: 0;
-  left: 0;
-  width: 100%; /* Ocupa todo el ancho de la pantalla */
-  display: flex;
-  justify-content: space-between; /* Envía los elementos a los extremos */
-  padding: 20px 40px; /* Espaciado respecto a los bordes de la pantalla */
-  box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
-  pointer-events: none; /* Por defecto, no captura clicks para no tapar contenido central */
-  z-index: 100; /* Asegura que esté por encima del ticket */
+  padding: 15px 20px;
+  background-color: #1f1f1f;
+  display: flex; justify-content: center;
 }
-
-/* Clase común para ambos botones de esquina */
 .corner-btn {
-  pointer-events: auto; /* Reactiva los clicks para el botón en sí */
-  border: none;
-  border-radius: 50px; /* Completamente redondeados (pastilla) como en los bocetos */
-  padding: 18px 50px; /* Mucho más grandes y táctiles */
-  font-size: 1.4rem; /* Texto más grande */
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.15); /* Sombra más pronunciada para resaltar */
+  padding: 15px 30px; font-size: 1.2rem; font-weight: bold;
+  border-radius: 50px; border: none; cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s; width: 100%; max-width: 300px;
 }
-
-.corner-btn:hover {
-  transform: translateY(-3px); /* Pequeña elevación al hover */
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-}
-
-.corner-btn:active {
-  transform: translateY(1px); /* Efecto de pulsado */
-}
-
-/* Estilos específicos de color (Heredados del diseño formal) */
-.pay-btn {
-  background-color: #3498db; /* Color oscuro formal */
-  color: #ffffff;
-  margin-left: auto; /* Fuerza el botón a la derecha si es el único visible */
-}
-
-.pay-btn:hover {
-  background-color: #000000;
-}
-
-.cancel-btn {
-  background-color: #e0e0e0; /* Color gris claro */
-  color: #333;
-  margin-right: auto; /* Fuerza el botón a la izquierda si es el único visible */
-}
-
-.cancel-btn:hover {
-  background-color: #d0d0d0;
-}
+.pay-btn { background-color: #ff9f43; color: white; }
+.pay-btn:hover { background-color: #ff8c00; transform: translateY(-2px); }
+.cancel-btn { background-color: #e74c3c; color: white; }
+.cancel-btn:hover { background-color: #c0392b; transform: translateY(-2px); }

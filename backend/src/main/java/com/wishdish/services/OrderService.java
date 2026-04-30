@@ -58,9 +58,8 @@ public class OrderService {
 
             // Precio base del plato
             BigDecimal precioCalculado = product.getPrice();
-
-            // Traducimos las listas a un texto para la cocina
             StringBuilder notes = new StringBuilder();
+            StringBuilder extrasGuardados = new StringBuilder();
 
             // si hay extras los sumamos
             if (itemRequest.getAddedExtras() != null && !itemRequest.getAddedExtras().isEmpty()) {
@@ -68,22 +67,29 @@ public class OrderService {
 
                 // Buscamos cada ingrediente extra en la base de datos para saber su precio
                 for (String nombreExtra: itemRequest.getAddedExtras()) {
-
                     Ingredient ingredient = ingredientRepository.findByName(nombreExtra).orElse(null);
+                    BigDecimal extraPrice = BigDecimal.ZERO;
 
                     if (ingredient != null && ingredient.getExtraPrice() != null) {
-                        precioCalculado = precioCalculado.add(ingredient.getExtraPrice());
+                        extraPrice = ingredient.getExtraPrice();
+                        precioCalculado = precioCalculado.add(extraPrice);
                     }
+
+                    // Guardamos la estructura matemática "Nombre:Precio;"
+                    if (extrasGuardados.length() > 0) extrasGuardados.append(";");
+                    extrasGuardados.append(nombreExtra).append(":").append(extraPrice);
                 }
             }
 
             if (itemRequest.getRemovedDefaults() != null && !itemRequest.getRemovedDefaults().isEmpty()) {
                 notes.append("Sin: ").append(String.join(", ", itemRequest.getRemovedDefaults())).append(".");
+                item.setRemovedDefaults(String.join(";", itemRequest.getRemovedDefaults())); // NUEVO
+            } else {
+                item.setRemovedDefaults(""); // NUEVO
             }
 
-            // Guardamos el precio total en la linea de la comanda
+            item.setAddedExtras(extrasGuardados.toString()); // NUEVO
             item.setUnitPrice(precioCalculado);
-            // Guardamos el texto en el plato
             item.setObservations(notes.toString().trim());
 
             orderItemRepository.save(item);
