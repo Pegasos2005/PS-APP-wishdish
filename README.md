@@ -34,10 +34,6 @@ Aplicación web para gestión de menú de restaurante. Sistema para visualizar p
 
 Crear la base de datos en MySQL:
 
-```sql
-CREATE DATABASE wishdish CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
 La aplicación está configurada para usar:
 - **Usuario:** root
 - **Contraseña:** root
@@ -97,6 +93,13 @@ ng serve --host 0.0.0.0
 Al iniciar el backend por primera vez, se ejecuta automáticamente la clase `DataLoader.java` que carga:
 - 5 categorías
 - 19 productos
+
+Además se crean los siguientes roles:
+Nombre; Rol; Contraseña;
+Tomás; ADMIN; admin;
+Sol; KITCHEN; kitchen;
+Carlos; KITCHEN; carlos;
+Crisa; WAITER; waiter;
 
 El backend detecta si ya hay datos y NO los vuelve a cargar en inicios posteriores.
 
