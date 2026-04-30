@@ -1,9 +1,8 @@
-// src/app/features/customer/customer-home/customer-home.component.ts
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CustomerOrderService } from '../../../core/services/customer-order.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service'; // <--- IMPORTANTE
 
 @Component({
   selector: 'app-customer-home',
@@ -15,12 +14,23 @@ import { AuthService } from '../../../core/services/auth.service';
 export class CustomerHomeComponent {
   private router = inject(Router);
   public orderService = inject(CustomerOrderService);
-  private authService = inject(AuthService);
+  private authService = inject(AuthService); // <--- INYECTAMOS
 
+  restaurantName = signal<string>('WishDish');
+
+  // Signals para el modal de salida segura
   isExitModalOpen = signal<boolean>(false);
   authError = signal<boolean>(false);
 
-  // Muestra el popup para salir
+  startOrdering(): void {
+    this.router.navigate(['/customer/customer-menu']);
+  }
+
+  watchOrders(): void {
+    this.router.navigate(['/customer/customer-ticket']);
+  }
+
+  // --- LÓGICA DE SALIDA SEGURA ---
   requestExit(): void {
     this.isExitModalOpen.set(true);
   }
@@ -31,31 +41,26 @@ export class CustomerHomeComponent {
   }
 
   confirmExit(username: string, pin: string): void {
+    if (!username || !pin) {
+      this.authError.set(true);
+      return;
+    }
+
     this.authService.login(username, pin).subscribe({
       next: (res) => {
-        // Solo ADMIN o WAITER pueden desbloquear la mesa
+        // Solo ADMIN o WAITER pueden desbloquear la tablet de la mesa
         if (res.role === 'ADMIN' || res.role === 'WAITER') {
-          this.orderService.setTableId(null); // Liberamos la mesa
-          this.authService.logout(); // Cerramos la sesión del camarero/admin
-          this.router.navigate(['/join-as']);
+          this.orderService.setTableId(null); // Liberamos la mesa en el servicio global
+          this.authService.logout(); // Cerramos la sesión temporal del staff
+          this.router.navigate(['/join-as']); // Volvemos al inicio
         } else {
+          // Si es un KITCHEN, no le dejamos
           this.authError.set(true);
         }
       },
-      error: () => this.authError.set(true)
+      error: () => {
+        this.authError.set(true);
+      }
     });
-  }
-
-  // Signal para el nombre del restaurante (fácilmente editable en el futuro)
-  restaurantName = signal<string>('WishDish');
-
-  startOrdering(): void {
-    console.log('Navegando al catálogo de menú');
-    this.router.navigate(['/customer/customer-menu']);
-  }
-
-  watchOrders(): void {
-    console.log('Navegando a la vista del ticket');
-    this.router.navigate(['/customer/customer-ticket']);
   }
 }

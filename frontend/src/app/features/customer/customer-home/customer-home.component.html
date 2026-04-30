@@ -1,19 +1,47 @@
 <div class="home-background">
 
-  <div class="table-badge">Table {{ orderService.tableId() || '?' }}</div>
+  <div class="table-badge">
+    Table {{ orderService.tableId() || '?' }}
+  </div>
 
-  <!-- NUEVO: Botón de salida seguro -->
-  <button class="secure-exit-btn" (click)="requestExit()">Leave Table</button>
+  <!-- NUEVO: Botón de salida seguro arriba a la derecha -->
+  <button class="secure-exit-btn" (click)="requestExit()">
+    ← Go Back
+  </button>
 
-  <!-- NUEVO: Modal de Autorización -->
+  <div class="overlay"></div>
+
+  <main class="home-content">
+    <header class="home-header">
+      <img src="assets/logo.png" alt="logo" style="height: 40px;">
+      <p class="welcome-text">Welcome! What would you like to do?</p>
+    </header>
+
+    <div class="action-group">
+      <button class="home-button primary-action" (click)="startOrdering()">
+        <span class="button-icon">🍽️</span>
+        <span class="button-text">Start to order</span>
+      </button>
+
+      <button class="home-button secondary-action" (click)="watchOrders()">
+        <span class="button-icon">🧾</span>
+        <span class="button-text">Watch orders or pay</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- NUEVO: Modal de Autorización de Staff -->
   @if (isExitModalOpen()) {
-    <div class="modal-overlay"> <!-- (Copia los estilos del modal a tu customer-home.css si no los tienes) -->
+    <div class="modal-overlay">
       <div class="modal-card">
-        <h2 class="modal-title">Staff Authorization Required</h2>
-        <input #staffName type="text" class="table-input" placeholder="Username" style="margin-bottom: 10px;" autofocus>
-        <input #staffPin type="password" class="table-input" placeholder="PIN" (keyup.enter)="confirmExit(staffName.value, staffPin.value)">
+        <h2 class="modal-title">Staff Authorization</h2>
 
-        @if (authError()) { <p class="error-text">Invalid credentials or insufficient permissions.</p> }
+        <input #staffName type="text" class="table-input" [class.error-shake]="authError()" placeholder="Username" style="margin-bottom: 10px;" autofocus>
+        <input #staffPin type="password" class="table-input" [class.error-shake]="authError()" placeholder="PIN" (keyup.enter)="confirmExit(staffName.value, staffPin.value)">
+
+        @if (authError()) {
+          <p class="error-text">Invalid credentials or insufficient permissions.</p>
+        }
 
         <div class="modal-buttons">
           <button class="access-button confirm-btn" (click)="confirmExit(staffName.value, staffPin.value)">Authorize Exit</button>
@@ -22,35 +50,4 @@
       </div>
     </div>
   }
-
-  <div class="overlay"></div>
-
-  <main class="home-content">
-
-    <header class="home-header">
-      <img src="assets/logo.png" alt="logo" style="height: 40px;">
-      <p class="welcome-text">Welcome! What would you like to do?</p>
-    </header>
-
-    <div class="action-group">
-
-      <button
-        class="home-button primary-action"
-        (click)="startOrdering()"
-        aria-label="Start a new order and view menu">
-        <span class="button-icon">🍽️</span>
-        <span class="button-text">Start to order</span>
-      </button>
-
-      <button
-        class="home-button secondary-action"
-        (click)="watchOrders()"
-        aria-label="View current active orders or proceed to payment">
-        <span class="button-icon">🧾</span>
-        <span class="button-text">Watch orders or pay</span>
-      </button>
-    </div>
-
-  </main>
-
 </div>

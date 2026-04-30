@@ -159,3 +159,69 @@ img{
     transition: transform 0.3s ease;
     object-fit: contain;
   }
+
+/* --- Botón de Salida Segura (Arriba a la derecha) --- */
+.secure-exit-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.secure-exit-btn:hover {
+  background-color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* --- ESTILOS DEL MODAL (Copiados de join-as para que funcionen aquí) --- */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000; backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  background-color: #ffffff; padding: 2.5rem; border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: 90%; max-width: 350px;
+  text-align: center; animation: slideDown 0.3s ease-out; z-index: 1001;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-title { margin-top: 0; color: #333; font-size: 1.5rem; margin-bottom: 1.5rem; }
+
+.table-input {
+  width: 100%; padding: 1rem; font-size: 1.2rem; text-align: center;
+  border: 2px solid #e0e0e0; border-radius: 8px; box-sizing: border-box;
+  outline: none; margin-bottom: 1rem; transition: border-color 0.2s;
+}
+
+.table-input:focus { border-color: #333; }
+
+.modal-buttons { display: flex; flex-direction: column; gap: 0.8rem; }
+
+.access-button {
+  padding: 1rem; font-size: 1rem; font-weight: 500; border-radius: 50px;
+  border: none; cursor: pointer; transition: all 0.2s ease;
+}
+
+.confirm-btn { background-color: #333; color: white; }
+.confirm-btn:hover { background-color: #000; }
+.cancel-btn { background-color: transparent; color: #666; padding: 0.5rem; }
+.cancel-btn:hover { background-color: transparent; text-decoration: underline; }
+.error-text { color: #d32f2f; font-size: 0.85rem; margin-top: -0.5rem; margin-bottom: 1rem; }
+.error-shake { border-color: #d32f2f; }
