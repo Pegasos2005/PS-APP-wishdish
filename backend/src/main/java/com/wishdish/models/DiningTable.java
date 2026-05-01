@@ -14,6 +14,9 @@ public class DiningTable {
     @Column(name = "table_number", nullable = false, unique = true)
     private Integer tableNumber;
 
+    @Column(name = "payment_requested", nullable = false)
+    private boolean paymentRequested = false;
+
     public DiningTable() {
     }
 
@@ -31,6 +34,14 @@ public class DiningTable {
 
     public void setTableNumber(Integer tableNumber) {
         this.tableNumber = tableNumber;
+    }
+
+    public boolean isPaymentRequested() {
+        return paymentRequested;
+    }
+
+    public void setPaymentRequested(boolean paymentRequested) {
+        this.paymentRequested = paymentRequested;
     }
 
     @Override

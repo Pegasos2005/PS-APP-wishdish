@@ -16,7 +16,7 @@
   <div class="ticket-wrapper">
 
     <main class="ticket-paper">
-      <h1 class="table-title">Table: {{ tableId }}</h1>
+      <h1 class="table-title">Table: {{ orderService.tableId() }}</h1>
 
       @for (order of tableOrders(); track order.commandNumber) {
       <div class="command-block">
@@ -46,8 +46,6 @@
   <div class="actions-container">
     @if (!isPaymentRequested()) {
     <button class="pay-btn corner-btn" (click)="requestPayment()">Pay now</button>
-    } @else {
-    <button class="cancel-btn corner-btn" (click)="cancelPayment()">Cancel</button>
     }
   </div>
 

@@ -144,11 +144,55 @@ public class OrderService {
         // desaparecieran al cocinarlas).
         List<Order.OrderStatus> activeStatuses = Arrays.asList(Order.OrderStatus.in_kitchen, Order.OrderStatus.served);
 
-        List<Order> activeOrders = orderRepository.findByDiningTableIdAndStatusIn(tableNumber, activeStatuses);
+        List<Order> activeOrders = orderRepository.findByDiningTable_TableNumberAndStatusIn(tableNumber, activeStatuses);
 
         // Usamos directamente tu constructor del DTO. ¡Mágia de Java 8!
         return activeOrders.stream()
                 .map(OrderResponseDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void requestPayment(Integer tableNumber) {
+        DiningTable table = diningTableRepository.findByTableNumber(tableNumber)
+                .orElseThrow(() -> new RuntimeException("Mesa " + tableNumber + " no existe."));
+        table.setPaymentRequested(true);
+        diningTableRepository.save(table);
+    }
+
+    @Transactional
+    public void closeTable(Integer tableNumber) {
+        DiningTable table = diningTableRepository.findByTableNumber(tableNumber)
+                .orElseThrow(() -> new RuntimeException("Mesa " + tableNumber + " no existe."));
+
+        List<Order.OrderStatus> activeStatuses = Arrays.asList(Order.OrderStatus.in_kitchen, Order.OrderStatus.served);
+        List<Order> activeOrders = orderRepository.findByDiningTable_TableNumberAndStatusIn(tableNumber, activeStatuses);
+        for (Order o : activeOrders) {
+            o.setStatus(Order.OrderStatus.paid);
+        }
+        orderRepository.saveAll(activeOrders);
+
+        table.setPaymentRequested(false);
+        diningTableRepository.save(table);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Integer> getTablesAwaitingPayment() {
+        return diningTableRepository.findByPaymentRequestedTrue().stream()
+                .map(DiningTable::getTableNumber)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public boolean tableHasActiveOrders(Integer tableNumber) {
+        List<Order.OrderStatus> activeStatuses = Arrays.asList(Order.OrderStatus.in_kitchen, Order.OrderStatus.served);
+        return !orderRepository.findByDiningTable_TableNumberAndStatusIn(tableNumber, activeStatuses).isEmpty();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isPaymentRequested(Integer tableNumber) {
+        return diningTableRepository.findByTableNumber(tableNumber)
+                .map(DiningTable::isPaymentRequested)
+                .orElse(false);
     }
 }

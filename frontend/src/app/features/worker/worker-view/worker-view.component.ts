@@ -5,6 +5,7 @@ import { interval, of } from 'rxjs';
 import { switchMap, catchError, map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { KitchenOrdersSystemService } from '../../../core/services/kitchen-orders-system.service';
+import { CustomerOrderService } from '../../../core/services/customer-order.service';
 import { ComandaResponseDTO, ItemComandaDTO } from '../../../core/models/comanda.model';
 
 @Component({
@@ -16,10 +17,12 @@ import { ComandaResponseDTO, ItemComandaDTO } from '../../../core/models/comanda
 })
 export class WorkerViewComponent implements OnInit {
   private kitchenService = inject(KitchenOrdersSystemService);
+  private orderService = inject(CustomerOrderService);
   private destroyRef = inject(DestroyRef);
 
   // Signal tipado con tu interfaz para evitar el error de DataTransferItemList
   orders = signal<ComandaResponseDTO[]>([]);
+  tablesAwaitingPayment = signal<number[]>([]);
 
   private manualStates = new Map<number, string>();
   private isBulkUpdating = false;
@@ -27,6 +30,7 @@ export class WorkerViewComponent implements OnInit {
 
   ngOnInit() {
     this.startPolling();
+    this.startPaymentRequestsPolling();
   }
 
   startPolling() {
@@ -105,6 +109,21 @@ export class WorkerViewComponent implements OnInit {
   isOrderComplete(order: ComandaResponseDTO): boolean {
     if (!order.items || order.items.length === 0) return false;
     return order.items.every((i: ItemComandaDTO) => i.status === 'prepared');
+  }
+
+  startPaymentRequestsPolling() {
+    interval(3000).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      switchMap(() => this.orderService.getTablesAwaitingPayment()),
+      catchError(() => of(this.tablesAwaitingPayment()))
+    ).subscribe(tables => this.tablesAwaitingPayment.set(tables));
+  }
+
+  chargeTable(tableNumber: number) {
+    this.tablesAwaitingPayment.update(list => list.filter(n => n !== tableNumber));
+    this.orderService.closeTable(tableNumber).subscribe({
+      error: (err) => console.error("Error closing table:", err)
+    });
   }
 
   toggleOrderComplete(order: ComandaResponseDTO) {

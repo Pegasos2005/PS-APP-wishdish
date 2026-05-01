@@ -15,8 +15,6 @@ export class ShowOrderComponent {
   public orderService = inject(CustomerOrderService);
   private router = inject(Router);
 
-  public tableId = 1;
-
   increaseQuantity(product: any) {
     this.orderService.addProduct(product);
   }
@@ -50,6 +48,11 @@ export class ShowOrderComponent {
       alert("Your cart is empty. Please add some products.");
       return;
     }
+    const tableId = this.orderService.tableId();
+    if (tableId === null) {
+      this.router.navigate(['/join-as']);
+      return;
+    }
     // Preparamos los items con sus extras y quitados
     const itemsPayload = this.orderService.order.map(item => ({
       productId: item.product.id,
@@ -59,7 +62,7 @@ export class ShowOrderComponent {
     }));
 
     const orderPayload = {
-      tableId: this.tableId,
+      tableId,
       items: itemsPayload
     };
 
