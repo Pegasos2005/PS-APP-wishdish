@@ -3,15 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 // RUTA HACIA EL SERVICIO (Esta funcionaba bien)
-import { ProductService } from '../../../../core/services/product.service';
-
-// RUTA HACIA LA INTERFAZ
-// Si tu carpeta interfaces está en src/app/admin/interfaces/ usa esta:
 import { ProductDTO } from '../../interfaces/product.interface';
-// Si tu carpeta interfaces está en src/app/features/admin/interfaces/
-// borra la línea de arriba y descomenta la de abajo:
-// import { ProductDTO } from '../../interfaces/product.interface';
-
+import { ProductService } from '../../../../core/services/product.service';
 @Component({
   selector: 'app-product-list',
   standalone: true,

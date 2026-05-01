@@ -4,9 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-// IMPORTACIONES CORREGIDAS
 import { Product, ProductDTO } from '../../features/admin/interfaces/product.interface';
-import { Ingredient } from '../../features/admin/interfaces/ingredient.interface'; // Faltaba esto
+import { Ingredient } from '../../features/admin/interfaces/ingredient.interface';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {

@@ -1,5 +1,4 @@
-/* --- Estilos compartidos de las vistas de edición --- */
-
+/* --- Contenedor Principal --- */
 .principal-container {
   display: flex;
   flex-direction: column;
@@ -9,11 +8,7 @@
   background: linear-gradient(135deg, #f5f6f9 0%, #eef0f5 100%);
 }
 
-.sub-header {
-  padding: 20px 40px;
-  color: #666;
-  font-weight: 600;
-}
+.sub-header { padding: 20px 40px; color: #666; font-weight: 600; }
 
 .content-area {
   flex: 1;
@@ -22,9 +17,6 @@
   justify-content: center;
 }
 
-.content-area.centered { align-items: center; }
-
-/* La tarjeta base (comanda-card) */
 .comanda-card {
   background: white;
   border-radius: 25px;
@@ -32,48 +24,71 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.06);
   width: 100%;
   max-width: 850px;
-}
-
-/* Layout de Producto */
-.form-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
 }
 
-.column-title { margin-bottom: 20px; font-size: 1.2rem; }
+/* --- Preferencias (Checkboxes circulares) --- */
+.preferences-list { display: flex; flex-direction: column; gap: 15px; }
 
-.preferences-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.column-title {
+  margin-bottom: 20px;
+  font-size: 1.6rem; /* Aumentado de 1.2rem a 1.6rem */
+  font-weight: 700;
+  color: #222;       /* Un color un poco más oscuro para más contraste */
 }
 
-.checkbox-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #666;
+.ingredient-row { font-size: 1.1rem; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+
+/* Ocultar el checkbox real */
+.hidden-check { display: none; }
+
+/* El círculo visual */
+.custom-circle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  flex-shrink: 0;
 }
+
+/* Cuando el checkbox está marcado, el label cambia */
+.hidden-check:checked + .custom-circle {
+  background-color: #ff3b30;
+  border-color: #ff3b30;
+}
+
+/* Botón + Centrado */
+.add-btn-wrapper { display: flex; justify-content: center; margin-top: 15px; }
 
 .add-circle-btn {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  border: 1px solid #ccc;
+  border: none;
   background: #eee;
   cursor: pointer;
-  margin-top: 10px;
+  font-size: 20px;
+  transition: background 0.2s;
 }
+.add-circle-btn:hover { background: #e0e0e0; }
 
-.image-placeholder {
-  width: 100%;
-  height: 250px;
-  background-color: #d9d9d9;
-  border-radius: 20px;
-  margin-bottom: 20px;
-}
+/* --- Inputs y Detalles --- */
+.image-container { width: 100%; height: 250px; margin-bottom: 20px; }
+.product-img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; }
+.image-placeholder { width: 100%; height: 100%; background-color: #d9d9d9; border-radius: 20px; }
 
+.dish-name-input { width: 100%; font-size: 1.5rem; border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+.description-text { width: 100%; min-height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; resize: vertical; }
+
+.price-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.price-input { width: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; }
+
+/* --- Botón Confirm --- */
 .confirm-btn {
   background-color: #ff3b30;
   color: white;
@@ -82,76 +97,8 @@
   border-radius: 15px;
   font-weight: bold;
   cursor: pointer;
-  float: right;
   margin-top: 20px;
   box-shadow: 0 4px 10px rgba(255, 59, 48, 0.3);
-}
-
-/* Layout de Ingrediente */
-.ingredient-layout {
-  max-width: 600px;
-  height: auto;
-}
-
-.large-input {
-  width: 100%;
-  height: 80px;
-  background-color: #d9d9d9;
-  border: none;
-  border-radius: 15px;
-  margin-top: 10px;
-  padding: 20px;
-  font-size: 1.1rem;
-}
-
-.form-footer {
-  display: flex;
-  justify-content: flex-end; /* Alinea todo el grupo a la derecha */
-  align-items: center;      /* Centra verticalmente el precio y el botón */
-  gap: 20px;                /* Espacio entre el precio y el botón */
-  margin-top: 40px;
-}
-
-.confirm-btn {
-  background-color: #ff3b30;
-  color: white;
-  border: none;
-  padding: 12px 40px;
-  border-radius: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  /* float: right; <--- ¡Elimina esta línea! */
-  margin-top: 0; /* Eliminamos el margen superior para que se alinee con el precio */
-  box-shadow: 0 4px 10px rgba(255, 59, 48, 0.3);
-}
-
-.price-label {
-  font-weight: bold;
-  font-size: 1.2rem;
-  /* No necesita márgenes especiales aquí */
-}
-/* Añade esto a tu CSS si los inputs se ven planos */
-.dish-name-input {
-  width: 100%;
-  font-size: 1.5rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.description-text {
-  width: 100%;
-  min-height: 100px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  resize: vertical;
-}
-
-.price-input {
-  width: 100px;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  display: block;
+  width: 100%; /* Si quieres que ocupe todo el ancho o cambiarlo a auto */
 }

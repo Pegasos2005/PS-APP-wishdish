@@ -14,28 +14,43 @@
 
         <div class="form-column">
           <h3 class="column-title">Preferences</h3>
-          <div class="preferences-list">
-            <label class="checkbox-item"><input type="checkbox"> <span>Sin gluten</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Extra queso</span></label>
-            <button type="button" class="add-circle-btn">+</button>
+          <div class="preferences-list" formArrayName="productIngredients">
+
+            @for (control of ingredientsArray.controls; track $index) {
+            <div [formGroupName]="$index" class="ingredient-row">
+              <input type="checkbox" [id]="'ing-' + $index" formControlName="isDefault" class="hidden-check">
+              <label [for]="'ing-' + $index" class="custom-circle"></label>
+
+              <span>{{ control.get('ingredient')?.value.name }}</span>
+            </div>
+            }
+
+            <div class="add-btn-wrapper">
+              <button type="button" class="add-circle-btn">+</button>
+            </div>
           </div>
         </div>
 
         <div class="form-column right-align">
-          <div class="image-placeholder"></div>
+          <div class="image-container">
+            @if (productForm.get('picture')?.value) {
+            <img [src]="productForm.get('picture')?.value" alt="Product image" class="product-img">
+            } @else {
+            <div class="image-placeholder"></div>
+            }
+          </div>
 
           <div class="product-details">
             <input type="text" formControlName="name" placeholder="Dish name" class="dish-name-input">
+            <textarea formControlName="description" placeholder="Description..." class="description-text"></textarea>
 
-            <textarea formControlName="description" placeholder="Description: Enter product details..." class="description-text"></textarea>
-
-            <div class="price-container">
+            <div class="price-wrapper">
               <label>Price:</label>
               <input type="number" formControlName="price" placeholder="0.00" class="price-input">
             </div>
           </div>
 
-          <button type="submit" class="confirm-btn">Confirm</button>
+          <button type="submit" class="confirm-btn" [disabled]="productForm.invalid">Confirm</button>
         </div>
 
       </form>
