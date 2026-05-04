@@ -1,0 +1,73 @@
+<div class="dashboard-layout">
+
+  <header class="dashboard-header">
+    <button class="back-btn" (click)="goBack()" aria-label="Go back to dashboard">
+      <span class="icon">❮</span> Back
+    </button>
+    <h1 class="dashboard-title">Table Management</h1>
+    <div style="width: 120px;"></div>
+  </header>
+
+  <main class="main-content">
+    <div class="tm-container">
+
+      <section class="tm-grid-section">
+        <h2 class="tm-section-title">Tables</h2>
+        <div class="tm-grid">
+          @for (t of occupancy(); track t.tableNumber) {
+            <div class="tm-table-cell"
+                 [class.occupied]="t.occupied"
+                 [class.free]="!t.occupied">
+              <div class="tm-table-number">{{ t.tableNumber }}</div>
+              <div class="tm-table-state">{{ t.occupied ? 'Busy' : 'Free' }}</div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="tm-form-section">
+        <h2 class="tm-section-title">Reassign</h2>
+
+        <div class="tm-form-row">
+          <label class="tm-label" for="from-table">Source table (occupied)</label>
+          <select id="from-table"
+                  class="tm-select"
+                  [ngModel]="fromTable()"
+                  (ngModelChange)="fromTable.set($event)">
+            <option [ngValue]="null">— Select —</option>
+            @for (t of occupiedTables(); track t.tableNumber) {
+              <option [ngValue]="t.tableNumber">Table {{ t.tableNumber }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="tm-form-row">
+          <label class="tm-label" for="to-table">Target table (free)</label>
+          <select id="to-table"
+                  class="tm-select"
+                  [ngModel]="toTable()"
+                  (ngModelChange)="toTable.set($event)">
+            <option [ngValue]="null">— Select —</option>
+            @for (t of freeTables(); track t.tableNumber) {
+              <option [ngValue]="t.tableNumber">Table {{ t.tableNumber }}</option>
+            }
+          </select>
+        </div>
+
+        <button class="tm-submit"
+                [disabled]="isSubmitting() || fromTable() === null || toTable() === null"
+                (click)="reassign()">
+          {{ isSubmitting() ? 'Reassigning…' : 'Reassign' }}
+        </button>
+
+        @if (feedback(); as fb) {
+          <div class="tm-feedback" [class.ok]="fb.ok" [class.err]="!fb.ok">
+            {{ fb.message }}
+          </div>
+        }
+      </section>
+
+    </div>
+  </main>
+
+</div>

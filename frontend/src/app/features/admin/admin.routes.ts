@@ -19,6 +19,12 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./crud-menu/crud-menu.component').then(c => c.CrudMenuComponent)
       },
 
+      // --- TABLE MANAGEMENT (reasignación de mesa) ---
+      {
+        path: 'table-management',
+        loadComponent: () => import('./table-management/table-management.component').then(c => c.TableManagementComponent)
+      },
+
       // --- PRODUCT MANAGEMENT ---
       {
         path: 'product-management/product-list',

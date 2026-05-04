@@ -17,6 +17,11 @@ public class DiningTable {
     @Column(name = "payment_requested", nullable = false)
     private boolean paymentRequested = false;
 
+    // Si la mesa ha sido reasignada, guarda el número de la mesa destino
+    // para que la tablet del cliente lo detecte por polling y se mueva sola.
+    @Column(name = "pending_reassign_to")
+    private Integer pendingReassignTo;
+
     public DiningTable() {
     }
 
@@ -42,6 +47,14 @@ public class DiningTable {
 
     public void setPaymentRequested(boolean paymentRequested) {
         this.paymentRequested = paymentRequested;
+    }
+
+    public Integer getPendingReassignTo() {
+        return pendingReassignTo;
+    }
+
+    public void setPendingReassignTo(Integer pendingReassignTo) {
+        this.pendingReassignTo = pendingReassignTo;
     }
 
     @Override

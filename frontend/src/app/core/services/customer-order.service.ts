@@ -1,8 +1,19 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, interval, switchMap } from 'rxjs';
 import { OrderItem } from '../interfaces/order-item.interface'; // Fíjate en el nuevo nombre
 import { environment } from '../../../environments/environment';
+
+export interface TableStatus {
+  paymentRequested: boolean;
+  hasActiveOrders: boolean;
+  reassignTo: number | null;
+}
+
+export interface TableOccupancy {
+  tableNumber: number;
+  occupied: boolean;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -11,19 +22,81 @@ export class CustomerOrderService {
   private apiUrl = environment.apiUrl + 'orders';
 
   tableId = signal<number | null>(null);
+  tableClosed = signal<boolean>(false);
 
   order: OrderItem[] = [];
   private _totalItems = signal(0);
   totalItems = computed(() => this._totalItems());
 
+  private statusPollSub?: Subscription;
+
   constructor(private http: HttpClient) {
     const stored = sessionStorage.getItem('tableId');
-    if (stored) this.tableId.set(+stored);
+    if (stored) {
+      this.tableId.set(+stored);
+      this.startStatusPolling();
+    }
   }
 
   setTableId(id: number | null) {
     this.tableId.set(id);
-    sessionStorage.setItem('tableId', String(id));
+    if (id === null) {
+      sessionStorage.removeItem('tableId');
+      this.stopStatusPolling();
+    } else {
+      sessionStorage.setItem('tableId', String(id));
+      this.startStatusPolling();
+    }
+  }
+
+  // Polling singleton: detecta paymentRequested, cierre y reasignación.
+  // Cualquier vista cliente que use tableId() como signal recibe los cambios.
+  private startStatusPolling(): void {
+    this.stopStatusPolling();
+    this.statusPollSub = interval(3000)
+      .pipe(switchMap(() => {
+        const id = this.tableId();
+        if (id === null) throw new Error('no table');
+        return this.getTableStatus(id);
+      }))
+      .subscribe({
+        next: (status) => this.handleStatus(status),
+        error: () => { /* mesa nula o fallo de red: ignoramos hasta próximo tick */ }
+      });
+  }
+
+  private stopStatusPolling(): void {
+    this.statusPollSub?.unsubscribe();
+    this.statusPollSub = undefined;
+  }
+
+  private handleStatus(status: TableStatus): void {
+    const currentId = this.tableId();
+    if (currentId === null) return;
+
+    if (status.reassignTo !== null && status.reassignTo !== undefined) {
+      const newId = status.reassignTo;
+      this.acknowledgeReassign(currentId).subscribe({
+        next: () => this.setTableId(newId),
+        error: (err) => console.error('Error confirmando reasignación:', err)
+      });
+      return;
+    }
+
+    if (sessionStorage.getItem('paymentRequested') === 'true'
+        && !status.paymentRequested
+        && !status.hasActiveOrders) {
+      sessionStorage.removeItem('paymentRequested');
+      this.tableClosed.set(true);
+    }
+  }
+
+  consumeTableClosed(): boolean {
+    if (this.tableClosed()) {
+      this.tableClosed.set(false);
+      return true;
+    }
+    return false;
   }
 
   checkTableExists(tableNumber: number): Observable<boolean> {
@@ -38,10 +111,25 @@ export class CustomerOrderService {
     return this.http.put<void>(`${environment.apiUrl}tables/${tableNumber}/request-payment`, {});
   }
 
-  getTableStatus(tableNumber: number): Observable<{ paymentRequested: boolean; hasActiveOrders: boolean }> {
-    return this.http.get<{ paymentRequested: boolean; hasActiveOrders: boolean }>(
+  getTableStatus(tableNumber: number): Observable<TableStatus> {
+    return this.http.get<TableStatus>(
       `${environment.apiUrl}tables/${tableNumber}/status`
     );
+  }
+
+  acknowledgeReassign(fromTable: number): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}tables/${fromTable}/ack-reassign`, {});
+  }
+
+  reassignTable(fromTable: number, toTable: number): Observable<void> {
+    return this.http.post<void>(
+      `${environment.apiUrl}tables/${fromTable}/reassign?to=${toTable}`,
+      {}
+    );
+  }
+
+  getOccupancy(): Observable<TableOccupancy[]> {
+    return this.http.get<TableOccupancy[]>(`${environment.apiUrl}tables/occupancy`);
   }
 
   closeTable(tableNumber: number): Observable<void> {

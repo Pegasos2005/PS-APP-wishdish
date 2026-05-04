@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -196,5 +197,72 @@ public class OrderService {
         return diningTableRepository.findByTableNumber(tableNumber)
                 .map(DiningTable::isPaymentRequested)
                 .orElse(false);
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getPendingReassignTo(Integer tableNumber) {
+        return diningTableRepository.findByTableNumber(tableNumber)
+                .map(DiningTable::getPendingReassignTo)
+                .orElse(null);
+    }
+
+    // Mueve órdenes activas y paymentRequested de la mesa origen a la destino,
+    // y deja un flag pendingReassignTo en la origen para que la tablet del
+    // cliente lo lea por polling y actualice su tableId sola.
+    @Transactional
+    public void reassignTable(Integer fromNumber, Integer toNumber) {
+        if (fromNumber == null || toNumber == null) {
+            throw new RuntimeException("Mesa origen y destino son obligatorias.");
+        }
+        if (fromNumber.equals(toNumber)) {
+            throw new RuntimeException("La mesa origen y destino no pueden coincidir.");
+        }
+
+        DiningTable from = diningTableRepository.findByTableNumber(fromNumber)
+                .orElseThrow(() -> new RuntimeException("Mesa origen " + fromNumber + " no existe."));
+        DiningTable to = diningTableRepository.findByTableNumber(toNumber)
+                .orElseThrow(() -> new RuntimeException("Mesa destino " + toNumber + " no existe."));
+
+        if (tableHasActiveOrders(toNumber) || to.isPaymentRequested()) {
+            throw new RuntimeException("La mesa destino " + toNumber + " está ocupada.");
+        }
+
+        List<Order.OrderStatus> activeStatuses = Arrays.asList(Order.OrderStatus.in_kitchen, Order.OrderStatus.served);
+        List<Order> activeOrders = orderRepository.findByDiningTable_TableNumberAndStatusIn(fromNumber, activeStatuses);
+        for (Order o : activeOrders) {
+            o.setDiningTable(to);
+        }
+        orderRepository.saveAll(activeOrders);
+
+        if (from.isPaymentRequested()) {
+            to.setPaymentRequested(true);
+            from.setPaymentRequested(false);
+        }
+
+        from.setPendingReassignTo(toNumber);
+        diningTableRepository.save(from);
+        diningTableRepository.save(to);
+    }
+
+    @Transactional
+    public void acknowledgeReassign(Integer fromNumber) {
+        DiningTable from = diningTableRepository.findByTableNumber(fromNumber)
+                .orElseThrow(() -> new RuntimeException("Mesa " + fromNumber + " no existe."));
+        from.setPendingReassignTo(null);
+        diningTableRepository.save(from);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> getOccupancy() {
+        return diningTableRepository.findAll().stream()
+                .sorted((a, b) -> Integer.compare(a.getTableNumber(), b.getTableNumber()))
+                .map(t -> {
+                    boolean occupied = tableHasActiveOrders(t.getTableNumber()) || t.isPaymentRequested();
+                    Map<String, Object> entry = new java.util.LinkedHashMap<>();
+                    entry.put("tableNumber", t.getTableNumber());
+                    entry.put("occupied", occupied);
+                    return entry;
+                })
+                .collect(Collectors.toList());
     }
 }
