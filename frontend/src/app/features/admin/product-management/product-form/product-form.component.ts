@@ -4,6 +4,8 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } fr
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../../../core/services/product.service';
 import { IngredientSelectionService } from '../../../../core/services/ingredient-selection.service';
+import { CategoryService } from '../../../../core/services/category.service';
+import { Category } from '../../../../core/interfaces/category.interface';
 
 @Component({
   selector: 'app-product-form',
@@ -18,17 +20,20 @@ export class ProductFormComponent implements OnInit {
   private router = inject(Router);
   private location = inject(Location);
   private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
   private selectionService = inject(IngredientSelectionService);
 
   productForm: FormGroup;
   isEditMode = false;
   productId: number | null = null;
+  categories: Category[] = [];
 
   constructor() {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
       description: [''],
+      categoryId: [null, Validators.required],
       picture: [''],
       productIngredients: this.fb.array([])
     });
@@ -39,6 +44,8 @@ export class ProductFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadCategories();
+
     const id = this.route.snapshot.paramMap.get('id');
 
     if (id && id !== 'null') {
@@ -52,6 +59,13 @@ export class ProductFormComponent implements OnInit {
     }
   }
 
+  loadCategories() {
+    this.categoryService.getCategories().subscribe({
+      next: (data) => this.categories = data,
+      error: (err) => console.error('Error cargando categorías:', err)
+    });
+  }
+
   loadProduct(id: number) {
     this.productService.getProductById(id).subscribe({
       next: (product) => {
@@ -59,6 +73,7 @@ export class ProductFormComponent implements OnInit {
           name: product.name,
           description: product.description,
           price: product.price,
+          categoryId: product.category?.id,
           picture: product.picture
         });
 
@@ -111,9 +126,13 @@ export class ProductFormComponent implements OnInit {
         ingredient: { id: item.id }, // <--- EL BACKEND NECESITA ESTA ESTRUCTURA
         isDefault: item.isDefault || false
     }));
+    
+    // Estructura de categoría para JPA
+    const category = rawValue.categoryId ? { id: rawValue.categoryId } : null;
 
     const payload = {
         ...rawValue,
+        category: category,
         productIngredients: formattedIngredients
     };
     // -------------------------------------------------

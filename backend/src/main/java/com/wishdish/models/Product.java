@@ -28,7 +28,7 @@ public class Product {
     @Column(nullable = false)
     private Boolean available = true;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private Category category;
 

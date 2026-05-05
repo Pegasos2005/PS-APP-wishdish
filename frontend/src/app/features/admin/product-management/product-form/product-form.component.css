@@ -101,3 +101,25 @@
   display: block;
   width: 100%; /* Si quieres que ocupe todo el ancho o cambiarlo a auto */
 }
+
+.category-wrapper {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   margin-bottom: 15px;
+   width: 100%;
+ }
+
+ .category-select {
+   flex: 1;
+   padding: 8px;
+   border-radius: 8px;
+   border: 1px solid #ccc;
+   background-color: white;
+   font-family: inherit;
+   font-size: 0.9rem;
+   color: #333;
+   outline: none;
+ }
+
+.category-select:focus { border-color: #ffcc00; }
