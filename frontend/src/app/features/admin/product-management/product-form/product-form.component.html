@@ -34,11 +34,23 @@
 
         <div class="form-column right-align">
           <div class="image-container">
-            @if (productForm.get('picture')?.value) {
-            <img [src]="productForm.get('picture')?.value" alt="Product image" class="product-img">
-            } @else {
-            <div class="image-placeholder"></div>
-            }
+            <div class="image-section">
+
+              <div class="image-preview-box">
+                @if (productForm.get('picture')?.value) {
+                  <img [src]="productForm.get('picture')?.value" alt="Product image" class="product-img">
+                } @else {
+                  <div class="image-placeholder">
+                    <span class="camera-icon">📷</span>
+                    <span>No image</span>
+                  </div>
+                }
+              </div>
+
+              <div class="file-input-wrapper">
+                <input type="file" accept="image/*" (change)="onFileSelected($event)" class="custom-file-input">
+              </div>
+            </div>
           </div>
 
           <div class="product-details">

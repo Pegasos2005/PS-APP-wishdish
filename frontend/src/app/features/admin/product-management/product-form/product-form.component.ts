@@ -126,7 +126,7 @@ export class ProductFormComponent implements OnInit {
         ingredient: { id: item.id }, // <--- EL BACKEND NECESITA ESTA ESTRUCTURA
         isDefault: item.isDefault || false
     }));
-    
+
     // Estructura de categoría para JPA
     const category = rawValue.categoryId ? { id: rawValue.categoryId } : null;
 
@@ -161,5 +161,20 @@ export class ProductFormComponent implements OnInit {
   goBack() {
     this.selectionService.clear();
     this.router.navigate(['/admin/product-management/product-list']);
+  }
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+
+    if (file) {
+      // Llamamos al backend para que guarde la foto física
+      this.productService.uploadImage(file).subscribe({
+        next: (response) => {
+          // El backend nos devuelve la URL y la guardamos en el formulario
+          this.productForm.patchValue({ picture: response.imageUrl });
+        },
+        error: (err) => console.error('Error al subir imagen', err)
+      });
+    }
   }
 }

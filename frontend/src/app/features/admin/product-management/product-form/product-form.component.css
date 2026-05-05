@@ -123,3 +123,46 @@
  }
 
 .category-select:focus { border-color: #ffcc00; }
+
+.image-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.image-preview-box {
+  width: 100%;
+  height: 220px;
+  background-color: #d1d5db; /* El gris clarito de tu imagen */
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.camera-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.custom-file-input {
+  width: 100%;
+  font-size: 14px;
+  padding: 5px 0;
+}

@@ -38,4 +38,11 @@ export class ProductService {
   createIngredient(data: Ingredient): Observable<Ingredient> {
     return this.http.post<Ingredient>(this.INGREDIENTS_URL, data);
   }
+
+  // Subir imagen física
+  uploadImage(file: File): Observable<{imageUrl: string}> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{imageUrl: string}>(`${this.API_URL}/upload`, formData);
+  }
 }

@@ -9,7 +9,13 @@
   <div class="modal-body">
 
     <div class="product-image">
-      <img [src]="product.picture" [alt]="product.name" />
+      @if (product.picture) {
+        <img [src]="product.picture" [alt]="product.name" class="modal-real-img" />
+      } @else {
+        <div class="image-placeholder-modal">
+          <span>🍽️ Sin imagen</span>
+        </div>
+      }
     </div>
 
     <div class="product-info">

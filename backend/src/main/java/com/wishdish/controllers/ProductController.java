@@ -17,6 +17,16 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/products")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -117,5 +127,56 @@ public class ProductController {
         }
         productRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+
+    // --- SISTEMA DE GESTIÓN DE IMÁGENES ---
+
+    // Carpeta donde se guardarán las fotos (se creará en la raíz del proyecto Backend)
+    private final String UPLOAD_DIR = "uploads/";
+
+    @PostMapping("/upload")
+    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            // 1. Crear carpeta si no existe
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // 2. Generar nombre único (para que no se pisen fotos con el mismo nombre)
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            Path filePath = uploadPath.resolve(fileName);
+
+            // 3. Guardar el archivo físicamente
+            Files.copy(file.getInputStream(), filePath);
+
+            // 4. Devolver la URL donde se podrá ver la foto (puerto 8080)
+            Map<String, String> response = new HashMap<>();
+            response.put("imageUrl", "http://localhost:8080/api/products/images/" + fileName);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/images/{filename}")
+    public ResponseEntity<Resource> getImage(@PathVariable String filename) {
+        try {
+            Path filePath = Paths.get(UPLOAD_DIR).resolve(filename);
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG) // Actúa como servidor de imágenes
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
