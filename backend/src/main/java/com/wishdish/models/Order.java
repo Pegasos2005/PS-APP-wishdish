@@ -18,8 +18,9 @@ public class Order {
     @JoinColumn(name = "table_id", nullable = false)
     private DiningTable diningTable;
 
-    @Column(name = "order_date")
-    private LocalDateTime orderDate;
+    // Fechas en Java moderno. insertable = false hace que MySQL ponga la fecha automáticamente
+    @Column(name = "order_date", updatable = false)
+    private LocalDateTime orderDate = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

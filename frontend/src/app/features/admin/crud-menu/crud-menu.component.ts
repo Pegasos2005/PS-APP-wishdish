@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-crud-menu',
@@ -10,7 +9,6 @@ import { Location } from '@angular/common';
 })
 export class CrudMenuComponent {
   private router = inject(Router);
-  private location = inject(Location);
 
   navigateTo(type: string) {
     if (type === 'products') {
@@ -21,6 +19,6 @@ export class CrudMenuComponent {
   }
 
   goBack() {
-    this.location.back();
+    this.router.navigate(['/admin/dashboard']);
   }
 }

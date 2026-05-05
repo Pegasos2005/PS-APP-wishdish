@@ -15,5 +15,5 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     List<Order> findByStatusIn(List<Order.OrderStatus> statuses);
 
-    List<Order> findByDiningTableIdAndStatusIn(Integer tableNumber, List<Order.OrderStatus> statuses);
+    List<Order> findByDiningTable_TableNumberAndStatusIn(Integer tableNumber, List<Order.OrderStatus> statuses);
 }

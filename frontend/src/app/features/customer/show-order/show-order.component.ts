@@ -51,8 +51,8 @@ export class ShowOrderComponent {
       return;
     }
 
-    if (!currentTable) {
-      alert("Error: Table not assigned.");
+    if (currentTable === null) {
+      this.router.navigate(['/join-as']);
       return;
     }
 

@@ -16,10 +16,14 @@ export class CustomerOrderService {
   private _totalItems = signal(0);
   totalItems = computed(() => this._totalItems());
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    const stored = sessionStorage.getItem('tableId');
+    if (stored) this.tableId.set(+stored);
+  }
 
   setTableId(id: number | null) {
     this.tableId.set(id);
+    sessionStorage.setItem('tableId', String(id));
   }
 
   checkTableExists(tableNumber: number): Observable<boolean> {
@@ -28,6 +32,24 @@ export class CustomerOrderService {
 
   getTicketByTable(tableId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/table/${tableId}`);
+  }
+
+  requestPayment(tableNumber: number): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}tables/${tableNumber}/request-payment`, {});
+  }
+
+  getTableStatus(tableNumber: number): Observable<{ paymentRequested: boolean; hasActiveOrders: boolean }> {
+    return this.http.get<{ paymentRequested: boolean; hasActiveOrders: boolean }>(
+      `${environment.apiUrl}tables/${tableNumber}/status`
+    );
+  }
+
+  closeTable(tableNumber: number): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}tables/${tableNumber}/close`, {});
+  }
+
+  getTablesAwaitingPayment(): Observable<number[]> {
+    return this.http.get<number[]>(`${environment.apiUrl}tables/payment-requested`);
   }
 
   // 1. EL BOTÓN DE PAGAR (Envía a la base de datos)

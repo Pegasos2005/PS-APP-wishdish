@@ -38,12 +38,12 @@
     </div>
   }
 
-  <!-- MODAL ADMIN (SOLO PIN) -->
+  <!-- MODAL ADMIN (SOLO PASSWORD) -->
   @if (isAdminModalOpen()) {
     <div class="modal-overlay">
       <div class="modal-card">
         <h2 class="modal-title">Admin Access</h2>
-        <input #adminPin type="password" class="table-input" [class.error-shake]="authError()" placeholder="Enter PIN" (keyup.enter)="confirmAdminLogin(adminPin.value)" autofocus>
+        <input #adminPin type="password" class="table-input" [class.error-shake]="authError()" placeholder="Enter password" (keyup.enter)="confirmAdminLogin(adminPin.value)" autofocus>
 
         @if (authError()) { <p class="error-text">{{ errorMessage() }}</p> }
 
@@ -55,13 +55,13 @@
     </div>
   }
 
-  <!-- MODAL WORKER (NAME + PIN) -->
+  <!-- MODAL WORKER (NAME + PASSWORD) -->
   @if (isWorkerModalOpen()) {
     <div class="modal-overlay">
       <div class="modal-card">
         <h2 class="modal-title">Staff Login</h2>
         <input #workerName type="text" class="table-input" [class.error-shake]="authError()" placeholder="Username" style="margin-bottom: 10px;" autofocus>
-        <input #workerPin type="password" class="table-input" [class.error-shake]="authError()" placeholder="PIN" (keyup.enter)="confirmWorkerLogin(workerName.value, workerPin.value)">
+        <input #workerPin type="password" class="table-input" [class.error-shake]="authError()" placeholder="Password" (keyup.enter)="confirmWorkerLogin(workerName.value, workerPin.value)">
 
         @if (authError()) { <p class="error-text">{{ errorMessage() }}</p> }
 

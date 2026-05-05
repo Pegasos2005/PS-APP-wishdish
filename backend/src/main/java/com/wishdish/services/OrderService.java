@@ -48,13 +48,7 @@ public class OrderService {
             Product product = productRepository.findById(itemRequest.getProductId())
                     .orElseThrow(() -> new RuntimeException("Error: El producto " + itemRequest.getProductId() + " no existe."));
 
-            OrderItem item = new OrderItem();
-            item.setOrder(savedOrder);
-            item.setProduct(product);
-            item.setQuantity(itemRequest.getQuantity());
-            item.setStatus(OrderItem.ItemStatus.in_kitchen);
-
-            // Precio base del plato
+            // 1. Calculamos el precio y procesamos los textos UNA sola vez
             BigDecimal precioCalculado = product.getPrice();
             StringBuilder notes = new StringBuilder();
             StringBuilder extrasGuardados = new StringBuilder();
@@ -64,9 +58,7 @@ public class OrderService {
                 notes.append("Extra: ").append(String.join(", ", itemRequest.getAddedExtras())).append(". ");
 
                 for (String nombreExtra : itemRequest.getAddedExtras()) {
-                    // BUSQUEDA DIRECTA POR NOMBRE (Hard Delete compatible)
                     Ingredient ingredient = ingredientRepository.findByName(nombreExtra).orElse(null);
-
                     BigDecimal extraPrice = BigDecimal.ZERO;
 
                     if (ingredient != null && ingredient.getExtraPrice() != null) {
@@ -74,7 +66,6 @@ public class OrderService {
                         precioCalculado = precioCalculado.add(extraPrice);
                     }
 
-                    // Guardamos la estructura matemática "Nombre:Precio;"
                     if (extrasGuardados.length() > 0) {
                         extrasGuardados.append(";");
                     }
@@ -83,18 +74,30 @@ public class OrderService {
             }
 
             // Procesar eliminaciones
+            String removedDefaultsStr = "";
             if (itemRequest.getRemovedDefaults() != null && !itemRequest.getRemovedDefaults().isEmpty()) {
                 notes.append("Sin: ").append(String.join(", ", itemRequest.getRemovedDefaults())).append(".");
-                item.setRemovedDefaults(String.join(";", itemRequest.getRemovedDefaults()));
-            } else {
-                item.setRemovedDefaults("");
+                removedDefaultsStr = String.join(";", itemRequest.getRemovedDefaults());
             }
 
-            item.setAddedExtras(extrasGuardados.toString());
-            item.setUnitPrice(precioCalculado);
-            item.setObservations(notes.toString().trim());
+            String finalNotes = notes.toString().trim();
+            String finalAddedExtras = extrasGuardados.toString();
 
-            orderItemRepository.save(item);
+            // 2. MAGIA: Guardamos un item en base de datos por cada unidad pedida
+            for (int i = 0; i < itemRequest.getQuantity(); i++) {
+                OrderItem item = new OrderItem();
+                item.setOrder(savedOrder);
+                item.setProduct(product);
+                item.setQuantity(1); // Ahora forzamos que cada línea sea 1 unidad
+                item.setStatus(OrderItem.ItemStatus.in_kitchen);
+
+                item.setRemovedDefaults(removedDefaultsStr);
+                item.setAddedExtras(finalAddedExtras);
+                item.setUnitPrice(precioCalculado);
+                item.setObservations(finalNotes);
+
+                orderItemRepository.save(item);
+            }
         }
 
         return orderRepository.findById(savedOrder.getId()).orElseThrow();
@@ -144,10 +147,54 @@ public class OrderService {
     public List<OrderResponseDTO> getActiveOrdersByTable(Integer tableNumber) {
         List<Order.OrderStatus> activeStatuses = Arrays.asList(Order.OrderStatus.in_kitchen, Order.OrderStatus.served);
 
-        List<Order> activeOrders = orderRepository.findByDiningTableIdAndStatusIn(tableNumber, activeStatuses);
+        List<Order> activeOrders = orderRepository.findByDiningTable_TableNumberAndStatusIn(tableNumber, activeStatuses);
 
         return activeOrders.stream()
                 .map(OrderResponseDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void requestPayment(Integer tableNumber) {
+        DiningTable table = diningTableRepository.findByTableNumber(tableNumber)
+                .orElseThrow(() -> new RuntimeException("Mesa " + tableNumber + " no existe."));
+        table.setPaymentRequested(true);
+        diningTableRepository.save(table);
+    }
+
+    @Transactional
+    public void closeTable(Integer tableNumber) {
+        DiningTable table = diningTableRepository.findByTableNumber(tableNumber)
+                .orElseThrow(() -> new RuntimeException("Mesa " + tableNumber + " no existe."));
+
+        List<Order.OrderStatus> activeStatuses = Arrays.asList(Order.OrderStatus.in_kitchen, Order.OrderStatus.served);
+        List<Order> activeOrders = orderRepository.findByDiningTable_TableNumberAndStatusIn(tableNumber, activeStatuses);
+        for (Order o : activeOrders) {
+            o.setStatus(Order.OrderStatus.paid);
+        }
+        orderRepository.saveAll(activeOrders);
+
+        table.setPaymentRequested(false);
+        diningTableRepository.save(table);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Integer> getTablesAwaitingPayment() {
+        return diningTableRepository.findByPaymentRequestedTrue().stream()
+                .map(DiningTable::getTableNumber)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public boolean tableHasActiveOrders(Integer tableNumber) {
+        List<Order.OrderStatus> activeStatuses = Arrays.asList(Order.OrderStatus.in_kitchen, Order.OrderStatus.served);
+        return !orderRepository.findByDiningTable_TableNumberAndStatusIn(tableNumber, activeStatuses).isEmpty();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isPaymentRequested(Integer tableNumber) {
+        return diningTableRepository.findByTableNumber(tableNumber)
+                .map(DiningTable::isPaymentRequested)
+                .orElse(false);
     }
 }

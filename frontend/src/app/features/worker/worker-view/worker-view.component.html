@@ -8,6 +8,20 @@
     <div class="sub-header">Staff - Kitchen Display System</div>
 
     <main class="content-area">
+      @if (tablesAwaitingPayment().length > 0) {
+      <div class="payment-requests-panel">
+        <h3>Tables awaiting payment</h3>
+        <div class="payment-requests-grid">
+          @for (tableNumber of tablesAwaitingPayment(); track tableNumber) {
+          <div class="payment-request-card">
+            <span>Table {{ tableNumber }} requests payment</span>
+            <button class="charge-btn" (click)="chargeTable(tableNumber)">Cobrar</button>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
       <div class="grid-comandas">
 
         @for (order of orders(); track order.id) {

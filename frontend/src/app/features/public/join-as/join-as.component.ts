@@ -19,8 +19,8 @@ export class JoinAsComponent {
 
   // Estados de los modales
   isTableModalOpen = signal<boolean>(false);
-  isAdminModalOpen = signal<boolean>(false); // Modal de Admin (solo PIN)
-  isWorkerModalOpen = signal<boolean>(false); // Modal de Worker (User + PIN)
+  isAdminModalOpen = signal<boolean>(false); // Modal de Admin (solo password)
+  isWorkerModalOpen = signal<boolean>(false); // Modal de Worker (User + password)
 
   tableError = signal<boolean>(false);
   authError = signal<boolean>(false);
@@ -48,7 +48,7 @@ export class JoinAsComponent {
       },
       error: () => {
         this.authError.set(true);
-        this.errorMessage.set('Incorrect PIN.');
+        this.errorMessage.set('Incorrect password.');
       }
     });
   }
@@ -69,7 +69,7 @@ export class JoinAsComponent {
       },
       error: () => {
         this.authError.set(true);
-        this.errorMessage.set('Incorrect username or PIN.');
+        this.errorMessage.set('Incorrect username or password.');
       }
     });
   }
