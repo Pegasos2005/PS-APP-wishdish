@@ -31,7 +31,7 @@ public class DataLoader {
             // ===========================
             if (userRepository.count() == 0) {
                 System.out.println("   👥 Creando usuarios del sistema...");
-                crearUsuario(userRepository, "Tomas", User.Role.ADMIN, "admin");
+                crearUsuario(userRepository, "Tomas", User.Role.ADMIN, "dizzy-match");
                 crearUsuario(userRepository, "Sol", User.Role.KITCHEN, "kitchen");
                 crearUsuario(userRepository, "Carlos", User.Role.KITCHEN, "carlos");
                 crearUsuario(userRepository, "Crisa", User.Role.WAITER, "waiter");
