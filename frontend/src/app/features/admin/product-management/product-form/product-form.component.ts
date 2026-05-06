@@ -47,15 +47,17 @@ export class ProductFormComponent implements OnInit {
     this.loadCategories();
 
     const id = this.route.snapshot.paramMap.get('id');
+    this.isEditMode = !!(id && id !== 'null');
+    this.productId = this.isEditMode ? Number(id) : null;
 
-    if (id && id !== 'null') {
-      this.isEditMode = true;
-      this.productId = Number(id);
-      this.loadProduct(this.productId);
-    }
-
-    if (!id && this.selectionService.hasPendingChanges()) {
+    // 1. PRIORIDAD: Si hay un borrador en el servicio (volvimos del picker), lo usamos
+    if (this.selectionService.getDraft()) {
+      this.productForm.patchValue(this.selectionService.getDraft());
       this.populateIngredients(this.selectionService.getSelection());
+    } 
+    // 2. Si es modo edición y NO hay borrador, cargamos de la DB
+    else if (this.isEditMode && this.productId) {
+      this.loadProduct(this.productId);
     }
   }
 
@@ -104,6 +106,12 @@ export class ProductFormComponent implements OnInit {
   }
 
   openIngredientPicker() {
+    // Guardar el estado actual del formulario (nombre, precio, etc.)
+    const formValue = { ...this.productForm.value };
+    delete formValue.productIngredients; // No duplicamos los ingredientes
+    this.selectionService.setDraft(formValue);
+
+    // Guardar los ingredientes actuales
     this.selectionService.setSelection(this.ingredientsArray.value);
 
     if (this.isEditMode && this.productId) {
