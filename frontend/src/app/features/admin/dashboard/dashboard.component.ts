@@ -75,6 +75,9 @@ export class DashboardComponent {
       case 'manage-catalog':
         this.router.navigate(['/admin/crud-menu']);
         break;
+      case 'change-table':
+        this.router.navigate(['/admin/table-management']);
+        break;
       default:
         console.log('Acción no implementada todavía:', action);
         break;

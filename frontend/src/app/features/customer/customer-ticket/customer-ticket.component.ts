@@ -1,8 +1,7 @@
 // src/app/features/customer/customer-ticket/customer-ticket.component.ts
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { Subscription, interval, switchMap } from 'rxjs';
 import { CustomerOrderService } from '../../../core/services/customer-order.service';
 
 @Component({
@@ -22,7 +21,19 @@ export class CustomerTicketComponent implements OnInit, OnDestroy {
   restaurantName = signal<string>("WISH DISH RESTAURANT");
   currentDate = signal<Date>(new Date());
 
-  private statusPollSub?: Subscription;
+  // Reaccionamos a cambios de tableId (p. ej. tras reasignación) recargando ticket
+  private tableEffect = effect(() => {
+    const id = this.orderService.tableId();
+    if (id === null) return;
+    this.loadTicketData();
+  });
+
+  // Reaccionamos al cierre de mesa detectado por el polling singleton
+  private closeEffect = effect(() => {
+    if (this.orderService.tableClosed()) {
+      this.onTableClosed();
+    }
+  });
 
   // --- CÁLCULOS MATEMÁTICOS DEL TICKET ---
 
@@ -49,15 +60,13 @@ export class CustomerTicketComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit() {
-    this.loadTicketData();
     if (sessionStorage.getItem('paymentRequested') === 'true') {
       this.isPaymentRequested.set(true);
-      this.startStatusPolling();
     }
   }
 
   ngOnDestroy() {
-    this.statusPollSub?.unsubscribe();
+    // El polling es singleton en CustomerOrderService — no hay nada que limpiar aquí
   }
 
   loadTicketData() {
@@ -112,7 +121,6 @@ export class CustomerTicketComponent implements OnInit, OnDestroy {
       next: () => {
         this.isPaymentRequested.set(true);
         sessionStorage.setItem('paymentRequested', 'true');
-        this.startStatusPolling();
       },
       error: (err) => console.error("Error requesting payment:", err)
     });
@@ -122,25 +130,8 @@ export class CustomerTicketComponent implements OnInit, OnDestroy {
     this.isPaymentRequested.set(false);
   }
 
-  private startStatusPolling(): void {
-    const tableId = this.orderService.tableId();
-    if (tableId === null) return;
-    this.statusPollSub?.unsubscribe();
-    this.statusPollSub = interval(3000)
-      .pipe(switchMap(() => this.orderService.getTableStatus(tableId)))
-      .subscribe({
-        next: (status) => {
-          if (!status.paymentRequested && !status.hasActiveOrders) {
-            this.onTableClosed();
-          }
-        },
-        error: (err) => console.error("Error polling table status:", err)
-      });
-  }
-
   private onTableClosed(): void {
-    this.statusPollSub?.unsubscribe();
-    sessionStorage.removeItem('paymentRequested');
+    this.orderService.consumeTableClosed();
     this.orderService.clear();
     this.isPaymentRequested.set(false);
     this.tableOrders.set([]);

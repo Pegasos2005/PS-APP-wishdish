@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,10 +51,31 @@ public class DiningTableController {
 
     // GET /api/tables/3/status — estado para el polling de la tablet
     @GetMapping("/{tableNumber}/status")
-    public ResponseEntity<Map<String, Boolean>> getTableStatus(@PathVariable Integer tableNumber) {
-        return ResponseEntity.ok(Map.of(
-                "paymentRequested", orderService.isPaymentRequested(tableNumber),
-                "hasActiveOrders", orderService.tableHasActiveOrders(tableNumber)
-        ));
+    public ResponseEntity<Map<String, Object>> getTableStatus(@PathVariable Integer tableNumber) {
+        Map<String, Object> status = new HashMap<>();
+        status.put("paymentRequested", orderService.isPaymentRequested(tableNumber));
+        status.put("hasActiveOrders", orderService.tableHasActiveOrders(tableNumber));
+        status.put("reassignTo", orderService.getPendingReassignTo(tableNumber));
+        return ResponseEntity.ok(status);
+    }
+
+    // POST /api/tables/5/reassign?to=8 — admin reasigna la mesa 5 a la 8
+    @PostMapping("/{from}/reassign")
+    public ResponseEntity<Void> reassignTable(@PathVariable Integer from, @RequestParam Integer to) {
+        orderService.reassignTable(from, to);
+        return ResponseEntity.ok().build();
+    }
+
+    // PUT /api/tables/5/ack-reassign — la tablet confirma que ya se movió
+    @PutMapping("/{from}/ack-reassign")
+    public ResponseEntity<Void> acknowledgeReassign(@PathVariable Integer from) {
+        orderService.acknowledgeReassign(from);
+        return ResponseEntity.ok().build();
+    }
+
+    // GET /api/tables/occupancy — listado de mesas con flag libre/ocupada
+    @GetMapping("/occupancy")
+    public ResponseEntity<List<Map<String, Object>>> getOccupancy() {
+        return ResponseEntity.ok(orderService.getOccupancy());
     }
 }
