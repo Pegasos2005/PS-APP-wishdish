@@ -46,8 +46,8 @@ Si necesitas cambiar estas credenciales, edita `backend/src/main/resources/appli
 **MySQL:**
 ```bash
 docker-compose up -d
-docker-compose stop -d
-docker-compose down -d
+docker-compose stop
+docker-compose down
 ```
 Ejecutar up para activar MySQL, stop lo para y down lo borra
 (Recomendable usar up y down todo el rato, no se los detalles del porqué)
