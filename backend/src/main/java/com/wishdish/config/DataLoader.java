@@ -95,18 +95,18 @@ public class DataLoader {
             // ===========================
             // CREAR PRODUCTOS - ENTRANTES
             // ===========================
-            Product nachosConQueso = crearProducto(productRepository, "Nachos con Queso", "Nachos crujientes con mezcla de quesos y guacamole.", "8.90", "assets/nachos.jpg", entrantes);
-            Product tequeños = crearProducto(productRepository, "Tequeños", "Palitos de queso crujientes con salsa.", "7.90", "assets/tequeños.jpg", entrantes);
-            Product arosDeCebolla = crearProducto(productRepository, "Aros de cebolla 10 uds", "Crujientes aros de cebolla fritos, acompañados de nuestra salsa Montana", "8.90", "assets/aros_cebolla.jpg", entrantes);
+            Product nachosConQueso = crearProducto(productRepository, "Nachos con Queso", "Nachos crujientes con mezcla de quesos y guacamole.", "8.90", "nachos.jpg", entrantes);
+            Product tequeños = crearProducto(productRepository, "Tequeños", "Palitos de queso crujientes con salsa.", "7.90", "tequeños.jpg", entrantes);
+            Product arosDeCebolla = crearProducto(productRepository, "Aros de cebolla 10 uds", "Crujientes aros de cebolla fritos, acompañados de nuestra salsa Montana", "8.90", "aros_cebolla.jpg", entrantes);
             System.out.println("   ✓ 3 entrantes creados");
 
             // ===========================
             // CREAR PRODUCTOS - HAMBURGUESAS
             // ===========================
-            Product hamburguesaBacon = crearProducto(productRepository, "Hamburguesa smash con queso y bacon", "180 g. de carne 100% vaca gallega, sin aditivos ni conservantes, picada a diario", "13.50", "assets/hamburguesa_smash_bacon.jpg", hamburguesas);
-            Product burgerDelMes = crearProducto(productRepository, "Burger del Mes", "Pan Black Brioche, 200Gr de Carne Picada de Angus Américano, 80Gr de nuestra Pulled-Pork Casero, Cebolla Caramelizada, Queso Fundido y Salsa Emmy", "16.50", "assets/Burger_del_mes.jpg", hamburguesas);
-            Product crispyChickenToroHot = crearProducto(productRepository, "Crispy chicken toro hot", "Nuestra hamburguesa 100% de pollo crispy", "12.90", "assets/crispy_chicken_toro_hot.jpg", hamburguesas);
-            Product hamburguesaSmash = crearProducto(productRepository, "Hamburguesa smash", "180 g. de carne 100% vaca gallega, sin aditivos ni conservantes, picada a diario", "13.50", "assets/hamburguesa_smash.jpg", hamburguesas);
+            Product hamburguesaBacon = crearProducto(productRepository, "Hamburguesa smash con queso y bacon", "180 g. de carne 100% vaca gallega, sin aditivos ni conservantes, picada a diario", "13.50", "hamburguesa_smash_bacon.jpg", hamburguesas);
+            Product burgerDelMes = crearProducto(productRepository, "Burger del Mes", "Pan Black Brioche, 200Gr de Carne Picada de Angus Américano, 80Gr de nuestra Pulled-Pork Casero, Cebolla Caramelizada, Queso Fundido y Salsa Emmy", "16.50", "Burger_del_mes.jpg", hamburguesas);
+            Product crispyChickenToroHot = crearProducto(productRepository, "Crispy chicken toro hot", "Nuestra hamburguesa 100% de pollo crispy", "12.90", "crispy_chicken_toro_hot.jpg", hamburguesas);
+            Product hamburguesaSmash = crearProducto(productRepository, "Hamburguesa smash", "180 g. de carne 100% vaca gallega, sin aditivos ni conservantes, picada a diario", "13.50", "hamburguesa_smash.jpg", hamburguesas);
             System.out.println("   ✓ 4 hamburguesas creadas");
 
             // ===========================
@@ -114,10 +114,10 @@ public class DataLoader {
             // ===========================
 
             // Nota: para poder unir los productos con ingredientes, los guardamos en una variable
-            Product batataCajun = crearProducto(productRepository, "Batatas Cajun", "batatas fritas cubiertas de nuestra mezcla de especias Cajun (contiene Sal).", "4.90", "assets/batatas_cajun.jpg", guarniciones);
-            Product batataFrita = crearProducto(productRepository, "Batata frita", "Boniato frito.", "4.90", "assets/batata_frita.jpg", guarniciones);
-            Product papasCajun = crearProducto(productRepository, "Papas cajún", "Papas fritas sazonadas con un mix de especias (la mezcla de especias contiene sal).", "3.50", "assets/papas_cajun.jpg", guarniciones);
-            Product papasClasicas = crearProducto(productRepository, "Papas clásicas", "Patatas fritas", "3.60", "assets/papas_clasicas.jpg", guarniciones);
+            Product batataCajun = crearProducto(productRepository, "Batatas Cajun", "batatas fritas cubiertas de nuestra mezcla de especias Cajun (contiene Sal).", "4.90", "batatas_cajun.jpg", guarniciones);
+            Product batataFrita = crearProducto(productRepository, "Batata frita", "Boniato frito.", "4.90", "batata_frita.jpg", guarniciones);
+            Product papasCajun = crearProducto(productRepository, "Papas cajún", "Papas fritas sazonadas con un mix de especias (la mezcla de especias contiene sal).", "3.50", "papas_cajun.jpg", guarniciones);
+            Product papasClasicas = crearProducto(productRepository, "Papas clásicas", "Patatas fritas", "3.60", "papas_clasicas.jpg", guarniciones);
             System.out.println("   ✓ 4 guarniciones creadas");
 
             // ===========================
