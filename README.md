@@ -81,7 +81,7 @@ cd backend
 
 ```bash
 cd frontend
-ng serve --host 0.0.0.0
+npm run dev
 ```
 
 **Acceder a:** http://localhost:4200
