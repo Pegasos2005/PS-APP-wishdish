@@ -61,7 +61,8 @@ export class ShowOrderComponent {
       productId: item.product.id,
       quantity: item.quantity,
       addedExtras: item.product.addedExtras || [],
-      removedDefaults: item.product.removedDefaults || []
+      removedDefaults: item.product.removedDefaults || [],
+      itemNotes: item.product.itemNotes || ''
     }));
 
     const orderPayload = {

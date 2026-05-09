@@ -16,6 +16,7 @@ export interface Producto {
   addedExtras?: string[];
   removedDefaults?: string[];
   calculatedPrice?: number
+  itemNotes?: string;
 }
 
 /**

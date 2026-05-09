@@ -184,3 +184,28 @@
   align-items: center;
   gap: 5px;
 }
+
+.notes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.notes-section label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+.notes-section textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  resize: vertical;
+}
+.notes-section textarea:focus {
+  border-color: #e31b23;
+  outline: none;
+}

@@ -96,6 +96,7 @@ public class OrderService {
                 item.setAddedExtras(finalAddedExtras);
                 item.setUnitPrice(precioCalculado);
                 item.setObservations(finalNotes);
+                item.setItemNotes(itemRequest.getItemNotes());
 
                 orderItemRepository.save(item);
             }

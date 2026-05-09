@@ -7,6 +7,7 @@ public class OrderItemRequestDTO {
     private Integer quantity;
     private List<String> addedExtras;
     private List<String> removedDefaults;
+    private String itemNotes;
 
     // Getters y Setters
     public Integer getProductId() { return productId; }
@@ -20,4 +21,7 @@ public class OrderItemRequestDTO {
 
     public List<String> getRemovedDefaults() { return removedDefaults; }
     public void setRemovedDefaults(List<String> removedDefaults) { this.removedDefaults = removedDefaults; }
+
+    public String getItemNotes() { return itemNotes; }
+    public void setItemNotes(String itemNotes) { this.itemNotes = itemNotes; }
 }

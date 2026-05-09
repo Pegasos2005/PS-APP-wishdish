@@ -1,9 +1,10 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-customer-dish-detail',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './customer-dish-detail.component.html',
   styleUrl: './customer-dish-detail.component.css',
 })
@@ -14,6 +15,7 @@ export class CustomerDishDetailComponent implements OnInit {
 
   // Ingredientes seleccionados
   selectedIngredients: Set<string> = new Set();
+  itemNotesText: string = '';
 
   ngOnInit() {
 
@@ -94,7 +96,8 @@ export class CustomerDishDetailComponent implements OnInit {
       ...this.product,
       calculatedPrice: this.calcularPrecioTotal(),
       addedExtras: addedExtras,
-      removedDefaults: removedDefaults
+      removedDefaults: removedDefaults,
+      itemNotes: this.itemNotesText.trim()
     };
 
     this.addToCart.emit(itemWithIngredients);
