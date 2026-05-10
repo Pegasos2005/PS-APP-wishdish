@@ -29,6 +29,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/customer/customer.routes').then(r => r.CUSTOMER_ROUTES)
   },
 
+  {
+    path: 'admin/staff-management',
+    loadComponent: () => import('./features/admin/staff-management/staff-management.component').then(m => m.StaffManagementComponent)
+  },
+
   // Fallback para rutas no encontradas (404)
   { path: '**', redirectTo: 'join-as' } // U otra página NotFound específica
 ];

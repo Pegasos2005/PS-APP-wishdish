@@ -1,0 +1,59 @@
+<div class="principal-container">
+  <header class="head">
+    <button type="button" class="return-button" (click)="goBack()">&lt;</button>
+    <img src="assets/logo.png" alt="Logo">
+  </header>
+
+  <div class="body-admin">
+    <div class="sub-header">
+      Admin - Staff Management
+    </div>
+
+    <main class="content-area">
+      <div class="comanda-card full-width">
+
+        <div class="list-header">
+          <h2>Active Staff</h2>
+          <button class="add-btn" (click)="addNewWorker()">+ Add Worker</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Role</th>
+              <th>PIN</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (worker of workers(); track worker.id) {
+                <tr>
+                  <td>#{{ worker.id }}</td>
+                  <td class="fw-bold">{{ worker.name }}</td>
+                  <td>
+                    <span class="role-badge" [ngClass]="worker.role.toLowerCase()">
+                      {{ worker.role }}
+                    </span>
+                  </td>
+                  <td class="pin-cell">••••</td>
+                  <td class="actions-cell">
+                    <button class="action-btn edit" (click)="editWorker(worker)" title="Edit">✏️</button>
+                    <button class="action-btn delete" (click)="deleteWorker(worker)" title="Delete">🗑️</button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="empty-text">No staff members found. Add your first worker!</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
