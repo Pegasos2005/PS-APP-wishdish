@@ -81,6 +81,9 @@ export class DashboardComponent {
       case 'staff':
         this.router.navigate(['/admin/staff-management']);
         break;
+      case 'edit-comand':
+        this.router.navigate(['/admin/edit-comand-select']);
+        break;
       default:
         console.log('Acción no implementada todavía:', action);
         break;

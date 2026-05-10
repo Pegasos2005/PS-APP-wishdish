@@ -33,6 +33,10 @@ export const routes: Routes = [
     path: 'admin/staff-management',
     loadComponent: () => import('./features/admin/staff-management/staff-management.component').then(m => m.StaffManagementComponent)
   },
+  {
+    path: 'admin/edit-comand-select',
+    loadComponent: () => import('./features/admin/edit-comand-select/edit-comand-select.component').then(m => m.EditComandSelectComponent)
+  },
 
   // Fallback para rutas no encontradas (404)
   { path: '**', redirectTo: 'join-as' } // U otra página NotFound específica
