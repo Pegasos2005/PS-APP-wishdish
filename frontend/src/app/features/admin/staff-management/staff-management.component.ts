@@ -22,6 +22,8 @@ export class StaffManagementComponent implements OnInit{
   workers = signal<WorkerItem[]>([]);
 
   showAddModal = signal<boolean>(false);
+
+  editingWorkerId = signal<number | null>(null);
   workerForm: FormGroup;
 
   constructor() {
@@ -49,12 +51,14 @@ export class StaffManagementComponent implements OnInit{
   }
 
   addNewWorker() {
+    this.editingWorkerId.set(null); // Modo "Crear"
     this.workerForm.reset({ role: 'CAMARERO' }); // Limpiamos
     this.showAddModal.set(true); // Abrimos modal
   }
 
   closeModal() {
     this.showAddModal.set(false);
+    this.editingWorkerId.set(null); // Limpiamos el estado
   }
 
   saveWorker() {
@@ -63,23 +67,53 @@ export class StaffManagementComponent implements OnInit{
       return;
     }
 
-    const newWorkerData: WorkerItem = this.workerForm.value;
+    const workerData: WorkerItem = this.workerForm.value;
+    const currentEditId = this.editingWorkerId();
 
-    this.workerService.createWorker(newWorkerData).subscribe({
-      next: (createdWorker) => {
-        // Añadimos el nuevo trabajador a la lista
-        this.workers.update(list => [...list, createdWorker]);
-        this.closeModal();
-        console.log('Trabajador creado con éxito');
-      },
-      error: (err) => {
-        console.error('Error al crear trabajador:', err);
-        alert('Could not save the worker. Check connection.');
-      }
-    });
+    if (currentEditId !== null) {
+      this.workerService.updateWorker(currentEditId, workerData).subscribe({
+        next: (updatedWorker) => {
+          // Sustituimos al trabajador antiguo por el actualizado en la lista visual
+          this.workers.update(list =>
+            list.map(w => w.id === currentEditId ? updatedWorker : w)
+          );
+          this.closeModal();
+          console.log('Trabajador actualizado con éxito');
+        },
+        error: (err) => {
+          console.error('Error al actualizar trabajador:', err);
+          alert('Could not update the worker. Check connection.');
+        }
+      });
+    } else {
+        this.workerService.createWorker(workerData).subscribe({
+          next: (createdWorker) => {
+            // Añadimos el nuevo trabajador a la lista
+            this.workers.update(list => [...list, createdWorker]);
+            this.closeModal();
+            console.log('Trabajador creado con éxito');
+          },
+          error: (err) => {
+            console.error('Error al crear trabajador:', err);
+            alert('Could not save the worker. Check connection.');
+          }
+        });
+    }
   }
 
-  editWorker(worker: WorkerItem) { console.log('Editar', worker); }
+  editWorker(worker: WorkerItem) {
+    if (!worker.id) return;
+    this.editingWorkerId.set(worker.id); // Activamos modo "Editar"
+
+    // Rellenamos automáticamente los inputs con los datos del trabajador
+    this.workerForm.patchValue({
+      name: worker.name,
+      role: worker.role,
+      pin: worker.pin || ''
+    });
+
+    this.showAddModal.set(true); // Abrimos el mismo modal
+  }
 
   deleteWorker(worker: WorkerItem) {
     // 1. Pedimos confirmación al usuario

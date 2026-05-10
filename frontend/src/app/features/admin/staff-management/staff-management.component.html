@@ -65,7 +65,7 @@
     <button class="close-btn" (click)="closeModal()">✕</button>
 
     <div class="modal-header">
-      <h3>Add New Staff Member</h3>
+      <h3>{{ editingWorkerId() ? 'Edit Staff Member' : 'Add New Staff Member' }}</h3>
     </div>
 
     <form [formGroup]="workerForm" (ngSubmit)="saveWorker()" class="form-body">
@@ -90,7 +90,7 @@
       </div>
 
       <button type="submit" class="confirm-btn" [disabled]="workerForm.invalid">
-        Save Worker
+        {{ editingWorkerId() ? 'Update Worker' : 'Save Worker' }}
       </button>
 
     </form>

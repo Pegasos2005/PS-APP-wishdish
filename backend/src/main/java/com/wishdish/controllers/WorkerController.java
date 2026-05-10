@@ -39,4 +39,10 @@ public class WorkerController {
         workerService.deleteWorker(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<WorkerDTO> updateWorker(@PathVariable Integer id, @RequestBody Worker workerDetails) {
+        Worker updatedWorker = workerService.updateWorker(id, workerDetails);
+        return ResponseEntity.ok(new WorkerDTO(updatedWorker));
+    }
 }

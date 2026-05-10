@@ -35,4 +35,21 @@ public class WorkerService {
         worker.setActive(false);
         workerRepository.save(worker);
     }
+
+    @Transactional
+    public Worker updateWorker(Integer id, Worker workerDetails) {
+        Worker existingWorker = workerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Worker with ID " + id + " not found"));
+
+        // Actualizamos los campos
+        existingWorker.setName(workerDetails.getName());
+        existingWorker.setRole(workerDetails.getRole());
+
+        // Solo actualizamos el PIN si nos envían uno nuevo
+        if (workerDetails.getPin() != null && !workerDetails.getPin().isEmpty()) {
+            existingWorker.setPin(workerDetails.getPin());
+        }
+
+        return workerRepository.save(existingWorker);
+    }
 }
