@@ -38,6 +38,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin/edit-comand-select/edit-comand-select.component').then(m => m.EditComandSelectComponent)
   },
 
+  {
+    path: 'admin/edit-comand/:id',
+    loadComponent: () => import('./features/admin/edit-comand/edit-comand.component').then(m => m.EditComandComponent)
+  },
+
   // Fallback para rutas no encontradas (404)
   { path: '**', redirectTo: 'join-as' } // U otra página NotFound específica
 ];

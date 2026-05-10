@@ -1,0 +1,127 @@
+<div class="principal-container">
+  <header class="head">
+    <button type="button" class="return-button" (click)="goBack()">&lt;</button>
+    <img src="assets/logo.png" alt="Logo">
+  </header>
+
+  <div class="body-admin">
+    <div class="sub-header">
+      Admin - Manual Product Entry
+    </div>
+
+    <main class="content-area">
+      <div class="comanda-card full-width">
+
+        @if (loadingOrder()) {
+          <div class="loading-state">
+            <p>Loading order details...</p>
+          </div>
+        } @else if (!currentOrder()) {
+          <div class="empty-state">
+            <p>Order #{{ orderId() }} not found or no longer active.</p>
+            <button class="btn-secondary" (click)="goBack()">Go Back</button>
+          </div>
+        } @else {
+
+          <div class="order-overview-header">
+            <div>
+              <h2>Order #{{ currentOrder()!.id }}</h2>
+              <span class="table-tag">Table {{ currentOrder()!.tableNumber }}</span>
+            </div>
+            <div class="status-badge">Kitchen Status: <strong>ACTIVE</strong></div>
+          </div>
+
+          <div class="edit-grid-layout">
+
+            <section class="current-items-panel">
+              <h3>Current Items in Order</h3>
+
+              <div class="items-scroller">
+                @for (item of currentOrder()!.items; track item.id) {
+                  <div class="existing-item-row" [class.staff-added]="isStaffAdded(item)">
+                    <div class="item-main">
+                      <span class="qty">{{ item.quantity }}x</span>
+                      <span class="name">{{ item.productName }}</span>
+                    </div>
+
+                    @if (item.observations) {
+                      <p class="obs-text">{{ item.observations }}</p>
+                    }
+                  </div>
+                } @empty {
+                  <p class="no-items">No items currently registered.</p>
+                }
+              </div>
+            </section>
+
+            <section class="add-panel">
+              <h3>➕ Add Product Manually</h3>
+
+              <div class="search-box">
+                <input
+                  type="text"
+                  [(ngModel)]="searchTerm"
+                  placeholder="🔍 Search product by name (Ej: Smash, Crispy...)"
+                  class="search-input">
+              </div>
+
+              <div class="products-quick-list">
+                @for (prod of filteredProducts(); track prod.id) {
+                  <div
+                    class="quick-prod-card"
+                    [class.selected]="selectedProduct()?.id === prod.id"
+                    [class.disabled]="!prod.available"
+                    (click)="prod.available && selectProduct(prod)">
+
+                    <img [src]="prod.picture" alt="{{ prod.name }}" class="prod-thumb">
+
+                    <div class="prod-info">
+                      <span class="prod-name">{{ prod.name }}</span>
+                      <span class="prod-price">{{ prod.price | number:'1.2-2' }} €</span>
+                      @if (!prod.available) {
+                        <span class="unavailable-tag">Unavailable</span>
+                      }
+                    </div>
+
+                  </div>
+                } @empty {
+                  <p class="no-results">No products found matching "{{ searchTerm() }}"</p>
+                }
+              </div>
+
+              @if (selectedProduct()) {
+                <div class="injection-form">
+                  <div class="selected-banner">
+                    Selected: <strong>{{ selectedProduct()!.name }}</strong>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="input-unit">
+                      <label>Quantity</label>
+                      <input type="number" [(ngModel)]="quantity" min="1" max="20" class="num-input">
+                    </div>
+
+                    <div class="input-unit flex-grow">
+                      <label>Staff Notes (Optional)</label>
+                      <input type="text" [(ngModel)]="observations" placeholder="Ej: Sin salsa, poco hecho..." class="text-input">
+                    </div>
+                  </div>
+
+                  <button
+                    class="confirm-add-btn"
+                    (click)="addManualItem()">
+                    Confirm & Send to Kitchen ➔
+                  </button>
+                </div>
+              }
+
+            </section>
+
+          </div>
+
+        }
+
+      </div>
+    </main>
+  </div>
+</div>
