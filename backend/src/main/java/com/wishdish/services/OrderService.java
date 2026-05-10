@@ -1,5 +1,6 @@
 package com.wishdish.services;
 
+import com.wishdish.dtos.ManualItemRequestDTO;
 import com.wishdish.dtos.OrderItemRequestDTO;
 import com.wishdish.dtos.OrderResponseDTO;
 import com.wishdish.models.*;
@@ -267,5 +268,47 @@ public class OrderService {
                     return entry;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<OrderResponseDTO> addManualItemToOrder(Integer orderId, ManualItemRequestDTO request) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Error: La comanda " + orderId + " no existe."));
+
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new RuntimeException("Error: El producto " + request.getProductId() + " no existe."));
+
+
+        // Si el producto no está disponible
+        if (product.getAvailable() == null || !product.getAvailable()) {
+            throw new RuntimeException("This product is currently unavailable");
+        }
+
+        // ESCENARIO ALTERNATIVO: Marca visual para que la cocina distinga la adición
+        String adminNotes = (request.getObservations() != null ? request.getObservations().trim() + " " : "");
+        String finalObservations = adminNotes + "[Añadido por personal]";
+
+        // 1 registro por unidad pedida
+        int qty = request.getQuantity() != null && request.getQuantity() > 0 ? request.getQuantity() : 1;
+
+        for (int i = 0; i < qty; i++) {
+            OrderItem item = new OrderItem();
+            item.setOrder(order);
+            item.setProduct(product);
+            item.setQuantity(1);
+            item.setStatus(OrderItem.ItemStatus.in_kitchen); // Directo a la pantalla del cocinero
+            item.setUnitPrice(product.getPrice());
+
+            item.setObservations(finalObservations.trim());
+            item.setItemNotes("");
+            item.setAddedExtras("");
+            item.setRemovedDefaults("");
+
+            orderItemRepository.save(item);
+            order.getItems().add(item);
+        }
+
+        // Devolvemos la lista de comandas activas de esa mesa actualizada
+        return getActiveOrdersByTable(order.getDiningTable().getTableNumber());
     }
 }
