@@ -34,7 +34,7 @@ public class OrderService {
     private IngredientRepository ingredientRepository;
 
     @Transactional
-    public Order createOrder(Integer tableNumber, List<OrderItemRequestDTO> items) {
+    public Order createOrder(Integer tableNumber, List<OrderItemRequestDTO> items, String generalNotes) {
         // Busca mesa por su número visual
         DiningTable table = diningTableRepository.findByTableNumber(tableNumber)
                 .orElseThrow(() -> new RuntimeException("Error: La mesa número " + tableNumber + " no existe."));
