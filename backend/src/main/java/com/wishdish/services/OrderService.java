@@ -43,6 +43,8 @@ public class OrderService {
         newOrder.setDiningTable(table);
         newOrder.setStatus(Order.OrderStatus.in_kitchen);
 
+        newOrder.setGeneralNotes(generalNotes);
+
         Order savedOrder = orderRepository.save(newOrder);
 
         for (OrderItemRequestDTO itemRequest : items) {

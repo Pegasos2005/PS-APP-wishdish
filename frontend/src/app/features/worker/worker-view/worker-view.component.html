@@ -47,7 +47,7 @@
             @for (item of order.items; track item.id) {
             <article class="dish-card" [class.item-prepared]="item.status === 'prepared'">
               <div class="dish-header">
-                <span class="dish-name"><strong>{{ item.quantity }}x</strong> {{ item.productName }}</span>
+                <span class="dish-name">{{ item.productName }}</span>
 
                 <button class="check-circle"
                         [class.prepared]="item.status === 'prepared'"
