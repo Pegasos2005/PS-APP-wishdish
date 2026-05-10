@@ -57,3 +57,42 @@
     </main>
   </div>
 </div>
+
+@if (showAddModal()) {
+  <div class="modal-overlay" (click)="closeModal()"></div>
+
+  <div class="modal-content">
+    <button class="close-btn" (click)="closeModal()">✕</button>
+
+    <div class="modal-header">
+      <h3>Add New Staff Member</h3>
+    </div>
+
+    <form [formGroup]="workerForm" (ngSubmit)="saveWorker()" class="form-body">
+
+      <div class="input-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" formControlName="name" placeholder="Ej: Carlos Mendoza">
+      </div>
+
+      <div class="input-group">
+        <label for="role">System Role</label>
+        <select id="role" formControlName="role">
+          <option value="CAMARERO">Camarero (Waiter)</option>
+          <option value="COCINERO">Cocinero (Kitchen)</option>
+          <option value="ADMIN">Administrador (Admin)</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label for="pin">Access PIN (4-6 digits)</label>
+        <input type="password" id="pin" formControlName="pin" placeholder="••••">
+      </div>
+
+      <button type="submit" class="confirm-btn" [disabled]="workerForm.invalid">
+        Save Worker
+      </button>
+
+    </form>
+  </div>
+}
