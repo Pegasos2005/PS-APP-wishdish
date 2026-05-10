@@ -80,5 +80,26 @@ export class StaffManagementComponent implements OnInit{
   }
 
   editWorker(worker: WorkerItem) { console.log('Editar', worker); }
-  deleteWorker(worker: WorkerItem) { console.log('Borrar', worker); }
+
+  deleteWorker(worker: WorkerItem) {
+    // 1. Pedimos confirmación al usuario
+    const confirmDelete = confirm(`Are you sure you want to delete ${worker.name}? This action cannot be undone.`);
+
+    if (confirmDelete && worker.id) {
+      this.workerService.deleteWorker(worker.id).subscribe({
+        next: () => {
+          // 2. Si el servidor responde OK, lo quitamos de la señal 'workers'
+          // Esto hace que la tabla se actualice al instante sin recargar
+          this.workers.update(currentList =>
+            currentList.filter(w => w.id !== worker.id)
+          );
+          console.log('Worker deleted successfully');
+        },
+        error: (err) => {
+          console.error('Error deleting worker:', err);
+          alert('Could not delete the worker. Please try again.');
+        }
+      });
+    }
+  }
 }

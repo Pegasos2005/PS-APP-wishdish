@@ -18,7 +18,7 @@ public class WorkerController {
     @Autowired
     private WorkerService workerService;
 
-    // ENDPOINT 1: Listar trabajadores (GET http://localhost:8080/api/workers)
+
     @GetMapping
     public ResponseEntity<List<WorkerDTO>> getAllWorkers() {
         List<WorkerDTO> workers = workerService.getAllActiveWorkers().stream()
@@ -27,10 +27,16 @@ public class WorkerController {
         return ResponseEntity.ok(workers);
     }
 
-    // ENDPOINT 2: Crear trabajador (POST http://localhost:8080/api/workers)
+
     @PostMapping
     public ResponseEntity<WorkerDTO> createWorker(@RequestBody Worker worker) {
         Worker newWorker = workerService.createWorker(worker);
         return ResponseEntity.ok(new WorkerDTO(newWorker));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteWorker(@PathVariable Integer id) {
+        workerService.deleteWorker(id);
+        return ResponseEntity.noContent().build();
     }
 }

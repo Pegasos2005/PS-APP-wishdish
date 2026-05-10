@@ -25,4 +25,14 @@ public class WorkerService {
         worker.setActive(true);
         return workerRepository.save(worker);
     }
+
+    @Transactional
+    public void deleteWorker(Integer id) {
+        Worker worker = workerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Worker with ID " + id + " not found"));
+
+        // Hacemos borrado
+        worker.setActive(false);
+        workerRepository.save(worker);
+    }
 }
