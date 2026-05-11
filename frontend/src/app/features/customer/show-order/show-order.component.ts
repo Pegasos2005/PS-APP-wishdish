@@ -3,17 +3,19 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { CustomerOrderService } from '../../../core/services/customer-order.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-show-order',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './show-order.component.html',
   styleUrls: ['./show-order.component.css']
 })
 export class ShowOrderComponent {
   public orderService = inject(CustomerOrderService);
   private router = inject(Router);
+  generalNotesText: string = '';
 
   increaseQuantity(product: any) {
     this.orderService.addProduct(product);
@@ -61,11 +63,13 @@ export class ShowOrderComponent {
       productId: item.product.id,
       quantity: item.quantity,
       addedExtras: item.product.addedExtras || [],
-      removedDefaults: item.product.removedDefaults || []
+      removedDefaults: item.product.removedDefaults || [],
+      itemNotes: item.product.itemNotes || ''
     }));
 
     const orderPayload = {
       tableId: currentTable,
+      generalNotes: this.generalNotesText.trim(),
       items: itemsPayload
     };
 
@@ -75,6 +79,7 @@ export class ShowOrderComponent {
       next: () => {
         alert("Order sent to the kitchen successfully!");
         this.orderService.clear();
+        this.generalNotesText = '';
         this.router.navigate(['/customer/customer-home']);
       },
       error: (err) => {

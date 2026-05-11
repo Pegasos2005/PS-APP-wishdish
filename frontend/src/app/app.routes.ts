@@ -29,6 +29,20 @@ export const routes: Routes = [
     loadChildren: () => import('./features/customer/customer.routes').then(r => r.CUSTOMER_ROUTES)
   },
 
+  {
+    path: 'admin/staff-management',
+    loadComponent: () => import('./features/admin/staff-management/staff-management.component').then(m => m.StaffManagementComponent)
+  },
+  {
+    path: 'admin/edit-comand-select',
+    loadComponent: () => import('./features/admin/edit-comand-select/edit-comand-select.component').then(m => m.EditComandSelectComponent)
+  },
+
+  {
+    path: 'admin/edit-comand/:id',
+    loadComponent: () => import('./features/admin/edit-comand/edit-comand.component').then(m => m.EditComandComponent)
+  },
+
   // Fallback para rutas no encontradas (404)
   { path: '**', redirectTo: 'join-as' } // U otra página NotFound específica
 ];

@@ -28,6 +28,7 @@
         <section class="comanda-card" [class.comanda-amago-salida]="order.isExiting">
           <header class="comanda-header">
             <span>Order: #{{ order.id }} - Table: {{ order.tableNumber }}</span>
+
             <button class="check-circle master-check"
                     [class.prepared]="isOrderComplete(order)"
                     (click)="toggleOrderComplete(order)"
@@ -36,11 +37,17 @@
             </button>
           </header>
 
+          @if (order.generalNotes) {
+            <div class="comanda-general-notes" style="background-color: #fffbeb; color: #b45309; padding: 10px 15px; font-weight: 600; border-bottom: 2px solid #fde68a; font-size: 14px;">
+              ⚠️ Nota de Mesa: "{{ order.generalNotes }}"
+            </div>
+          }
+
           <div class="dishes-grid">
             @for (item of order.items; track item.id) {
             <article class="dish-card" [class.item-prepared]="item.status === 'prepared'">
               <div class="dish-header">
-                <span class="dish-name"><strong>{{ item.quantity }}x</strong> {{ item.productName }}</span>
+                <span class="dish-name">{{ item.productName }}</span>
 
                 <button class="check-circle"
                         [class.prepared]="item.status === 'prepared'"

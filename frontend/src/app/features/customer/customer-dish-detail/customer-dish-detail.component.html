@@ -32,6 +32,14 @@
         <div class="preferences-section">
           <h3>Preferencias</h3>
 
+          <div class="notes-section">
+            <label for="itemNotes">Añadir nota para cocina (Opcional):</label>
+            <textarea
+              id="itemNotes"
+              [(ngModel)]="itemNotesText"
+              placeholder="Ej: La carne muy hecha, sin sal..."></textarea>
+          </div>
+
           <div class="ingredients-list">
             @for (ingredient of product.ingredients; track ingredient.id || ingredient.name) {
               <label class="ingredient-checkbox">

@@ -49,6 +49,9 @@ export class WorkerViewComponent implements OnInit {
               id: order.id,
               tableNumber: order.tableNumber,
               status: order.status,
+
+              generalNotes: order.generalNotes,
+
               isExiting: existingOrder ? existingOrder.isExiting : false,
               // Mapeamos los platos asegurando que lleguen todas las notas y cantidades
               items: (order.items || []).map((item: any): ItemComandaDTO => {

@@ -18,6 +18,7 @@ export interface ItemComandaDTO {
 }
 
 export interface ComandaResponseDTO {
+  generalNotes?: string;
   id: number;
   tableNumber: number;
   status: string;

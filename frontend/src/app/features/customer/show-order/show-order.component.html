@@ -47,6 +47,15 @@
         <button class="btn-secondary" routerLink="/customer/customer-menu">Browse Menu</button>
       </div>
       } @else {
+
+      <div class="general-notes-section">
+        <label for="generalNotes">Order Notes (Optional):</label>
+        <textarea
+          id="generalNotes"
+          [(ngModel)]="generalNotesText"
+          placeholder="Ej: Sacar todo a la vez, mesa en terraza..."></textarea>
+      </div>
+
       <button class="send-order-btn" (click)="sendOrder()">
         <span>Send Order to Kitchen • {{ orderService.getTotalPrice() | number:'1.2-2' }} €</span>
         <span class="cart-count">{{ orderService.totalItems() }}</span>

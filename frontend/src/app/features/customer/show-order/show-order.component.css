@@ -227,3 +227,35 @@
 .extras-text strong {
   color: #333;
 }
+
+.general-notes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.general-notes-section label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.general-notes-section textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  background-color: #f9fafb;
+}
+
+.general-notes-section textarea:focus {
+  border-color: #e31b23;
+  outline: none;
+  background-color: #ffffff;
+}

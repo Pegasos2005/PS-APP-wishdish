@@ -1,5 +1,6 @@
 package com.wishdish.services;
 
+import com.wishdish.dtos.ManualItemRequestDTO;
 import com.wishdish.dtos.OrderItemRequestDTO;
 import com.wishdish.dtos.OrderResponseDTO;
 import com.wishdish.models.*;
@@ -34,7 +35,7 @@ public class OrderService {
     private IngredientRepository ingredientRepository;
 
     @Transactional
-    public Order createOrder(Integer tableNumber, List<OrderItemRequestDTO> items) {
+    public Order createOrder(Integer tableNumber, List<OrderItemRequestDTO> items, String generalNotes) {
         // Busca mesa por su número visual
         DiningTable table = diningTableRepository.findByTableNumber(tableNumber)
                 .orElseThrow(() -> new RuntimeException("Error: La mesa número " + tableNumber + " no existe."));
@@ -42,6 +43,8 @@ public class OrderService {
         Order newOrder = new Order();
         newOrder.setDiningTable(table);
         newOrder.setStatus(Order.OrderStatus.in_kitchen);
+
+        newOrder.setGeneralNotes(generalNotes);
 
         Order savedOrder = orderRepository.save(newOrder);
 
@@ -96,6 +99,7 @@ public class OrderService {
                 item.setAddedExtras(finalAddedExtras);
                 item.setUnitPrice(precioCalculado);
                 item.setObservations(finalNotes);
+                item.setItemNotes(itemRequest.getItemNotes());
 
                 orderItemRepository.save(item);
             }
@@ -105,7 +109,12 @@ public class OrderService {
     }
 
     public List<OrderResponseDTO> getActiveOrders() {
-        List<Order> orders = orderRepository.findByStatusIn(Collections.singletonList(Order.OrderStatus.in_kitchen));
+        List<Order.OrderStatus> activeStatuses = Arrays.asList(
+                Order.OrderStatus.in_kitchen,
+                Order.OrderStatus.served
+        );
+
+        List<Order> orders = orderRepository.findByStatusIn(activeStatuses);
 
         return orders.stream()
                 .map(OrderResponseDTO::new)
@@ -264,5 +273,61 @@ public class OrderService {
                     return entry;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<OrderResponseDTO> addManualItemToOrder(Integer orderId, ManualItemRequestDTO request) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Error: La comanda " + orderId + " no existe."));
+
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new RuntimeException("Error: El producto " + request.getProductId() + " no existe."));
+
+
+        // Si el producto no está disponible
+        if (product.getAvailable() == null || !product.getAvailable()) {
+            throw new RuntimeException("This product is currently unavailable");
+        }
+
+        // ESCENARIO ALTERNATIVO: Marca visual para que la cocina distinga la adición
+        String adminNotes = (request.getObservations() != null ? request.getObservations().trim() + " " : "");
+        String finalObservations = adminNotes + "[Añadido por personal]";
+
+        // 1 registro por unidad pedida
+        int qty = request.getQuantity() != null && request.getQuantity() > 0 ? request.getQuantity() : 1;
+
+        for (int i = 0; i < qty; i++) {
+            OrderItem item = new OrderItem();
+            item.setOrder(order);
+            item.setProduct(product);
+            item.setQuantity(1);
+            item.setStatus(OrderItem.ItemStatus.in_kitchen); // Directo a la pantalla del cocinero
+            item.setUnitPrice(product.getPrice());
+
+            item.setObservations(finalObservations.trim());
+            item.setItemNotes("");
+            item.setAddedExtras("");
+            item.setRemovedDefaults("");
+
+            orderItemRepository.save(item);
+            order.getItems().add(item);
+        }
+
+        if (order.getStatus() == Order.OrderStatus.served) {
+            order.setStatus(Order.OrderStatus.in_kitchen);
+            orderRepository.save(order);
+        }
+
+        // Devolvemos la lista de comandas activas de esa mesa actualizada
+        return getActiveOrdersByTable(order.getDiningTable().getTableNumber());
+    }
+
+    @Transactional
+    public void removeOrderItem(Integer itemId) {
+        OrderItem item = orderItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Error: El ítem " + itemId + " no existe."));
+
+        // Lo borramos físicamente de la base de datos
+        orderItemRepository.delete(item);
     }
 }

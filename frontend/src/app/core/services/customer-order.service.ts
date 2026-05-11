@@ -149,7 +149,9 @@ export class CustomerOrderService {
   private getIngredientsSignature(product: any): string {
     const extras = product.addedExtras ? [...product.addedExtras].sort().join('|') : '';
     const removed = product.removedDefaults ? [...product.removedDefaults].sort().join('|') : '';
-    return extras + '###' + removed;
+    const note = product.itemNotes ? product.itemNotes : '';
+
+    return extras + '###' + removed + '###' + note;
   }
 
   // 2. GESTIÓN DEL CARRITO EN MEMORIA
