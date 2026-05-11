@@ -38,16 +38,21 @@
 
               <div class="items-scroller">
                 @for (item of currentOrder()!.items; track item.id) {
-                  <div class="existing-item-row" [class.staff-added]="isStaffAdded(item)">
-                    <div class="item-main">
-                      <span class="qty">{{ item.quantity }}x</span>
-                      <span class="name">{{ item.productName }}</span>
+                    <div class="existing-item-row" [class.staff-added]="isStaffAdded(item)">
+                      <div class="item-main">
+                        <span class="qty">{{ item.quantity }}x</span>
+                        <span class="name">{{ item.productName }}</span>
+
+                        <button class="delete-item-btn" (click)="removeItem(item.id)" title="Eliminar este producto">
+                          🗑️
+                        </button>
+                      </div>
+
+                      @if (item.observations) {
+                        <p class="obs-text">{{ item.observations }}</p>
+                      }
                     </div>
 
-                    @if (item.observations) {
-                      <p class="obs-text">{{ item.observations }}</p>
-                    }
-                  </div>
                 } @empty {
                   <p class="no-items">No items currently registered.</p>
                 }

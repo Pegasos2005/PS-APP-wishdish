@@ -109,7 +109,12 @@ public class OrderService {
     }
 
     public List<OrderResponseDTO> getActiveOrders() {
-        List<Order> orders = orderRepository.findByStatusIn(Collections.singletonList(Order.OrderStatus.in_kitchen));
+        List<Order.OrderStatus> activeStatuses = Arrays.asList(
+                Order.OrderStatus.in_kitchen,
+                Order.OrderStatus.served
+        );
+
+        List<Order> orders = orderRepository.findByStatusIn(activeStatuses);
 
         return orders.stream()
                 .map(OrderResponseDTO::new)
@@ -308,7 +313,21 @@ public class OrderService {
             order.getItems().add(item);
         }
 
+        if (order.getStatus() == Order.OrderStatus.served) {
+            order.setStatus(Order.OrderStatus.in_kitchen);
+            orderRepository.save(order);
+        }
+
         // Devolvemos la lista de comandas activas de esa mesa actualizada
         return getActiveOrdersByTable(order.getDiningTable().getTableNumber());
+    }
+
+    @Transactional
+    public void removeOrderItem(Integer itemId) {
+        OrderItem item = orderItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Error: El ítem " + itemId + " no existe."));
+
+        // Lo borramos físicamente de la base de datos
+        orderItemRepository.delete(item);
     }
 }

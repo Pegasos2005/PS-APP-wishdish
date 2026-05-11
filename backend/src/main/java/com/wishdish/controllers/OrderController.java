@@ -64,11 +64,13 @@ public class OrderController {
             List<OrderResponseDTO> updatedTableOrders = orderService.addManualItemToOrder(orderId, request);
             return ResponseEntity.ok(updatedTableOrders);
         } catch (RuntimeException e) {
-            // Si es el error de "producto no disponible", devolvemos un 400 con el mensaje
-            if (e.getMessage().contains("no está disponible actualmente")) {
-                return ResponseEntity.badRequest().body(e.getMessage());
-            }
-            throw e;
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @DeleteMapping("/items/{itemId}")
+    public ResponseEntity<Void> removeOrderItem(@PathVariable Integer itemId) {
+        orderService.removeOrderItem(itemId);
+        return ResponseEntity.noContent().build();
     }
 }

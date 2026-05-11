@@ -97,10 +97,45 @@ export class EditComandComponent implements OnInit {
   }
 
   addManualItem() {
-    console.log('Preparado para enviar en Commit 4:', {
-      productId: this.selectedProduct()?.id,
+    const prod = this.selectedProduct();
+    if (!prod || !this.orderId()) return;
+
+    // Preparamos el paquete de datos para Java
+    const payload = {
+      productId: prod.id,
       quantity: this.quantity(),
-      observations: this.observations()
+      observations: this.observations().trim()
+    };
+
+    console.log('Sending manual addition:', payload);
+
+    this.http.post<ComandaResponseDTO[]>(
+      `${environment.apiUrl}orders/${this.orderId()}/items`,
+      payload
+    ).subscribe({
+      next: (updatedOrders) => {
+        // Buscamos nuestra comanda en la lista actualizada que devuelve el servidor
+        const found = updatedOrders.find(o => o.id === this.orderId()) || null;
+        this.currentOrder.set(found);
+
+        // Limpiamos el formulario para permitir añadir otro producto rápido
+        this.selectedProduct.set(null);
+        this.quantity.set(1);
+        this.observations.set('');
+        this.searchTerm.set('');
+
+        alert('¡Producto añadido y enviado a cocina con éxito!');
+      },
+      error: (err) => {
+        console.error('Error en la adición manual:', err);
+
+        // Si el backend devuelve un 400 con el mensaje de disponibilidad
+        if (err.status === 400 && typeof err.error === 'string') {
+          alert(err.error); // Mostrará: "Este producto no está disponible actualmente"
+        } else {
+          alert('Hubo un error al intentar añadir el producto.');
+        }
+      }
     });
   }
 
@@ -111,5 +146,24 @@ export class EditComandComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/admin/edit-comand-select']);
+  }
+
+  removeItem(itemId: number) {
+    if (!confirm('¿Estás seguro de que deseas eliminar este producto de la comanda?')) return;
+
+    this.http.delete(`${environment.apiUrl}orders/items/${itemId}`).subscribe({
+      next: () => {
+        // Actualizamos la vista local eliminando el ítem de la lista
+        if (this.currentOrder()) {
+          const updatedItems = this.currentOrder()!.items.filter(i => i.id !== itemId);
+          this.currentOrder.set({ ...this.currentOrder()!, items: updatedItems });
+        }
+        console.log('Ítem eliminado correctamente');
+      },
+      error: (err) => {
+        console.error('Error al eliminar ítem:', err);
+        alert('No se pudo eliminar el producto.');
+      }
+    });
   }
 }
