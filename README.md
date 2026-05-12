@@ -43,6 +43,15 @@ Si necesitas cambiar estas credenciales, edita `backend/src/main/resources/appli
 
 ### 2. Instalación de Dependencias
 
+**MySQL:**
+```bash
+docker-compose up -d
+docker-compose stop
+docker-compose down
+```
+Ejecutar up para activar MySQL, stop lo para y down lo borra
+(Recomendable usar up y down todo el rato, no se los detalles del porqué)
+
 **Backend:**
 ```bash
 cd backend
@@ -81,7 +90,7 @@ cd backend
 
 ```bash
 cd frontend
-ng serve --host 0.0.0.0
+npm run dev
 ```
 
 **Acceder a:** http://localhost:4200
