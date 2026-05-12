@@ -110,8 +110,7 @@ public class OrderService {
 
     public List<OrderResponseDTO> getActiveOrders() {
         List<Order.OrderStatus> activeStatuses = Arrays.asList(
-                Order.OrderStatus.in_kitchen,
-                Order.OrderStatus.served
+                Order.OrderStatus.in_kitchen
         );
 
         List<Order> orders = orderRepository.findByStatusIn(activeStatuses);
@@ -126,7 +125,12 @@ public class OrderService {
         OrderItem item = orderItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Error: El item " + itemId + " no existe."));
 
-        item.advanceStatus();
+        // Permitir toggle entre 'in_kitchen' y 'prepared'
+        if (item.getStatus() == OrderItem.ItemStatus.prepared) {
+            item.setStatus(OrderItem.ItemStatus.in_kitchen);
+        } else {
+            item.setStatus(OrderItem.ItemStatus.prepared);
+        }
         orderItemRepository.save(item);
 
         checkAndAdvanceOrder(item.getOrder());
@@ -148,7 +152,7 @@ public class OrderService {
                 .allMatch(item -> item.getStatus() == OrderItem.ItemStatus.prepared);
 
         if (allPrepared && order.getStatus() == Order.OrderStatus.in_kitchen) {
-            order.advanceStatus();
+            order.setStatus(Order.OrderStatus.served);
             orderRepository.save(order);
         }
     }
@@ -311,11 +315,6 @@ public class OrderService {
 
             orderItemRepository.save(item);
             order.getItems().add(item);
-        }
-
-        if (order.getStatus() == Order.OrderStatus.served) {
-            order.setStatus(Order.OrderStatus.in_kitchen);
-            orderRepository.save(order);
         }
 
         // Devolvemos la lista de comandas activas de esa mesa actualizada

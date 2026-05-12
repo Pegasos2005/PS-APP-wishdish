@@ -76,11 +76,30 @@ export class WorkerViewComponent implements OnInit {
 
   toggleItemStatus(order: ComandaResponseDTO, item: ItemComandaDTO) {
     const newStatus = (item.status === 'prepared') ? 'in_kitchen' : 'prepared';
+
+    // Si el usuario está marcando el último plato como preparado, pedimos confirmación
+    if (newStatus === 'prepared') {
+      const willBeComplete = order.items.every(i => i.id === item.id ? true : i.status === 'prepared');
+      if (willBeComplete) {
+        console.log(`[Worker] Solicitando confirmación para finalizar comanda ID: ${order.id}`);
+        if (!window.confirm(`¿Estás seguro de que deseas finalizar la comanda de la mesa ${order.tableNumber}? Todos los platos quedarán marcados como listos.`)) {
+          console.log(`[Worker] Acción cancelada por el usuario`);
+          return;
+        }
+      }
+    }
+
     this.manualStates.set(item.id, newStatus);
     item.status = newStatus;
 
     if (this.isOrderComplete(order)) {
       this.animateAndRemoveOrder(order);
+    } else {
+      // Si el plato vuelve a "en cocina", nos aseguramos de que la comanda no se borre
+      if (order.isExiting) {
+        order.isExiting = false;
+        this.excludedOrderIds.delete(order.id);
+      }
     }
 
     this.kitchenService.avanzarEstadoItem(item.id).subscribe({
@@ -105,7 +124,10 @@ export class WorkerViewComponent implements OnInit {
     this.kitchenService.finalizarComanda(order.id).subscribe();
 
     setTimeout(() => {
-      this.orders.update(current => current.filter(c => c.id !== order.id));
+      // Solo borramos de la señal si el usuario no ha revertido el estado durante la animación
+      if (order.isExiting) {
+        this.orders.update(current => current.filter(c => c.id !== order.id));
+      }
     }, 500);
   }
 
@@ -130,8 +152,13 @@ export class WorkerViewComponent implements OnInit {
   }
 
   toggleOrderComplete(order: ComandaResponseDTO) {
-    this.isBulkUpdating = true;
     if (!this.isOrderComplete(order)) {
+      console.log(`[Worker] Solicitando confirmación masiva para mesa: ${order.tableNumber}`);
+      if (!window.confirm(`¿Marcar todos los platos de la mesa ${order.tableNumber} como preparados?`)) {
+        return;
+      }
+
+      this.isBulkUpdating = true;
       order.items.forEach((item: ItemComandaDTO) => {
         item.status = 'prepared';
         this.manualStates.set(item.id, 'prepared');
