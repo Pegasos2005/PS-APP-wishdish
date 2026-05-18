@@ -60,14 +60,7 @@
     <div class="modal-overlay">
       <div class="modal-card">
         <h2 class="modal-title">Staff Login</h2>
-
-        <select #workerName class="table-input" [class.error-shake]="authError()" style="margin-bottom: 10px;" autofocus>
-          <option value="" disabled selected>Select your name...</option>
-          @for (worker of activeWorkers(); track worker.id) {
-            <option [value]="worker.name">{{ worker.name }} ({{ worker.role }})</option>
-          }
-        </select>
-
+        <input #workerName type="text" class="table-input" [class.error-shake]="authError()" placeholder="Username" style="margin-bottom: 10px;" autofocus>
         <input #workerPin type="password" class="table-input" [class.error-shake]="authError()" placeholder="Password" (keyup.enter)="confirmWorkerLogin(workerName.value, workerPin.value)">
 
         @if (authError()) { <p class="error-text">{{ errorMessage() }}</p> }

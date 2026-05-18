@@ -35,11 +35,11 @@ export class DashboardComponent {
     { id: 4, title: 'Manage Devices', icon: '📱', action: 'manage-devices' },
     { id: 5, title: 'Close Cash Register', icon: '💶', action: 'close-cash' },
     { id: 6, title: 'Close Table', icon: '🔒', action: 'close-table' },
-    { id: 7, title: 'Staff Management', icon: '👥', action: 'staff' },
+    { id: 7, title: 'Stats & Analytics', icon: '📊', action: 'stats' },
     { id: 8, title: 'Inventory', icon: '📦', action: 'inventory' },
     { id: 9, title: 'Settings', icon: '⚙️', action: 'settings' },
     // Página 2
-    { id: 10, title: 'Stats & Analytics', icon: '📊', action: 'stats' },
+    { id: 10, title: 'Staff Management', icon: '👥', action: 'staff' },
     { id: 11, title: 'Providers', icon: '🚚', action: 'providers' },
     { id: 12, title: 'Discount Codes', icon: '🎟️', action: 'discounts' },
     { id: 13, title: 'QR Generator', icon: '🔳', action: 'qr-gen' },
