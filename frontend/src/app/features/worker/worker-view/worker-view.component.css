@@ -37,8 +37,12 @@
   width: 100%;
   max-width: 900px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   background: white;
+  /* Estados iniciales explícitos para asegurar la animación */
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  will-change: transform, opacity;
 }
 
 .sub-header {
@@ -132,8 +136,9 @@
 
 .comanda-amago-salida {
   opacity: 0 !important;
-  transform: scale(0.9) translateY(-20px);
+  transform: translateY(-20px) scale(0.95) !important;
   pointer-events: none;
+  filter: blur(4px);
 }
 
 .item-modifications {
