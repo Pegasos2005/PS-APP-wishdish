@@ -1,9 +1,10 @@
 // src/app/features/public/join-as/join-as.component.ts
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CustomerOrderService } from '../../../core/services/customer-order.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { WorkerItem, WorkerService } from '../../../core/services/worker.service';
 
 @Component({
   selector: 'app-join-as',
@@ -12,10 +13,11 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './join-as.component.html',
   styleUrls: ['./join-as.component.css']
 })
-export class JoinAsComponent {
+export class JoinAsComponent implements OnInit{
   private router = inject(Router);
   private orderService = inject(CustomerOrderService);
   private authService = inject(AuthService);
+  private workerService = inject(WorkerService);
 
   // Estados de los modales
   isTableModalOpen = signal<boolean>(false);
@@ -25,6 +27,15 @@ export class JoinAsComponent {
   tableError = signal<boolean>(false);
   authError = signal<boolean>(false);
   errorMessage = signal<string>('');
+
+  activeWorkers = signal<WorkerItem[]>([]);
+
+  ngOnInit() {
+    this.workerService.getWorkers().subscribe({
+      next: (data) => this.activeWorkers.set(data),
+      error: (err) => console.error("Error cargando trabajadores:", err)
+    });
+  }
 
   // --- BOTONES PRINCIPALES ---
   joinAsAdmin(): void { this.isAdminModalOpen.set(true); }
@@ -64,12 +75,21 @@ export class JoinAsComponent {
     this.authService.login(username, pin).subscribe({
       next: (res) => {
         this.closeAllModals();
-        // Si el login es correcto, el backend ya habrá comprobado que existe[cite: 43]
-        this.router.navigate(['/worker']);
+
+        // Pasamos el rol a mayúsculas para evitar problemas si se guardó como 'Admin' o 'Administrador'
+        const userRole = res.role ? res.role.toUpperCase() : '';
+
+        if (userRole === 'ADMIN' || userRole === 'ADMINISTRADOR') {
+          // Es un encargado, lo mandamos al panel de control EXACTAMENTE igual que el Super Admin
+          this.router.navigate(['/admin']);
+        } else {
+          // Es un Camarero o Cocinero, lo mandamos a la pantalla operativa
+          this.router.navigate(['/worker']);
+        }
       },
       error: () => {
         this.authError.set(true);
-        this.errorMessage.set('Incorrect username or password.');
+        this.errorMessage.set('Incorrect PIN.');
       }
     });
   }

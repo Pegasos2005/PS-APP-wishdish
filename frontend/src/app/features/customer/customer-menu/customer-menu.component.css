@@ -76,7 +76,7 @@
   position: fixed;
   bottom: 25px;       /* Separación del borde inferior */
   left: 25px;         /* Separación del borde izquierdo */
-  z-index: 9999;      /* Por encima de cualquier otro elemento (menú, cards, etc.) */
+  /*z-index: 9999;*/      /* Por encima de cualquier otro elemento (menú, cards, etc.) */
 
   /* 2. Estilo visual (Tu diseño original mejorado) */
   padding: 15px 80px;
