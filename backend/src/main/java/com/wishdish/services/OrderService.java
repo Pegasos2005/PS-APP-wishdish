@@ -110,8 +110,7 @@ public class OrderService {
 
     public List<OrderResponseDTO> getActiveOrders() {
         List<Order.OrderStatus> activeStatuses = Arrays.asList(
-                Order.OrderStatus.in_kitchen,
-                Order.OrderStatus.served
+                Order.OrderStatus.in_kitchen // Solo enviamos las que están pendientes en cocina
         );
 
         List<Order> orders = orderRepository.findByStatusIn(activeStatuses);
@@ -122,14 +121,26 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderItem advanceItemStatus(Integer itemId) {
+    public OrderItem updateItemStatus(Integer itemId, String statusName) {
         OrderItem item = orderItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Error: El item " + itemId + " no existe."));
 
-        item.advanceStatus();
+        // Cambiamos al estado específico (prepared o in_kitchen)
+        item.setStatus(OrderItem.ItemStatus.valueOf(statusName));
         orderItemRepository.save(item);
 
-        checkAndAdvanceOrder(item.getOrder());
+        // Sincronizar el estado de la comanda global:
+        // Si todos están preparados -> served. Si hay alguno pendiente -> in_kitchen.
+        Order order = item.getOrder();
+        boolean allPrepared = order.getItems().stream()
+                .allMatch(i -> i.getStatus() == OrderItem.ItemStatus.prepared);
+
+        if (allPrepared) {
+            order.setStatus(Order.OrderStatus.served);
+        } else if (order.getStatus() == Order.OrderStatus.served) {
+            order.setStatus(Order.OrderStatus.in_kitchen);
+        }
+        orderRepository.save(order);
 
         return item;
     }

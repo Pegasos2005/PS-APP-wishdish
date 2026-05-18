@@ -16,9 +16,9 @@ export class KitchenOrdersSystemService {
     return this.http.get<any[]>(`${this.apiUrl}/active`);
   }
 
-  // Avisa de que una hamburguesa en concreto ya está hecha
-  avanzarEstadoItem(itemId: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/items/${itemId}/advance`, {});
+  // Actualiza el estado de un item específico enviando el nuevo estado al backend
+  avanzarEstadoItem(itemId: number, status: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/items/${itemId}/status?status=${status}`, {});
   }
 
   // Avisa de que toda la mesa ya tiene su comida lista

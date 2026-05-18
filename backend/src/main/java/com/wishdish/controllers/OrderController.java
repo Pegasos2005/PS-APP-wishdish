@@ -36,12 +36,12 @@ public class OrderController {
         return ResponseEntity.ok(new OrderResponseDTO(newOrder));
     }
 
-    // El cocinero avanza el estado del plato
-    @PutMapping("/items/{itemId}/advance")
-    public ResponseEntity<OrderItemDTO> advanceItemStatus(@PathVariable Integer itemId) {
-        OrderItem advancedItem = orderService.advanceItemStatus(itemId);
+    // El cocinero actualiza el estado del plato (preparado o en cocina)
+    @PutMapping("/items/{itemId}/status")
+    public ResponseEntity<OrderItemDTO> updateItemStatus(@PathVariable Integer itemId, @RequestParam String status) {
+        OrderItem updatedItem = orderService.updateItemStatus(itemId, status);
         // Transformamos la entidad pura a DTO antes de enviarla
-        return ResponseEntity.ok(new OrderItemDTO(advancedItem));
+        return ResponseEntity.ok(new OrderItemDTO(updatedItem));
     }
 
 
