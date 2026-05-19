@@ -21,6 +21,9 @@ public class User {
     @Column(name = "pin_hash", nullable = false)
     private String pinHash;
 
+    @Column(nullable = false)
+    private Boolean active = true;
+
     // Los 3 roles exactos que me pediste
     public enum Role {
         ADMIN,
