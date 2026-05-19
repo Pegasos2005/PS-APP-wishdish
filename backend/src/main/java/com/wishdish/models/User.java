@@ -21,6 +21,9 @@ public class User {
     @Column(name = "pin_hash", nullable = false)
     private String pinHash;
 
+    @Column(nullable = false)
+    private Boolean active = true;
+
     // Los 3 roles exactos que me pediste
     public enum Role {
         ADMIN,
@@ -42,6 +45,9 @@ public class User {
 
     public String getPinHash() { return pinHash; }
     public void setPinHash(String pinHash) { this.pinHash = pinHash; }
+
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 
     @Override
     public String toString() {

@@ -11,13 +11,13 @@ import { WorkerItem, WorkerService } from '../../../core/services/worker.service
   standalone: true,
   imports: [CommonModule],
   templateUrl: './join-as.component.html',
-  styleUrls: ['./join-as.component.css']
+  styleUrls: ['./join-as.component.css'],
 })
-export class JoinAsComponent implements OnInit{
+export class JoinAsComponent {
+
   private router = inject(Router);
   private orderService = inject(CustomerOrderService);
   private authService = inject(AuthService);
-  private workerService = inject(WorkerService);
 
   // Estados de los modales
   isTableModalOpen = signal<boolean>(false);
@@ -28,19 +28,16 @@ export class JoinAsComponent implements OnInit{
   authError = signal<boolean>(false);
   errorMessage = signal<string>('');
 
-  activeWorkers = signal<WorkerItem[]>([]);
-
-  ngOnInit() {
-    this.workerService.getWorkers().subscribe({
-      next: (data) => this.activeWorkers.set(data),
-      error: (err) => console.error("Error cargando trabajadores:", err)
-    });
-  }
-
   // --- BOTONES PRINCIPALES ---
-  joinAsAdmin(): void { this.isAdminModalOpen.set(true); }
-  joinAsWorker(): void { this.isWorkerModalOpen.set(true); }
-  joinAsUser(): void { this.isTableModalOpen.set(true); }
+  joinAsAdmin(): void {
+    this.isAdminModalOpen.set(true);
+  }
+  joinAsWorker(): void {
+    this.isWorkerModalOpen.set(true);
+  }
+  joinAsUser(): void {
+    this.isTableModalOpen.set(true);
+  }
 
   closeAllModals(): void {
     this.isTableModalOpen.set(false);
@@ -60,13 +57,13 @@ export class JoinAsComponent implements OnInit{
       error: () => {
         this.authError.set(true);
         this.errorMessage.set('Incorrect password.');
-      }
+      },
     });
   }
 
   // --- LOGIN WORKER ---
   confirmWorkerLogin(username: string, pin: string): void {
-    if(!username || !pin) {
+    if (!username || !pin) {
       this.authError.set(true);
       this.errorMessage.set('Please fill both fields.');
       return;
@@ -75,22 +72,12 @@ export class JoinAsComponent implements OnInit{
     this.authService.login(username, pin).subscribe({
       next: (res) => {
         this.closeAllModals();
-
-        // Pasamos el rol a mayúsculas para evitar problemas si se guardó como 'Admin' o 'Administrador'
-        const userRole = res.role ? res.role.toUpperCase() : '';
-
-        if (userRole === 'ADMIN' || userRole === 'ADMINISTRADOR') {
-          // Es un encargado, lo mandamos al panel de control EXACTAMENTE igual que el Super Admin
-          this.router.navigate(['/admin']);
-        } else {
-          // Es un Camarero o Cocinero, lo mandamos a la pantalla operativa
-          this.router.navigate(['/worker']);
-        }
+        this.router.navigate(['/worker']);
       },
       error: () => {
         this.authError.set(true);
         this.errorMessage.set('Incorrect PIN.');
-      }
+      },
     });
   }
 
@@ -115,13 +102,13 @@ export class JoinAsComponent implements OnInit{
         error: () => {
           // Error de conexión
           this.tableError.set(true);
-          this.errorMessage.set("Server error. Please check your connection.");
-        }
+          this.errorMessage.set('Server error. Please check your connection.');
+        },
       });
     } else {
       // 4. El usuario ha escrito letras o números negativos
       this.tableError.set(true);
-      this.errorMessage.set("Please enter a valid table number.");
+      this.errorMessage.set('Please enter a valid table number.');
     }
   }
 }
