@@ -33,6 +33,11 @@ public class CategoryController {
         return categoryService.createCategory(category);
     }
 
+    @PutMapping("/{id}")
+    public Category updateCategory(@PathVariable Integer id, @RequestBody Category category) {
+        return categoryService.updateCategory(id, category);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);

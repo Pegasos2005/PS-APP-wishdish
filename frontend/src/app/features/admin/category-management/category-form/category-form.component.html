@@ -1,0 +1,33 @@
+<div class="principal-container">
+  <header class="head">
+    <button class="return-button" (click)="goBack()">&lt;</button>
+    <img src="assets/logo.png" alt="logo">
+  </header>
+
+  <div class="body-admin">
+    <div class="sub-header">Admin - {{ isEditMode ? 'Edit' : 'New' }} Category</div>
+
+    <main class="content-area">
+      <section class="comanda-card form-container">
+        <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label>Category Name</label>
+            <input type="text" formControlName="name" placeholder="e.g. Burgers, Drinks..." class="search-field">
+          </div>
+
+          <div class="form-group">
+            <label>Description (Optional)</label>
+            <textarea formControlName="description" placeholder="Short description..." class="search-field" rows="4"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="add-btn" [disabled]="categoryForm.invalid">
+              {{ isEditMode ? 'Save Changes' : 'Create Category' }}
+            </button>
+            <button type="button" class="btn-modify" (click)="goBack()">Cancel</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+</div>

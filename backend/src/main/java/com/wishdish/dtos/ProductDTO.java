@@ -1,6 +1,7 @@
 package com.wishdish.dtos;
 
 import com.wishdish.models.Product;
+import com.wishdish.models.Category;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public class ProductDTO {
     private BigDecimal price;
     private String picture;
     private List<IngredientDTO> ingredients;
+    private Category category;
 
     public ProductDTO() {
     }
@@ -24,6 +26,7 @@ public class ProductDTO {
         this.description = product.getDescription();
         this.price = product.getPrice();
         this.picture = product.getPicture();
+        this.category = product.getCategory();
 
         // SEGURIDAD: Comprobamos si la lista existe antes de iterar
         if (product.getProductIngredients() != null) {
@@ -53,4 +56,6 @@ public class ProductDTO {
     public void setPicture(String picture) { this.picture = picture; }
     public List<IngredientDTO> getIngredients() { return ingredients; }
     public void setIngredients(List<IngredientDTO> ingredients) { this.ingredients = ingredients; }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
 }

@@ -1,0 +1,117 @@
+.principal-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f5f6f9 0%, #eef0f5 100%);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  padding: 10px 40px;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  justify-content: space-between;
+}
+
+.head img { height: 50px; }
+
+.return-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #333;
+}
+
+.body-admin {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sub-header {
+  padding: 20px 40px;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.content-area {
+  flex: 1;
+  padding: 0 40px 40px 40px;
+  overflow-y: auto;
+}
+
+.grid-comandas {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+}
+
+.comanda-card {
+  border: none;
+  border-radius: 20px;
+  padding: 20px;
+  width: 100%;
+  max-width: 900px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  transition: transform 0.2s;
+}
+
+.comanda-card.selected {
+  border: 2px solid #ff3b30;
+}
+
+.form-container {
+  margin-bottom: 30px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.column-title {
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.admin-toolbar {
+  display: flex;
+  gap: 15px;
+  max-width: 900px;
+  margin: 0 auto 20px;
+  width: 100%;
+}
+
+.search-field {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 15px;
+  border: 1px solid #e0e0e0;
+  outline: none;
+  font-family: inherit;
+}
+
+.product-row { display: flex; justify-content: space-between; align-items: center; }
+.product-controls { display: flex; align-items: center; gap: 20px; }
+.actions { display: flex; gap: 10px; }
+
+.add-btn { background: #28a745; color: white; border: none; padding: 10px 25px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+.btn-modify { background: #f0f2f5; color: #666; border: none; padding: 8px 16px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+.btn-modify:hover { background: #ffeb3b; color: black; }
+.btn-delete { background: #f0f2f5; color: #666; border: none; padding: 8px 16px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+.btn-delete:hover { background: #e31b23; color: white; }

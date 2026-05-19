@@ -60,6 +60,21 @@ export const ADMIN_ROUTES: Routes = [
          path: 'product-management/ingredient-picker/:id',
          loadComponent: () => import('./product-management/ingredient-picker/ingredient-picker.component').then(c => c.IngredientPickerComponent)
        }
+
+      // --- CATEGORY MANAGEMENT ---
+      ,
+      {
+        path: 'category-management',
+        loadComponent: () => import('./category-management/category-list.component').then(c => c.CategoryManagementComponent)
+      },
+      {
+        path: 'category-management/new',
+        loadComponent: () => import('./category-management/category-form/category-form.component').then(c => c.CategoryFormComponent)
+      },
+      {
+        path: 'category-management/edit/:id',
+        loadComponent: () => import('./category-management/category-form/category-form.component').then(c => c.CategoryFormComponent)
+      }
     ]
   }
 ];
