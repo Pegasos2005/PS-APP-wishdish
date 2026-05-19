@@ -1,0 +1,49 @@
+<div class="payment-page">
+
+  <header class="payment-header">
+    <button class="return-button" (click)="cancel()" aria-label="Go back" [disabled]="submitting() || success()">&lt;</button>
+    <h2 class="payment-title">PAGO CON TARJETA</h2>
+    <div style="width: 40px;"></div>
+  </header>
+
+  <main class="payment-card">
+
+    @if (loading()) {
+      <p class="info-text">Preparando el pago…</p>
+    }
+
+    @if (!loading() && !success()) {
+      <div class="amount-section">
+        <span class="amount-label">Total a pagar</span>
+        <span class="amount-value">{{ amountEuros() | number:'1.2-2' }} €</span>
+      </div>
+
+      <div id="payment-element" class="stripe-element"></div>
+
+      @if (errorMessage()) {
+        <p class="error-text">{{ errorMessage() }}</p>
+      }
+
+      <button
+        class="pay-btn"
+        (click)="pay()"
+        [disabled]="submitting()">
+        {{ submitting() ? 'Procesando…' : 'Pagar ' + (amountEuros() | number:'1.2-2') + ' €' }}
+      </button>
+
+      <p class="hint-text">
+        Tarjeta de prueba: <strong>4242 4242 4242 4242</strong> · cualquier CVC · fecha futura.
+      </p>
+    }
+
+    @if (success()) {
+      <div class="success-section">
+        <p class="success-icon">✓</p>
+        <p class="success-text">Pago confirmado</p>
+        <p class="info-text">Volviendo al inicio…</p>
+      </div>
+    }
+
+  </main>
+
+</div>

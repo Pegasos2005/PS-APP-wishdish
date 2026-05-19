@@ -84,3 +84,10 @@ build/
 
 ### VS Code ###
 .vscode/
+Stripe.md
+
+# Local-only Spring profile (Stripe keys etc.)
+backend/src/main/resources/application-local.properties
+
+# Documentación interna de pruebas
+Stripe-tests.md
