@@ -14,15 +14,16 @@
         {{ category.categoryName }}
       </button>
       }
+    </aside>
 
+    <div class="order-footer">
       <button class="show-order-btn" routerLink="/customer/show-order">
         Show Order
         @if (orderService.totalItems() > 0) {
         <span class="cart-count">{{ orderService.totalItems() }}</span>
         }
       </button>
-
-    </aside>
+    </div>
 
     <main class="product-column" #productColumn (scroll)="onScroll($event)">
       @for (category of menuCategories(); track category.categoryId) {

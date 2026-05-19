@@ -6,7 +6,7 @@
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  z-index: 10000;
 }
 
 /* Modal */
@@ -20,7 +20,7 @@
   padding: 30px;
   width: 90%;
   max-width: 500px;
-  z-index: 1000;
+  z-index: 10001;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   max-height: 90vh;
   overflow-y: auto;
@@ -208,4 +208,34 @@
 .notes-section textarea:focus {
   border-color: #e31b23;
   outline: none;
+}
+
+/* --- ADAPTACIÓN PARA MÓVIL DEL MODAL --- */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 100%;
+    /* Quitamos el centrado vertical y lo anclamos abajo */
+    top: auto;
+    bottom: 0;
+    transform: translate(-50%, 0);
+
+    /* Cambiamos los bordes para que solo sean redondos arriba */
+    border-radius: 25px 25px 0 0;
+
+    padding: 20px;
+    /* Damos un margen extra por debajo al botón de confirmar para que respire */
+    padding-bottom: 40px;
+
+    /* El alto máximo será el 90% de la pantalla para que siempre se vea un trozo oscuro arriba */
+    max-height: 90vh;
+  }
+
+  /* Reducimos un pelín la imagen en móvil para dejar más espacio al texto y los extras */
+  .product-image {
+    height: 180px;
+  }
+
+  .product-name {
+    font-size: 20px;
+  }
 }

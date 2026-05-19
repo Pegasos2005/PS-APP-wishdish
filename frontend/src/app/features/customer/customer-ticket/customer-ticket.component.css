@@ -43,13 +43,13 @@
 /* --- ESTILOS DEL TICKET TÉRMICO --- */
 .ticket-wrapper {
   flex: 1;
-  display: flex;
-  justify-content: center;
+  display: block;
   padding: 30px 20px;
   overflow-y: auto;
 }
 
 .thermal-receipt {
+  margin: 0 auto;
   background-color: #fdfbf7; /* Color papel térmico */
   color: #111;
   font-family: 'Courier New', Courier, monospace; /* Fuente de ticket */
@@ -171,3 +171,49 @@
 .pay-btn:hover { background-color: #ff8c00; transform: translateY(-2px); }
 .cancel-btn { background-color: #e74c3c; color: white; }
 .cancel-btn:hover { background-color: #c0392b; transform: translateY(-2px); }
+
+/* --- ADAPTACIÓN PARA MÓVIL DEL TICKET --- */
+@media (max-width: 768px) {
+
+  /* Reducimos el padding de la cabecera y el tamaño del texto para que no estorbe */
+  .ticket-dark-header {
+    padding: 10px 15px;
+  }
+
+  .notify-message {
+    font-size: 0.95rem;
+  }
+
+  /* Reducimos los márgenes exteriores para que el ticket ocupe más ancho de pantalla */
+  .ticket-wrapper {
+    padding: 15px 10px;
+  }
+
+  /* Ajustamos el interior del ticket térmico */
+  .thermal-receipt {
+    padding: 15px 10px;
+    font-size: 0.8rem; /* Reducimos ligeramente la fuente para que las columnas respiren */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+  }
+
+  /* Hacemos las columnas de UDS, PVP e IMPORTE un poco más estrechas
+     para regalarle espacio al texto de la DESCRIPCIÓN */
+  .receipt-grid {
+    grid-template-columns: 2em 1fr 3em 4.5em;
+    gap: 3px;
+  }
+
+  /* Los totales ocuparán un poco más del ancho en móvil para que no se partan las líneas */
+  .total-line {
+    width: 90%;
+  }
+
+  /* Hacemos que el botón inferior ocupe todo el ancho disponible para facilitar el tap */
+  .actions-container {
+    padding: 15px;
+  }
+
+  .corner-btn {
+    max-width: 100%;
+  }
+}
