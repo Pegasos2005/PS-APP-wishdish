@@ -44,30 +44,37 @@ export class ProductFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadCategories();
-
     const id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!(id && id !== 'null');
     this.productId = this.isEditMode ? Number(id) : null;
 
-    // 1. PRIORIDAD: Si hay un borrador en el servicio (volvimos del picker), lo usamos
-    if (this.selectionService.getDraft()) {
-      this.productForm.patchValue(this.selectionService.getDraft());
-      this.populateIngredients(this.selectionService.getSelection());
-    } 
-    // 2. Si es modo edición y NO hay borrador, cargamos de la DB
-    else if (this.isEditMode && this.productId) {
-      this.loadProduct(this.productId);
-    }
+    // Load categories first, then proceed based on edit mode or draft
+    this.loadCategoriesAndProduct();
   }
 
-  loadCategories() {
+  /**
+   * Loads categories and then, based on the component's state (edit mode or draft),
+   * either loads product data from the DB or applies a draft.
+   */
+  loadCategoriesAndProduct() {
     this.categoryService.getCategories().subscribe({
-      next: (data) => this.categories = data,
+      next: (data) => {
+        this.categories = data;
+
+        // Now that categories are loaded, apply product data
+        if (this.selectionService.getDraft()) {
+          // If there's a draft (returned from picker), use it
+          this.productForm.patchValue(this.selectionService.getDraft());
+          this.populateIngredients(this.selectionService.getSelection());
+        } else if (this.isEditMode && this.productId) {
+          // If in edit mode and no draft, load from DB
+          this.loadProduct(this.productId);
+        }
+      },
       error: (err) => console.error('Error cargando categorías:', err)
     });
   }
-
+  
   loadProduct(id: number) {
     this.productService.getProductById(id).subscribe({
       next: (product) => {
@@ -75,7 +82,7 @@ export class ProductFormComponent implements OnInit {
           name: product.name,
           description: product.description,
           price: product.price,
-          categoryId: product.category?.id,
+          categoryId: product.category ? Number(product.category.id || product.category) : null,
           picture: product.picture
         });
 
@@ -129,17 +136,18 @@ export class ProductFormComponent implements OnInit {
 
     // --- TRANSFORMACIÓN DE DATOS PARA EL BACKEND ---
     // Esto convierte el array plano del formulario en el objeto {ingredient: {id: X}} que JPA espera
-    const rawValue = this.productForm.value;
+    const { categoryId, productIngredients, ...productData } = this.productForm.value;
+
     const formattedIngredients = this.ingredientsArray.value.map((item: any) => ({
         ingredient: { id: item.id }, // <--- EL BACKEND NECESITA ESTA ESTRUCTURA
         isDefault: item.isDefault || false
     }));
 
     // Estructura de categoría para JPA
-    const category = rawValue.categoryId ? { id: rawValue.categoryId } : null;
+    const category = categoryId ? { id: Number(categoryId) } : null;
 
     const payload = {
-        ...rawValue,
+        ...productData,
         category: category,
         productIngredients: formattedIngredients
     };

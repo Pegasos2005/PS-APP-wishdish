@@ -15,6 +15,8 @@ export class CrudMenuComponent {
       this.router.navigate(['/admin/product-management/product-list']);
     } else if (type === 'ingredients') {
       this.router.navigate(['/admin/ingredient-management/ingredient-list']);
+    } else if (type === 'categories') {
+      this.router.navigate(['/admin/category-management']);
     }
   }
 
