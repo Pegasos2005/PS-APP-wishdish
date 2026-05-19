@@ -30,7 +30,7 @@ export class StaffManagementComponent implements OnInit{
     // Inicializamos el formulario limpio
     this.workerForm = this.fb.group({
       name: ['', Validators.required],
-      role: ['CAMARERO', Validators.required], // Valor por defecto
+      role: ['WAITER', Validators.required], // Valor por defecto
       pin: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(6)]]
     });
   }
@@ -52,7 +52,7 @@ export class StaffManagementComponent implements OnInit{
 
   addNewWorker() {
     this.editingWorkerId.set(null); // Modo "Crear"
-    this.workerForm.reset({ role: 'CAMARERO' }); // Limpiamos
+    this.workerForm.reset({ role: 'WAITER' }); // Limpiamos
     this.showAddModal.set(true); // Abrimos modal
   }
 

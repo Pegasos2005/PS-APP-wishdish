@@ -8,7 +8,7 @@ export const kitchenGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const role = authService.currentUserRole()?.toUpperCase();
 
-  if (role === 'ADMIN' || role === 'COCINERO' || role === 'CAMARERO') {
+  if (role === 'ADMIN' || role === 'KITCHEN' ) {
     return true;
   }
 

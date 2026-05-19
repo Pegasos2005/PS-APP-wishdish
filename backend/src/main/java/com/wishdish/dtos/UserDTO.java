@@ -1,23 +1,23 @@
 package com.wishdish.dtos;
 
-import com.wishdish.models.Worker;
+import com.wishdish.models.User;
 
-public class WorkerDTO {
+public class UserDTO {
     private Integer id;
     private String name;
     private String role;
     private String pin;
     private Boolean active;
 
-    public WorkerDTO() {
+    public UserDTO() {
     }
 
-    public WorkerDTO(Worker worker) {
-        this.id = worker.getId();
-        this.name = worker.getName();
-        this.role = worker.getRole();
-        this.pin = worker.getPin();
-        this.active = worker.getActive();
+    public UserDTO(User user) {
+        this.id = user.getId();
+        this.name = user.getName();
+        this.role = user.getRole().name();
+        this.pin = "";
+        this.active = user.getActive();
     }
 
     // Getters y Setters

@@ -13,6 +13,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByName(String name);
     Optional<User> findFirstByRole(User.Role role);
 
-    List<User> findAllByRoleNotAndActiveTrue(User.Role role);
+    List<User> findByRoleNotAndActiveTrue(User.Role role);
     Optional<User> findByNameAndActiveTrue(String name);
 }

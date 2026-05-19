@@ -46,6 +46,9 @@ public class User {
     public String getPinHash() { return pinHash; }
     public void setPinHash(String pinHash) { this.pinHash = pinHash; }
 
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
+
     @Override
     public String toString() {
         return "User{" +
