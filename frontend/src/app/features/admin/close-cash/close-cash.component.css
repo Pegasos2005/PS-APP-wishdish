@@ -1,0 +1,87 @@
+/* --- Contenedor Principal --- */
+.principal-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f0f2f5; /* Mismo fondo gris-azulado claro del dashboard */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- LA CABECERA (Estilo luminoso) --- */
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 3rem; /* Ajustado al padding del dashboard */
+  background-color: white; /* Cabecera blanca impecable */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Sombra suave y sutil */
+  z-index: 10;
+}
+
+/* Mantenemos las proporciones para que el logo siga perfectamente centrado */
+.header-left, .header-right {
+  width: 250px;
+}
+
+.header-left {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.header-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+/* Botón de retroceso adaptado al "back-btn" del dashboard */
+.return-button {
+  background: none;
+  border: none;
+  color: #e74c3c; /* El rojo corporativo de salida */
+  font-size: 28px;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0.2rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.return-button:hover {
+  background-color: #fceceb; /* Fondo sutil rojizo al pasar el ratón */
+  transform: translateX(-3px); /* Se mueve un poco hacia atrás */
+}
+
+/* Logo central */
+.header-logo {
+  height: 40px;
+  object-fit: contain;
+  /* Descomenta esta línea si tu logo es blanco y no se ve sobre el fondo blanco */
+  /* filter: invert(1); */
+}
+
+/* Fecha a la derecha */
+.header-date {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50; /* El azul oscuro elegante del título del dashboard */
+  letter-spacing: 0.3px;
+}
+
+/* --- Cuerpo del contenido --- */
+.cash-content {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

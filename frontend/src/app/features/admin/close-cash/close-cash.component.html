@@ -1,1 +1,22 @@
-<p>close-cash works!</p>
+<div class="principal-container">
+
+  <header class="admin-header">
+
+    <div class="header-left">
+      <button class="return-button" (click)="goBack()" aria-label="Go back">&lt;</button>
+    </div>
+
+    <div class="header-center">
+      <img src="assets/logo.png" alt="WishDish Logo" class="header-logo">
+    </div>
+
+    <div class="header-right">
+      <span class="header-date">{{ currentDateFormatted() }}</span>
+    </div>
+
+  </header>
+
+  <main class="cash-content">
+  </main>
+
+</div>
