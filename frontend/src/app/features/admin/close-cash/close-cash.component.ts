@@ -48,33 +48,43 @@ export class CloseCashComponent implements OnInit {
   }
 
   // Calcula la altura de cada barra y los textos laterales (eje Y)
-  calculateChartPercentages() {
-    const data = this.hourlyData();
-    if (data.length === 0) return;
+  // Calcula la altura de cada barra y los textos laterales (eje Y)
+    calculateChartPercentages() {
+      const data = this.hourlyData();
+      if (data.length === 0) return;
 
-    // Buscamos cuál es la hora en la que más se vendió
-    const maxAmount = Math.max(...data.map(d => d.amount));
+      // Buscamos cuál es la hora en la que más se vendió
+      const maxAmount = Math.max(...data.map(d => d.amount));
 
-    // Si no han vendido nada, el tope de la gráfica será 100€
-    const chartTopLimit = maxAmount > 0 ? (Math.ceil(maxAmount / 500) * 500) : 100;
+      // Matemática dinámica para adaptar la escala al máximo real
+      let chartTopLimit = 10; // Mínimo absoluto si no hay apenas ventas
+      if (maxAmount > 0) {
+        // Calculamos el orden de magnitud (unidades, decenas, cientos...)
+        const digits = Math.floor(Math.log10(maxAmount));
+        const factor = Math.pow(10, digits - 1 >= 0 ? digits - 1 : 0);
 
-    // Generar etiquetas dinámicas para el Eje Y
-    this.yAxisLabels.set([
-      chartTopLimit,
-      chartTopLimit * 0.75,
-      chartTopLimit * 0.5,
-      chartTopLimit * 0.25,
-      0
-    ]);
+        // Creamos escalones exactos dividiendo entre las 4 franjas que tenemos
+        const step = Math.ceil(maxAmount / 4 / factor) * factor;
+        chartTopLimit = step * 4;
+      }
 
-    // Calcular qué % de altura ocupa cada barrita
-    const updatedData = data.map(d => ({
-      ...d,
-      percentage: chartTopLimit > 0 ? (d.amount / chartTopLimit) * 100 : 0
-    }));
+      // Generar etiquetas dinámicas para el Eje Y
+      this.yAxisLabels.set([
+        chartTopLimit,
+        chartTopLimit * 0.75,
+        chartTopLimit * 0.5,
+        chartTopLimit * 0.25,
+        0
+      ]);
 
-    this.hourlyData.set(updatedData);
-  }
+      // Calcular qué % de altura ocupa cada barrita según el nuevo techo
+      const updatedData = data.map(d => ({
+        ...d,
+        percentage: chartTopLimit > 0 ? (d.amount / chartTopLimit) * 100 : 0
+      }));
+
+      this.hourlyData.set(updatedData);
+    }
 
   // Genera la fecha actual con el formato correcto
   generateFormattedDate() {

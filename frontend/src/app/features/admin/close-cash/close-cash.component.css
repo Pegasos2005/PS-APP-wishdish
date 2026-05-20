@@ -93,7 +93,7 @@
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.05);
   width: 100%;
-  max-width: 600px;
+  max-width: 900px; /* <--- AUMENTADO A 900px para que respiren las 24 barras */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -165,7 +165,8 @@
   position: relative;
   border-left: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
-  margin-bottom: 20px; /* Espacio para las horas (X axis) */
+  margin-bottom: 35px; /* <--- Aumentamos para dejar hueco a los textos rotados */
+  min-width: 500px; /* <--- Fuerza a que no se aplaste más de esto */
 }
 
 /* Líneas horizontales del gráfico */
@@ -216,9 +217,11 @@
 
 .x-label {
   position: absolute;
-  bottom: -25px;
-  font-size: 0.7rem;
+  bottom: -30px; /* <--- Bajamos el texto */
+  font-size: 0.75rem;
   color: #555;
+  transform: rotate(-45deg); /* <--- Truco de diseño: Rota los textos */
+  white-space: nowrap;
 }
 
 /* --- CAJAS DE ESTADÍSTICAS --- */
