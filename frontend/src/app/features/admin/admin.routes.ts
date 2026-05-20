@@ -74,6 +74,10 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'category-management/edit/:id',
         loadComponent: () => import('./category-management/category-form/category-form.component').then(c => c.CategoryFormComponent)
+      },
+      {
+        path: 'close-cash',
+        loadComponent: () => import('./close-cash/close-cash.component').then(c => c.CloseCashComponent)
       }
     ]
   }

@@ -84,6 +84,9 @@ export class DashboardComponent {
       case 'edit-comand':
         this.router.navigate(['/admin/edit-comand-select']);
         break;
+      case 'close-cash':
+        this.router.navigate(['/admin/close-cash']);
+        break;
       default:
         console.log('Acción no implementada todavía:', action);
         break;
