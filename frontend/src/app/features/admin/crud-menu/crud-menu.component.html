@@ -8,6 +8,11 @@
   <main class="main-content">
     <div class="crud-selection-grid">
 
+      <button class="action-card" (click)="navigateTo('categories')">
+        <div class="card-icon">🏷️</div>
+        <span class="card-title">Edit Categories</span>
+      </button>
+
       <button class="action-card" (click)="navigateTo('products')">
         <div class="card-icon">🍔</div>
         <span class="card-title">Edit Products</span>
@@ -16,11 +21,6 @@
       <button class="action-card" (click)="navigateTo('ingredients')">
         <div class="card-icon">🌿</div>
         <span class="card-title">Edit Ingredients</span>
-      </button>
-
-      <button class="action-card" (click)="navigateTo('categories')">
-        <div class="card-icon">🏷️</div>
-        <span class="card-title">Edit Categories</span>
       </button>
 
     </div>
