@@ -99,8 +99,9 @@ export class CustomerOrderService {
     return false;
   }
 
-  checkTableExists(tableNumber: number): Observable<boolean> {
-    return this.http.get<boolean>(`${environment.apiUrl}tables/${tableNumber}/exists`);
+  joinOrCreateTable(tableNumber: number): Observable<void> {
+      // Asegúrate de que 'this.apiUrl' sea la ruta correcta a tu backend (ej. http://localhost:8080/api)
+      return this.http.post<void>(`${environment.apiUrl}tables/${tableNumber}/join`, {});
   }
 
   getTicketByTable(tableId: number): Observable<any[]> {

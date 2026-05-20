@@ -85,28 +85,22 @@ export class JoinAsComponent {
     const num = parseInt(inputValue, 10);
 
     if (!isNaN(num) && num > 0) {
-      // 1. Preguntamos a Spring Boot si la mesa existe
-      this.orderService.checkTableExists(num).subscribe({
-        next: (exists: boolean) => {
-          if (exists) {
-            // 2. ¡La mesa existe! Le dejamos pasar
-            this.tableError.set(false);
-            this.orderService.setTableId(num);
-            this.router.navigate(['/customer/customer-home']);
-          } else {
-            // 3. La mesa NO existe en la base de datos
-            this.tableError.set(true);
-            this.errorMessage.set("The selected table doesn't exist.");
-          }
+      // Llamamos al nuevo endpoint POST del backend
+      this.orderService.joinOrCreateTable(num).subscribe({
+        next: () => {
+          // Si entra por 'next', significa que la mesa se creó o ya existía correctamente
+          this.tableError.set(false);
+          this.orderService.setTableId(num);
+          this.router.navigate(['/customer/customer-home']);
         },
         error: () => {
-          // Error de conexión
+          // Error de conexión o fallo del servidor
           this.tableError.set(true);
           this.errorMessage.set('Server error. Please check your connection.');
         },
       });
     } else {
-      // 4. El usuario ha escrito letras o números negativos
+      // El usuario ha escrito letras o números negativos
       this.tableError.set(true);
       this.errorMessage.set('Please enter a valid table number.');
     }

@@ -1,6 +1,7 @@
 // src/main/java/com/wishdish/controllers/DiningTableController.java
 package com.wishdish.controllers;
 
+import com.wishdish.models.DiningTable;
 import com.wishdish.repositories.DiningTableRepository;
 import com.wishdish.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,21 @@ public class DiningTableController {
     @Autowired
     private OrderService orderService;
 
-    // GET http://localhost:8080/api/tables/5/exists
-    @GetMapping("/{tableNumber}/exists")
-    public ResponseEntity<Boolean> checkTableExists(@PathVariable Integer tableNumber) {
-        // Busca si hay alguna mesa con ese número. isPresent() devuelve true o false.
-        boolean exists = diningTableRepository.findByTableNumber(tableNumber).isPresent();
-        return ResponseEntity.ok(exists);
+    // POST http://localhost:8080/api/tables/5/join
+    @PostMapping("/{tableNumber}/join")
+    public ResponseEntity<Void> joinOrCreateTable(@PathVariable Integer tableNumber) {
+        // Comprobamos si la mesa YA existe
+        boolean exists = diningTableRepository.existsByTableNumber(tableNumber);
+
+        // Si no existe, la creamos y la guardamos
+        if (!exists) {
+            DiningTable newTable = new DiningTable();
+            newTable.setTableNumber(tableNumber);
+            diningTableRepository.save(newTable);
+        }
+
+        // Devolvemos un 200 OK en ambos casos (ya existía o se acaba de crear)
+        return ResponseEntity.ok().build();
     }
 
     // PUT /api/tables/3/request-payment — el cliente pide pagar

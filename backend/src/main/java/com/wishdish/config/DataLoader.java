@@ -40,22 +40,6 @@ public class DataLoader {
                 System.out.println("   ✅ Usuarios ya existen (" + userRepository.count() + " usuarios)");
             }
 
-
-            // ===========================
-            // CREAR MESAS (verificación independiente)
-            // ===========================
-            if (diningTableRepository.count() == 0) {
-                System.out.println("   🪑 Creando mesas...");
-                for (int i = 1; i <= 10; i++) {
-                    DiningTable table = new DiningTable();
-                    table.setTableNumber(i);
-                    diningTableRepository.save(table);
-                }
-                System.out.println("   ✓ 10 mesas creadas");
-            } else {
-                System.out.println("   ✅ Mesas ya existen (" + diningTableRepository.count() + " mesas)");
-            }
-
             // ===========================
             // VERIFICAR PRODUCTOS Y CATEGORÍAS
             // ===========================
