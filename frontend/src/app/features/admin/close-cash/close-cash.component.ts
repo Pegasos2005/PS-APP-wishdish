@@ -49,42 +49,42 @@ export class CloseCashComponent implements OnInit {
 
   // Calcula la altura de cada barra y los textos laterales (eje Y)
   // Calcula la altura de cada barra y los textos laterales (eje Y)
-    calculateChartPercentages() {
-      const data = this.hourlyData();
-      if (data.length === 0) return;
+  calculateChartPercentages() {
+    const data = this.hourlyData();
+    if (data.length === 0) return;
 
-      // Buscamos cuál es la hora en la que más se vendió
-      const maxAmount = Math.max(...data.map(d => d.amount));
+    // Buscamos cuál es la hora en la que más se vendió
+    const maxAmount = Math.max(...data.map(d => d.amount));
 
-      // Matemática dinámica para adaptar la escala al máximo real
-      let chartTopLimit = 10; // Mínimo absoluto si no hay apenas ventas
-      if (maxAmount > 0) {
-        // Calculamos el orden de magnitud (unidades, decenas, cientos...)
-        const digits = Math.floor(Math.log10(maxAmount));
-        const factor = Math.pow(10, digits - 1 >= 0 ? digits - 1 : 0);
+    // Matemática dinámica para adaptar la escala al máximo real
+    let chartTopLimit = 10; // Mínimo absoluto si no hay apenas ventas
+    if (maxAmount > 0) {
+      // Calculamos el orden de magnitud (unidades, decenas, cientos...)
+      const digits = Math.floor(Math.log10(maxAmount));
+      const factor = Math.pow(10, digits - 1 >= 0 ? digits - 1 : 0);
 
-        // Creamos escalones exactos dividiendo entre las 4 franjas que tenemos
-        const step = Math.ceil(maxAmount / 4 / factor) * factor;
-        chartTopLimit = step * 4;
-      }
-
-      // Generar etiquetas dinámicas para el Eje Y
-      this.yAxisLabels.set([
-        chartTopLimit,
-        chartTopLimit * 0.75,
-        chartTopLimit * 0.5,
-        chartTopLimit * 0.25,
-        0
-      ]);
-
-      // Calcular qué % de altura ocupa cada barrita según el nuevo techo
-      const updatedData = data.map(d => ({
-        ...d,
-        percentage: chartTopLimit > 0 ? (d.amount / chartTopLimit) * 100 : 0
-      }));
-
-      this.hourlyData.set(updatedData);
+      // Creamos escalones exactos dividiendo entre las 4 franjas que tenemos
+      const step = Math.ceil(maxAmount / 4 / factor) * factor;
+      chartTopLimit = step * 4;
     }
+
+    // Generar etiquetas dinámicas para el Eje Y
+    this.yAxisLabels.set([
+      chartTopLimit,
+      chartTopLimit * 0.75,
+      chartTopLimit * 0.5,
+      chartTopLimit * 0.25,
+      0
+    ]);
+
+    // Calcular qué % de altura ocupa cada barrita según el nuevo techo
+    const updatedData = data.map(d => ({
+      ...d,
+      percentage: chartTopLimit > 0 ? (d.amount / chartTopLimit) * 100 : 0
+    }));
+
+    this.hourlyData.set(updatedData);
+  }
 
   // Genera la fecha actual con el formato correcto
   generateFormattedDate() {
@@ -106,7 +106,23 @@ export class CloseCashComponent implements OnInit {
   }
 
   // Lógica del botón de Cierre de Caja
+  // Actualiza la función del botón al final de tu archivo CloseCashComponent
   closeCashRegister() {
-    alert("Cerrando caja... (Próximamente conexión al Backend)");
+    this.http.post(`${environment.apiUrl}orders/close-cash`, {}).subscribe({
+      next: () => {
+        // Caso de éxito: No había mesas abiertas
+        alert("¡Cash register closed successfully! The day has been archived.");
+        this.router.navigate(['/admin/dashboard']);
+      },
+      error: (err) => {
+        // Caso de error: Spring Boot nos ha rechazado la petición
+        if (err.status === 400 && err.error?.error === 'there are open tables') {
+          // Lanzamos el mensaje exacto que me pediste en el aviso de error
+          alert("Cannot close cash register: there are open tables.");
+        } else {
+          alert("An unexpected error occurred while trying to close the cash register.");
+        }
+      }
+    });
   }
 }

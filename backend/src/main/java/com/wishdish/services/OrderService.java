@@ -31,6 +31,17 @@ public class OrderService {
     @Autowired
     private IngredientRepository ingredientRepository;
 
+    public boolean hasActiveTables() {
+        // Buscamos si hay órdenes cocinándose (in_kitchen) o entregadas pero sin pagar (served)
+        List<Order.OrderStatus> activeStatuses = Arrays.asList(Order.OrderStatus.in_kitchen, Order.OrderStatus.served);
+
+        // Usamos el repositorio para ver si cuenta alguna comanda en estos estados
+        List<Order> activeOrders = orderRepository.findByStatusIn(activeStatuses);
+
+        // Si la lista no está vacía, significa que hay mesas abiertas
+        return !activeOrders.isEmpty();
+    }
+
     @Transactional(readOnly = true)
     public DailyReportDTO getDailyReport() {
         // 1. Calculamos la barrera de tiempo: Hace exactamente 24 horas

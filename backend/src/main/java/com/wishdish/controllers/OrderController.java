@@ -79,4 +79,20 @@ public class OrderController {
     public ResponseEntity<com.wishdish.dtos.DailyReportDTO> getDailyReport() {
         return ResponseEntity.ok(orderService.getDailyReport());
     }
+
+    // ENDPOINT: Realizar el cierre de caja definitivo
+    @PostMapping("/close-cash")
+    public ResponseEntity<?> executeCloseCash() {
+        // 1. Validamos la regla de negocio: ¿Hay mesas abiertas?
+        if (orderService.hasActiveTables()) {
+            // Si hay mesas, devolvemos un mapa con el error en formato JSON para Angular
+            java.util.Map<String, String> errorResponse = new java.util.HashMap<>();
+            errorResponse.put("error", "there are open tables");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+
+        // 2. Si todo está limpio (cero mesas abiertas), procedemos a cerrar
+        // Aquí iría tu lógica en el futuro para archivar el día, por ahora devolvemos OK
+        return ResponseEntity.ok().build();
+    }
 }
