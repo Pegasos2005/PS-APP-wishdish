@@ -17,6 +17,58 @@
   </header>
 
   <main class="cash-content">
+
+    <div class="report-card">
+      <h2 class="report-title">DAILY CLOSE CASH REGISTER REPORT</h2>
+      <p class="generated-time">Generated: {{ currentTime() }}</p>
+
+      <div class="green-overview">
+        <h3 class="overview-title">DAILY SALES OVERVIEW</h3>
+        <h1 class="total-amount">€{{ totalSales() | number:'1.2-2' }}</h1>
+
+        <div class="chart-wrapper">
+
+          <div class="y-axis">
+            @for (label of yAxisLabels(); track label) {
+            <span>€{{ label | number }}</span>
+            }
+          </div>
+
+          <div class="bars-area">
+            <div class="grid-lines">
+              <div></div><div></div><div></div><div></div><div></div>
+            </div>
+
+            <div class="bars-container">
+              @for (data of hourlyData(); track data.hour) {
+              <div class="bar-group">
+                <div class="bar" [style.height.%]="data.percentage" [title]="'€' + data.amount"></div>
+                <span class="x-label">{{ data.hour }}</span>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box trans-box">
+          <span class="stat-label">Total Transactions:</span>
+          <span class="stat-value">{{ totalTransactions() }}</span>
+        </div>
+
+        <div class="stat-box avg-box">
+          <span class="stat-label">Average per Order:</span>
+          <span class="stat-value">€{{ averageOrder() | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <button class="close-btn" (click)="closeCashRegister()">CLOSE CASH REGISTER</button>
+      <p class="warning-text">This action cannot be undone. Ensure all data is correct.</p>
+
+    </div>
+
   </main>
+
 
 </div>

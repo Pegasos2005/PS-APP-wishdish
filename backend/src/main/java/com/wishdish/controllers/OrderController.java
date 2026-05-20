@@ -73,4 +73,10 @@ public class OrderController {
         orderService.removeOrderItem(itemId);
         return ResponseEntity.noContent().build();
     }
+
+    // NUEVO ENDPOINT: Reporte Diario de Caja
+    @GetMapping("/daily-report")
+    public ResponseEntity<com.wishdish.dtos.DailyReportDTO> getDailyReport() {
+        return ResponseEntity.ok(orderService.getDailyReport());
+    }
 }

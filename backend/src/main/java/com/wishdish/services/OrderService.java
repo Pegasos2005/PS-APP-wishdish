@@ -1,8 +1,6 @@
 package com.wishdish.services;
 
-import com.wishdish.dtos.ManualItemRequestDTO;
-import com.wishdish.dtos.OrderItemRequestDTO;
-import com.wishdish.dtos.OrderResponseDTO;
+import com.wishdish.dtos.*;
 import com.wishdish.models.*;
 import com.wishdish.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +30,63 @@ public class OrderService {
 
     @Autowired
     private IngredientRepository ingredientRepository;
+
+    @Transactional(readOnly = true)
+    public DailyReportDTO getDailyReport() {
+        // 1. Calculamos la barrera de tiempo: Hace exactamente 24 horas
+        LocalDateTime last24Hours = LocalDateTime.now().minusHours(24);
+
+        // 2. Buscamos todas las comandas que estén PAGADAS y sean recientes
+        List<Order> recentOrders = orderRepository.findByStatusAndOrderDateAfter(Order.OrderStatus.paid, last24Hours);
+
+        BigDecimal totalSales = BigDecimal.ZERO;
+        int totalTransactions = recentOrders.size();
+
+        // 3. Preparamos un mapa con las últimas 24 horas a cero (Para que el gráfico no tenga huecos vacíos)
+        Map<Integer, BigDecimal> hourlySum = new HashMap<>();
+        for (int i = 0; i < 24; i++) {
+            int hour = LocalDateTime.now().minusHours(i).getHour();
+            hourlySum.put(hour, BigDecimal.ZERO);
+        }
+
+        // 4. Sumamos el precio de cada comanda en su hora correspondiente
+        for (Order order : recentOrders) {
+            BigDecimal orderTotal = BigDecimal.ZERO;
+            for (OrderItem item : order.getItems()) {
+                BigDecimal itemTotal = item.getUnitPrice().multiply(new BigDecimal(item.getQuantity()));
+                orderTotal = orderTotal.add(itemTotal);
+            }
+            totalSales = totalSales.add(orderTotal);
+
+            int orderHour = order.getOrderDate().getHour();
+            if (hourlySum.containsKey(orderHour)) {
+                hourlySum.put(orderHour, hourlySum.get(orderHour).add(orderTotal));
+            }
+        }
+
+        // 5. Calculamos el ticket medio
+        BigDecimal averageOrder = BigDecimal.ZERO;
+        if (totalTransactions > 0) {
+            averageOrder = totalSales.divide(new BigDecimal(totalTransactions), 2, RoundingMode.HALF_UP);
+        }
+
+        // 6. Formateamos la lista para Angular (Cronológicamente: desde hace 23h hasta la hora actual)
+        List<HourlySalesDTO> hourlyData = new ArrayList<>();
+        for (int i = 23; i >= 0; i--) {
+            LocalDateTime h = LocalDateTime.now().minusHours(i);
+            int hourKey = h.getHour();
+            String hourString = String.format("%02d:00", hourKey);
+            hourlyData.add(new HourlySalesDTO(hourString, hourlySum.get(hourKey)));
+        }
+
+        DailyReportDTO report = new DailyReportDTO();
+        report.setTotalSales(totalSales);
+        report.setTotalTransactions(totalTransactions);
+        report.setAverageOrder(averageOrder);
+        report.setHourlyData(hourlyData);
+
+        return report;
+    }
 
     @Transactional
     public Order createOrder(Integer tableNumber, List<OrderItemRequestDTO> items, String generalNotes) {
