@@ -1,24 +1,22 @@
 <div class="principal-container">
 
   <header class="admin-header">
-
     <div class="header-left">
       <button class="return-button" (click)="goBack()" aria-label="Go back">&lt;</button>
     </div>
-
     <div class="header-center">
       <img src="assets/logo.png" alt="WishDish Logo" class="header-logo">
     </div>
-
     <div class="header-right">
       <span class="header-date">{{ currentDateFormatted() }}</span>
     </div>
-
   </header>
 
   <main class="cash-content">
 
     <div class="report-card">
+
+      @if (!showSummary()) {
       <h2 class="report-title">DAILY CLOSE CASH REGISTER REPORT</h2>
       <p class="generated-time">Generated: {{ currentTime() }}</p>
 
@@ -27,7 +25,6 @@
         <h1 class="total-amount">€{{ totalSales() | number:'1.2-2' }}</h1>
 
         <div class="chart-wrapper">
-
           <div class="y-axis">
             @for (label of yAxisLabels(); track label) {
             <span>€{{ label | number }}</span>
@@ -38,7 +35,6 @@
             <div class="grid-lines">
               <div></div><div></div><div></div><div></div><div></div>
             </div>
-
             <div class="bars-container">
               @for (data of hourlyData(); track data.hour) {
               <div class="bar-group">
@@ -65,10 +61,65 @@
 
       <button class="close-btn" (click)="closeCashRegister()">CLOSE CASH REGISTER</button>
       <p class="warning-text">This action cannot be undone. Ensure all data is correct.</p>
+      }
+
+      @else {
+      <h2 class="report-title">TICKET DE RESUMEN DE PEDIDOS DIARIOS</h2>
+      <p class="generated-time">Generated: {{ currentTime() }}</p>
+
+      <div class="audit-container visually-expanded">
+        <h3 class="audit-section-title">📊 DETAILED SALES AUDIT</h3>
+
+        @if (tableGroupedOrders().length === 0) {
+        <div class="empty-audit">
+          <p>No settled orders found in the last 24 hours.</p>
+        </div>
+        } @else {
+        <div class="audit-scroll-area">
+          @for (table of tableGroupedOrders(); track table.tableNumber) {
+          <div class="audit-table-card">
+            <div class="audit-table-header">
+              <span>🪑 TABLE {{ table.tableNumber }}</span>
+              <span class="table-accumulated">Accumulated: €{{ table.tableTotal | number:'1.2-2' }}</span>
+            </div>
+
+            <div class="audit-table-body">
+              @for (order of table.orders; track order.id) {
+              <div class="audit-order-block">
+                <div class="audit-order-subheader">
+                  <span>🧾 Comanda #{{ order.id }} — <small>{{ order.time }}</small></span>
+                  <span class="order-subtotal">Subtotal: €{{ order.orderTotal | number:'1.2-2' }}</span>
+                </div>
+
+                <ul class="audit-items-list">
+                  @for (item of order.items; track item.id) {
+                  <li class="audit-item-row">
+                    <span class="item-qty-name">{{ item.quantity }}x  {{ item.productName }}</span>
+                    <span class="item-price-calc">€{{ (item.productPrice * item.quantity) | number:'1.2-2' }}</span>
+                  </li>
+                  }
+                </ul>
+              </div>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        }
+
+        <div class="audit-footer-summary">
+          <div class="summary-line">
+            <span>Total General de Comandas:</span>
+            <span class="highlight-green">€{{ totalSales() | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="print-btn" (click)="printSummaryAndExit()">PRINT SUMMARY</button>
+      <p class="warning-text">Clicking here will confirm the prints and return to main dashboard.</p>
+      }
 
     </div>
 
   </main>
-
-
 </div>
