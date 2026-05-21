@@ -19,19 +19,19 @@ export class CloseCashComponent implements OnInit {
   currentDateFormatted = signal<string>('');
   currentTime = signal<string>('');
 
-  // Control de Vista Flujo (False = Gráfica, True = Ticket Resumen)
+  // Control de Pasos (False = Gráfica, True = Ticket Resumen)
   showSummary = signal<boolean>(false);
 
-  // Datos puros cargados desde el backend
+  // Datos reales cargados desde el backend
   totalSales = signal<number>(0);
   totalTransactions = signal<number>(0);
   averageOrder = signal<number>(0);
   hourlyData = signal<{ hour: string, amount: number, percentage?: number }[]>([]);
-  rawBackendOrders = signal<any[]>([]);
+  rawBackendOrders = signal<any[]>([]); // <--- Se llenará 100% con datos reales
 
   yAxisLabels = signal<number[]>([2000, 1500, 1000, 500, 0]);
 
-  // Signal computado para agrupar las comandas por número de mesa
+  // Agrupador dinámico por Mesas de las órdenes reales
   tableGroupedOrders = computed(() => {
     const orders = this.rawBackendOrders();
     if (!orders || orders.length === 0) return [];
@@ -39,11 +39,21 @@ export class CloseCashComponent implements OnInit {
     const groups: { [key: number]: any } = {};
 
     orders.forEach(order => {
-      const tableNum = order.tableNumber;
+      // Extraemos el número de mesa real de la comanda de la DB
+      const tableNum = order.tableNumber || order.diningTable?.tableNumber || 0;
 
+      // Normalizamos los items de la comanda y calculamos su subtotal real
       let orderTotal = 0;
-      order.items.forEach((item: any) => {
-        orderTotal += (item.productPrice * item.quantity);
+      const normalizedItems = (order.items || []).map((item: any) => {
+        const price = item.productPrice || item.unitPrice || item.price || 0;
+        orderTotal += (price * item.quantity);
+
+        return {
+          id: item.id,
+          quantity: item.quantity,
+          productName: item.productName || item.name || item.product?.name || 'Producto',
+          productPrice: price
+        };
       });
 
       const dateObj = order.orderDate ? new Date(order.orderDate) : new Date();
@@ -53,7 +63,7 @@ export class CloseCashComponent implements OnInit {
         id: order.id,
         time: timeString,
         orderTotal: orderTotal,
-        items: order.items
+        items: normalizedItems
       };
 
       if (!groups[tableNum]) {
@@ -77,33 +87,18 @@ export class CloseCashComponent implements OnInit {
   }
 
   fetchDailyReport() {
+    // ÚNICA LLAMADA AL BACKEND: Trae la gráfica y el histórico de comandas reales juntas
     this.http.get<any>(`${environment.apiUrl}orders/daily-report`).subscribe({
       next: (data) => {
-        this.totalSales.set(data.totalSales);
-        this.totalTransactions.set(data.totalTransactions);
-        this.averageOrder.set(data.averageOrder);
-        this.hourlyData.set(data.hourlyData);
+        this.totalSales.set(data.totalSales || 0);
+        this.totalTransactions.set(data.totalTransactions || 0);
+        this.averageOrder.set(data.averageOrder || 0);
+        this.hourlyData.set(data.hourlyData || []);
+        this.rawBackendOrders.set(data.orders || []); // <--- COMPORTAMIENTO REAL ASIGNADO
 
         this.calculateChartPercentages();
       },
       error: (err) => console.error("Error cargando el reporte diario", err)
-    });
-
-    // Carga de pedidos del histórico para la auditoría (o simulación en local)
-    this.http.get<any[]>(`${environment.apiUrl}orders/active`).subscribe({
-      next: (orders) => {
-        if (!orders || orders.length === 0) {
-           // Datos mockeados de prueba si las tablas están vacías
-           this.rawBackendOrders.set([
-             { id: 412, tableNumber: 2, orderDate: new Date(), items: [{ id: 1, quantity: 1, productName: 'Nachos', productPrice: 12.50 }, { id: 2, quantity: 1, productName: 'Solomillo', productPrice: 28.00 }] },
-             { id: 415, tableNumber: 2, orderDate: new Date(), items: [{ id: 3, quantity: 2, productName: 'Nachos', productPrice: 12.50 }, { id: 4, quantity: 1, productName: 'Solomillo', productPrice: 28.00 }] },
-             { id: 413, tableNumber: 5, orderDate: new Date(), items: [{ id: 5, quantity: 2, productName: 'Hamburguesa WishDish', productPrice: 18.00 }, { id: 6, quantity: 1, productName: 'Ensalada de la Casa', productPrice: 14.00 }] },
-             { id: 420, tableNumber: 10, orderDate: new Date(), items: [{ id: 7, quantity: 4, productName: 'Paella Especial', productPrice: 28.00 }, { id: 8, quantity: 1, productName: 'Botella de Vino Tinto', productPrice: 25.00 }] }
-           ]);
-        } else {
-           this.rawBackendOrders.set(orders);
-        }
-      }
     });
   }
 
@@ -134,18 +129,15 @@ export class CloseCashComponent implements OnInit {
 
   goBack() {
     if (this.showSummary()) {
-      // Si está en el ticket, volver atrás le regresa a la gráfica
       this.showSummary.set(false);
     } else {
       this.router.navigate(['/admin/dashboard']);
     }
   }
 
-  // PASO 1: Hacemos el POST al Backend, si responde OK, pasamos a la pantalla de ticket
   closeCashRegister() {
     this.http.post(`${environment.apiUrl}orders/close-cash`, {}).subscribe({
       next: () => {
-        // En vez de irse al dashboard, cambiamos de vista para mostrar el resumen funcional
         this.showSummary.set(true);
       },
       error: (err) => {
@@ -158,9 +150,17 @@ export class CloseCashComponent implements OnInit {
     });
   }
 
-  // PASO 2: El botón final que te saca de la pantalla rumbo al dashboard
   printSummaryAndExit() {
-    alert("🖨️ Summary printed successfully! Returning to dashboard.");
-    this.router.navigate(['/admin/dashboard']);
+    this.http.delete(`${environment.apiUrl}orders/clear-all`).subscribe({
+      next: () => {
+        alert("🖨️ Summary printed successfully and day data cleared! Returning to dashboard.");
+        this.router.navigate(['/admin/dashboard']);
+      },
+      error: (err) => {
+        console.error("Error al vaciar la caja:", err);
+        alert("An error occurred while trying to clear the cash register data, but returning to dashboard.");
+        this.router.navigate(['/admin/dashboard']);
+      }
+    });
   }
 }
