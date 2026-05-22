@@ -3,4 +3,5 @@ export interface Ingredient {
   name: string;
   description?: string;
   extraPrice: number;
+  available: boolean;
 }

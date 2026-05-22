@@ -22,11 +22,26 @@
         @for (product of filteredProducts(); track product.id) {
         <section class="comanda-card">
           <div class="product-row">
-            <span class="product-name"><strong>{{ product.name }}</strong></span>
+            <div class="product-main-info">
+              @if (product.picture) {
+                <img [src]="product.picture" [alt]="product.name" class="product-thumbnail">
+              } @else {
+                <div class="product-thumbnail-placeholder">🍽️</div>
+              }
+              <span class="product-name">
+                <strong>{{ product.name }}</strong>
+                <span class="status-badge" [class.unavailable]="product.available === false">
+                  {{ product.available !== false ? 'Disponible' : 'No disponible' }}
+                </span>
+              </span>
+            </div>
 
             <div class="product-controls">
               <span class="product-price">{{ product.price | number:'1.2-2' }}€</span>
               <div class="actions">
+                <button class="btn-toggle" (click)="toggleAvailability(product)">
+                  {{ product.available !== false ? 'Deshabilitar' : 'Habilitar' }}
+                </button>
                 <button class="btn-modify" (click)="editProduct(product)">Modify</button>
                 <button class="btn-delete" (click)="deleteProduct(product)">Delete</button>
               </div>

@@ -49,6 +49,21 @@ export class IngredientListComponent implements OnInit {
     this.router.navigate(['/admin/ingredient-management/ingredient-form', ingredient.id]);
   }
 
+  toggleAvailability(ingredient: Ingredient) {
+    if (!ingredient.id) return;
+    
+    const updatedIngredient = { ...ingredient, available: !ingredient.available };
+    
+    this.ingredientService.updateIngredient(ingredient.id, updatedIngredient).subscribe({
+      next: () => {
+        this.ingredients.update(current => 
+          current.map(i => i.id === ingredient.id ? { ...i, available: !i.available } : i)
+        );
+      },
+      error: (err) => console.error('Error toggling ingredient availability:', err)
+    });
+  }
+
   deleteIngredient(ingredient: Ingredient) {
     console.log("ID a borrar:", ingredient.id); // <--- MIRA ESTO EN LA CONSOLA
 

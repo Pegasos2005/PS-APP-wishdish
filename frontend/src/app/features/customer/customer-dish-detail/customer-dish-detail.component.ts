@@ -24,7 +24,8 @@ export class CustomerDishDetailComponent implements OnInit {
       this.product.ingredients.forEach((ing: any) => {
 
         // Busca isDefault, pero si le ha quitado el 'is' y lo llama 'default', le decimos que lo acepte tambien"
-        if (ing.isDefault === true || ing.default === true || String(ing.isDefault) === 'true') {
+        // Solo seleccionamos por defecto si ADEMÁS está disponible
+        if ((ing.isDefault === true || ing.default === true || String(ing.isDefault) === 'true') && ing.available !== false) {
           this.selectedIngredients.add(ing.id || ing.name);
         }
       });
@@ -32,6 +33,9 @@ export class CustomerDishDetailComponent implements OnInit {
   }
 
   toggleIngredient(ingredientId: string) {
+    const ingredient = this.product.ingredients?.find((i: any) => (i.id || i.name) === ingredientId);
+    if (ingredient?.available === false) return; // Evita seleccionar si está deshabilitado
+
     if (this.selectedIngredients.has(ingredientId)) {
       this.selectedIngredients.delete(ingredientId);
     } else {

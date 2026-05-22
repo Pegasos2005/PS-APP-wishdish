@@ -8,13 +8,16 @@
 
   <div class="modal-body">
 
-    <div class="product-image">
+    <div class="product-image" [class.img-unavailable]="product.available === false">
       @if (product.picture) {
         <img [src]="product.picture" [alt]="product.name" class="modal-real-img" />
       } @else {
         <div class="image-placeholder-modal">
           <span>🍽️ Sin imagen</span>
         </div>
+      }
+      @if (product.available === false) {
+        <div class="unavailable-badge">NO DISPONIBLE</div>
       }
     </div>
 
@@ -25,6 +28,9 @@
 
       <div class="price-section">
         <span class="price">€ {{ calcularPrecioTotal() | number:'1.2-2' }}</span>
+        @if (product.available === false) {
+          <span class="unavailable-label">- Actualmente no disponible</span>
+        }
       </div>
 
       <!-- Ingredientes / Preferences -->
@@ -42,17 +48,22 @@
 
           <div class="ingredients-list">
             @for (ingredient of product.ingredients; track ingredient.id || ingredient.name) {
-              <label class="ingredient-checkbox">
+              <label class="ingredient-checkbox" [class.ingredient-disabled]="ingredient.available === false">
                 <input
                   type="checkbox"
                   [checked]="isIngredientSelected(ingredient.id || ingredient.name)"
-                  (change)="toggleIngredient(ingredient.id || ingredient.name)">
+                  (change)="toggleIngredient(ingredient.id || ingredient.name)"
+                  [disabled]="ingredient.available === false">
 
                 <span class="ingredient-name">
                   {{ ingredient.name }}
 
                   @if (!isDefaultIngredient(ingredient) && ingredient.extraPrice > 0) {
                     <span class="extra-price-tag"> (+ {{ ingredient.extraPrice | number:'1.2-2' }} €)</span>
+                  }
+
+                  @if (ingredient.available === false) {
+                    <span class="out-of-stock"> (Agotado)</span>
                   }
                 </span>
               </label>
@@ -62,8 +73,8 @@
       }
 
       <!-- Botón confirmar -->
-      <button class="confirm-btn" (click)="confirmAddToCart()">
-        Confirm
+      <button class="confirm-btn" (click)="confirmAddToCart()" [disabled]="product.available === false">
+        {{ product.available === false ? 'No disponible' : 'Confirm' }}
       </button>
     </div>
 
