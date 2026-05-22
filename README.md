@@ -235,4 +235,125 @@ ng serve --port 4201
 2. **Frontend:** Crear/modificar componentes y servicios
 3. **Reiniciar ambos servidores** para ver los cambios
 
+## Pago con Stripe (demo académica)
+
+La integración procesa pagos reales en **modo test** de Stripe (sin webhooks). El importe se calcula en el servidor a partir de las órdenes activas de la mesa.
+
+### Requisitos previos
+
+- Cuenta Stripe gratuita → [dashboard.stripe.com](https://dashboard.stripe.com)
+- Las claves de test se obtienen en **Developers → API keys** (modo Test activado)
+
+### Configuración de claves
+
+**Backend** — crea el fichero (ya está en `.gitignore`, nunca se commitea):
+
+```
+backend/src/main/resources/application-local.properties
+```
+
+```properties
+stripe.secret.key=sk_test_TU_CLAVE_SECRETA
+stripe.currency=eur
+```
+
+**Frontend** — edita ambos ficheros de entorno:
+
+- `frontend/src/environments/environment.ts`
+- `frontend/src/environments/environment.development.ts`
+
+```ts
+export const environment = {
+  production: false,
+  apiUrl: 'http://' + window.location.hostname + ':8080/api/',
+  stripePublicKey: 'pk_test_TU_CLAVE_PUBLICA'
+};
+```
+
+### Arrancar el backend con Stripe activo
+
+El profile `local` es obligatorio para cargar la `sk_test_`:
+
+**Desde IntelliJ:** Edit Run Configuration → Active profiles: `local` → Run
+
+**Desde terminal** (requiere JDK instalado):
+```bash
+cd backend
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+### MySQL sin instalación local (Podman)
+
+Fedora incluye Podman por defecto. No requiere instalar MySQL en el sistema:
+
+```bash
+# Arrancar (primera vez)
+podman run -d --name wishdish-mysql \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=wishdish \
+  -p 3306:3306 \
+  docker.io/mysql:8.0
+
+# Arranques posteriores
+podman start wishdish-mysql
+
+# Parar
+podman stop wishdish-mysql
+```
+
+El backend se conecta automáticamente a `localhost:3306` con usuario `root/root`.
+
+Ejecutar queries desde el contenedor (sin instalar cliente MySQL):
+```bash
+podman exec -it wishdish-mysql mysql -uroot -proot wishdish -e "SELECT * FROM payment_transactions;"
+```
+
+### Flujo de pago
+
+1. Cliente selecciona mesa → hace comanda → va al ticket
+2. Pulsa **"Pay now"** → navega a la página de pago Stripe
+3. El backend calcula el total de las órdenes activas (con IGIC incluido en `unitPrice`)
+4. El cliente introduce los datos de tarjeta en el Payment Element de Stripe
+5. Stripe procesa el cobro → el frontend llama a `/api/payments/confirm`
+6. El backend verifica el pago contra la API de Stripe (server-to-server) y cierra la mesa
+
+### Tarjetas de test
+
+| Tarjeta | Resultado |
+|---|---|
+| `4242 4242 4242 4242` | Pago aprobado ✅ |
+| `4000 0000 0000 0002` | Pago rechazado ❌ |
+
+CVC y fecha de caducidad: cualquier valor válido (ej. `123` / `12/30`).
+
+### Endpoints de pago
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| POST | `/api/payments/create-intent` | Body: `{"tableNumber": 1}`. Crea PaymentIntent en Stripe y devuelve `clientSecret`. |
+| POST | `/api/payments/confirm` | Body: `{"paymentIntentId": "pi_..."}`. Verifica con Stripe y cierra la mesa. Idempotente. |
+
+### Verificar resultados en BD
+
+```bash
+# Estado de las transacciones
+podman exec -it wishdish-mysql mysql -uroot -proot wishdish -e "
+SELECT stripe_payment_intent_id, table_number, amount, status
+FROM payment_transactions ORDER BY created_at DESC LIMIT 5;"
+
+# Confirmar que las órdenes de la mesa pasaron a 'paid'
+podman exec -it wishdish-mysql mysql -uroot -proot wishdish -e "
+SELECT o.id, o.status, dt.table_number FROM orders o
+JOIN dining_tables dt ON dt.id = o.table_id
+ORDER BY o.id DESC LIMIT 10;"
+```
+
+También puedes ver los pagos en [dashboard.stripe.com/test/payments](https://dashboard.stripe.com/test/payments).
+
+### Limitaciones conocidas (académicas)
+
+- **Sin webhooks**: si el navegador se cierra entre el éxito de Stripe y la llamada a `/confirm`, el cobro queda en Stripe pero la mesa no se cierra automáticamente. Recovery: reintentar `/confirm` con el `paymentIntentId`.
+- **Métodos de redirección** (iDEAL, Sofort…): requieren `return_url` para el retorno. En la demo usar solo tarjeta.
+- **Sin Spring Security**: los endpoints `/api/payments/*` no requieren autenticación. Aceptable en entorno académico local.
+
 ## Documentación Adicional

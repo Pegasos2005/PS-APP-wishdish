@@ -18,5 +18,9 @@ export const CUSTOMER_ROUTES: Routes = [
   {
     path: 'customer-ticket',
     loadComponent: () => import('./customer-ticket/customer-ticket.component').then(c => c.CustomerTicketComponent)
+  },
+  {
+    path: 'customer-payment',
+    loadComponent: () => import('./customer-payment/customer-payment.component').then(c => c.CustomerPaymentComponent)
   }
 ];

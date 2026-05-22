@@ -117,13 +117,7 @@ export class CustomerTicketComponent implements OnInit, OnDestroy {
       this.router.navigate(['/join-as']);
       return;
     }
-    this.orderService.requestPayment(tableId).subscribe({
-      next: () => {
-        this.isPaymentRequested.set(true);
-        sessionStorage.setItem('paymentRequested', 'true');
-      },
-      error: (err) => console.error("Error requesting payment:", err)
-    });
+    this.router.navigate(['/customer/customer-payment']);
   }
 
   cancelPayment(): void {
