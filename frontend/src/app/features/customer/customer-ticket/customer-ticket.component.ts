@@ -127,7 +127,15 @@ export class CustomerTicketComponent implements OnInit, OnDestroy {
   }
 
   cancelPayment(): void {
-    this.isPaymentRequested.set(false);
+    const tableId = this.orderService.tableId();
+    if (tableId === null) return;
+    this.orderService.cancelPaymentRequest(tableId).subscribe({
+      next: () => {
+        this.isPaymentRequested.set(false);
+        sessionStorage.removeItem('paymentRequested');
+      },
+      error: (err) => console.error("Error cancelling payment:", err)
+    });
   }
 
   private onTableClosed(): void {

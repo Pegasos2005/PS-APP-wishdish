@@ -269,6 +269,14 @@ public class OrderService {
     }
 
     @Transactional
+    public void cancelPaymentRequest(Integer tableNumber) {
+        DiningTable table = diningTableRepository.findByTableNumber(tableNumber)
+                .orElseThrow(() -> new RuntimeException("Mesa " + tableNumber + " no existe."));
+        table.setPaymentRequested(false);
+        diningTableRepository.save(table);
+    }
+
+    @Transactional
     public void closeTable(Integer tableNumber) {
         DiningTable table = diningTableRepository.findByTableNumber(tableNumber)
                 .orElseThrow(() -> new RuntimeException("Mesa " + tableNumber + " no existe."));

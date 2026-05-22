@@ -78,6 +78,10 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'close-cash',
         loadComponent: () => import('./close-cash/close-cash.component').then(c => c.CloseCashComponent)
+      },
+      {
+        path: 'close-table',
+        loadComponent: () => import('./close-table/close-table.component').then(c => c.CloseTableComponent)
       }
     ]
   }

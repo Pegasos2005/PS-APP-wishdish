@@ -87,6 +87,9 @@ export class DashboardComponent {
       case 'close-cash':
         this.router.navigate(['/admin/close-cash']);
         break;
+      case 'close-table':
+        this.router.navigate(['/admin/close-table']);
+        break;
       default:
         console.log('Acción no implementada todavía:', action);
         break;
