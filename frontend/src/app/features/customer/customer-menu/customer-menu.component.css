@@ -156,7 +156,6 @@
 
 /* --- ADAPTACIÓN PARA MÓVIL --- */
 @media (max-width: 768px) {
-
   /* Cambiamos la estructura a columna para apilar categorías arriba y productos abajo */
   .body-menu {
     flex-direction: column;
@@ -173,23 +172,20 @@
     border-bottom: 1px solid #ddd;
     padding: 10px;
     z-index: 10;
-
-    /* Ocultamos la barra de scroll para un aspecto más nativo (opcional pero recomendado) */
-    -ms-overflow-style: none;  /* IE y Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .category-column::-webkit-scrollbar {
-    display: none; /* Chrome, Safari y Opera */
+    display: none;
   }
 
-  /* Adaptamos los botones de categoría para el formato horizontal */
   .category-btn {
     height: 45px;
     padding: 10px 20px;
-    white-space: nowrap; /* Evita que el texto salte de línea */
+    white-space: nowrap;
     border-left: none;
-    border-radius: 25px; /* Forma de píldora */
+    border-radius: 25px;
     text-align: center;
     box-shadow: none;
     border: 1px solid transparent;
@@ -199,7 +195,6 @@
     border-radius: 25px;
   }
 
-  /* Ajustamos el padding de los productos y dejamos espacio extra abajo para el botón flotante */
   .product-column {
     padding: 15px;
     padding-bottom: 90px;
@@ -210,53 +205,45 @@
     margin-top: 25px;
   }
 
-  @media (max-width: 768px) {
-
-    /* ... (tus estilos anteriores de body-menu, category-column, etc.) ... */
-
-    /* 1. Estilos para el nuevo fondo del footer anclado abajo */
-    .order-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #ffffff; /* Fondo blanco/sólido similar al header */
-      border-top: 1px solid #e3e0e0; /* Pequeña línea separadora */
-      padding: 15px 20px;
-      z-index: 9999; /* Asegura que esté por encima de los productos */
-      box-shadow: 0 -4px 15px rgba(0,0,0,0.05); /* Sombra difuminada hacia arriba */
-      box-sizing: border-box;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    /* 2. Adaptamos el botón para que ocupe el espacio dentro de su nuevo fondo */
-    .show-order-btn {
-      position: relative; /* Quitamos el fixed, ahora el fixed es el order-footer */
-      bottom: auto;
-      left: auto;
-      width: 100%; /* El botón ocupa todo el ancho de su contenedor */
-      margin: 0;
-      padding: 15px 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      transform: none; /* Quitamos el centrado manual anterior */
-    }
-
-    .show-order-btn:hover {
-      transform: translateY(-2px);
-    }
-
-    /* 3. Evitamos que el último producto se quede oculto tras el nuevo fondo */
-    .product-column {
-      padding: 15px;
-      /* Damos suficiente espacio al final para que el último elemento suba por encima del footer al scrollear */
-      padding-bottom: 110px !important;
-    }
+  .order-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border-top: 1px solid #e3e0e0;
+    padding: 15px 20px;
+    z-index: 9999;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
+
+  .show-order-btn {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    margin: 0;
+    padding: 15px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transform: none;
+  }
+
+  .show-order-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .product-column {
+    padding: 15px;
+    padding-bottom: 110px !important;
+  }
+}
 
 /* --- ESTILOS DE DISPONIBILIDAD EN EL MENÚ --- */
 
@@ -264,6 +251,7 @@
   position: relative;
   transition: all 0.3s ease;
   margin-bottom: 15px; /* Espaciado entre elementos */
+  z-index: 1;
 }
 
 /* Efecto grisáceo para el producto no disponible */
@@ -293,5 +281,4 @@
 
 .product-item-wrapper.is-unavailable:hover {
   filter: grayscale(0.5) opacity(0.9); /* Recupera algo de color al pasar el mouse */
-}
 }
