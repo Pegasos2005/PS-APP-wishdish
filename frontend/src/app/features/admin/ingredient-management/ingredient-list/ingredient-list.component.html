@@ -22,12 +22,14 @@
         @for (ingredient of filteredIngredients(); track ingredient.id) {
         <section class="comanda-card">
           <div class="product-row">
-            <span class="product-name">
-              <strong>{{ ingredient.name }}</strong>
-              <span class="status-badge" [class.unavailable]="ingredient.available === false">
-                {{ ingredient.available !== false ? 'Disponible' : 'No disponible' }}
+            <div class="product-main-info">
+              <span class="product-name">
+                <strong>{{ ingredient.name }}</strong>
+                <span class="status-badge" [class.unavailable]="ingredient.available === false">
+                  {{ ingredient.available !== false ? 'Disponible' : 'No disponible' }}
+                </span>
               </span>
-            </span>
+            </div>
 
             <div class="product-controls">
               <span class="product-price">{{ ingredient.extraPrice | number:'1.2-2' }}€</span>
