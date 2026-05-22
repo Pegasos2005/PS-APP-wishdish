@@ -46,7 +46,14 @@ public class DiningTableController {
         return ResponseEntity.ok().build();
     }
 
-    // PUT /api/tables/3/close — el camarero cierra la mesa (cobra)
+    // PUT /api/tables/3/cancel-payment — el cliente cancela su solicitud de pago
+    @PutMapping("/{tableNumber}/cancel-payment")
+    public ResponseEntity<Void> cancelPayment(@PathVariable Integer tableNumber) {
+        orderService.cancelPaymentRequest(tableNumber);
+        return ResponseEntity.ok().build();
+    }
+
+    // PUT /api/tables/3/close — el admin cierra la mesa (cobra)
     @PutMapping("/{tableNumber}/close")
     public ResponseEntity<Void> closeTable(@PathVariable Integer tableNumber) {
         orderService.closeTable(tableNumber);

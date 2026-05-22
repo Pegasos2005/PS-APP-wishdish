@@ -112,6 +112,10 @@ export class CustomerOrderService {
     return this.http.put<void>(`${environment.apiUrl}tables/${tableNumber}/request-payment`, {});
   }
 
+  cancelPaymentRequest(tableNumber: number): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}tables/${tableNumber}/cancel-payment`, {});
+  }
+
   getTableStatus(tableNumber: number): Observable<TableStatus> {
     return this.http.get<TableStatus>(
       `${environment.apiUrl}tables/${tableNumber}/status`

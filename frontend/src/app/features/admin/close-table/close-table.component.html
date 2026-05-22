@@ -1,0 +1,29 @@
+<div class="dashboard-layout">
+
+  <header class="dashboard-header">
+    <button class="back-btn" (click)="goBack()" aria-label="Go back to dashboard">
+      <span class="icon">❮</span> Back
+    </button>
+    <h1 class="dashboard-title">Close Table</h1>
+    <div style="width: 120px;"></div>
+  </header>
+
+  <main class="main-content">
+    <section class="ct-section">
+      <h2 class="ct-section-title">Tables awaiting payment</h2>
+
+      @if (tablesAwaitingPayment().length === 0) {
+        <p class="ct-empty">No tables waiting for payment.</p>
+      } @else {
+        <div class="payment-requests-grid">
+          @for (tableNumber of tablesAwaitingPayment(); track tableNumber) {
+            <div class="payment-request-card">
+              <span>Table {{ tableNumber }} requests payment</span>
+              <button class="charge-btn" (click)="closeTable(tableNumber)">Cerrar mesa</button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  </main>
+</div>
