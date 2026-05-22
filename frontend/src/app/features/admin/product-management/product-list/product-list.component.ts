@@ -49,6 +49,21 @@ export class ProductListComponent implements OnInit {
     this.router.navigate(['/admin/product-management/product-form', product.id]);
   }
 
+  toggleAvailability(product: ProductDTO) {
+    if (!product.id) return;
+    
+    const updatedProduct = { ...product, available: !product.available };
+    
+    this.productService.updateProduct(product.id, updatedProduct).subscribe({
+      next: () => {
+        this.products.update(current => 
+          current.map(p => p.id === product.id ? { ...p, available: !p.available } : p)
+        );
+      },
+      error: (err) => console.error('Error updating availability:', err)
+    });
+  }
+
   deleteProduct(product: ProductDTO) {
     // 1. Guard clause: evita borrar si no hay ID
     if (!product.id) {

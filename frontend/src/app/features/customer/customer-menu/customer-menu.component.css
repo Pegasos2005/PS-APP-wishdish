@@ -257,4 +257,41 @@
       padding-bottom: 110px !important;
     }
   }
+
+/* --- ESTILOS DE DISPONIBILIDAD EN EL MENÚ --- */
+
+.product-item-wrapper {
+  position: relative;
+  transition: all 0.3s ease;
+  margin-bottom: 15px; /* Espaciado entre elementos */
+}
+
+/* Efecto grisáceo para el producto no disponible */
+.product-item-wrapper.is-unavailable {
+  filter: grayscale(1) opacity(0.8);
+}
+
+/* Badge central sobre la tarjeta */
+.menu-unavailable-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-5deg);
+  background-color: rgba(227, 27, 35, 0.9); /* Rojo corporativo */
+  color: white;
+  padding: 8px 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 14px;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 5;
+  pointer-events: none; /* Permite que el click llegue a la tarjeta de abajo */
+  white-space: nowrap;
+  border: 1px solid white;
+}
+
+.product-item-wrapper.is-unavailable:hover {
+  filter: grayscale(0.5) opacity(0.9); /* Recupera algo de color al pasar el mouse */
+}
 }

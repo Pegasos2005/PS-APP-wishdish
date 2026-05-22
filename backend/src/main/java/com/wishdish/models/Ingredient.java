@@ -25,6 +25,9 @@ public class Ingredient {
     @Column(nullable = false)
     private boolean active = true;
 
+    @Column(nullable = false)
+    private boolean available = true;
+
     // Esta es la parte clave: mapeamos la relación con la tabla intermedia
     // cascade = CascadeType.ALL asegura que si borras el ingrediente, se borren sus relaciones
     // orphanRemoval = true elimina los registros hijos huérfanos de la base de datos
@@ -80,6 +83,14 @@ public class Ingredient {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
     public List<ProductIngredient> getProductIngredients() {

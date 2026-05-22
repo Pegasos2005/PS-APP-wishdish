@@ -50,6 +50,7 @@ public class IngredientController {
     public ResponseEntity<Ingredient> updateIngredient(@PathVariable Integer id, @RequestBody Ingredient ingredientDetails) {
         return ingredientRepository.findById(id).map(existingIngredient -> {
             existingIngredient.setName(ingredientDetails.getName());
+            existingIngredient.setAvailable(ingredientDetails.isAvailable());
 
             if (ingredientDetails.getExtraPrice() != null) {
                 existingIngredient.setExtraPrice(ingredientDetails.getExtraPrice());

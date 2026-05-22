@@ -15,6 +15,7 @@ public class ProductDTO {
     private BigDecimal price;
     private String picture;
     private List<IngredientDTO> ingredients;
+    private Boolean available;
     private Category category;
 
     public ProductDTO() {
@@ -26,6 +27,7 @@ public class ProductDTO {
         this.description = product.getDescription();
         this.price = product.getPrice();
         this.picture = product.getPicture();
+        this.available = product.getAvailable();
         this.category = product.getCategory();
 
         // SEGURIDAD: Comprobamos si la lista existe antes de iterar
@@ -58,4 +60,6 @@ public class ProductDTO {
     public void setIngredients(List<IngredientDTO> ingredients) { this.ingredients = ingredients; }
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
+    public Boolean getAvailable() { return available; }
+    public void setAvailable(Boolean available) { this.available = available; }
 }

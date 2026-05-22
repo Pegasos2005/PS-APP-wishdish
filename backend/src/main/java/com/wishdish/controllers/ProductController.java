@@ -78,6 +78,7 @@ public class ProductController {
             existingProduct.setDescription(productDetails.getDescription());
             existingProduct.setPicture(productDetails.getPicture());
             existingProduct.setCategory(productDetails.getCategory());
+            existingProduct.setAvailable(productDetails.getAvailable());
 
             // 2. Gestión de Ingredientes
             if (productDetails.getProductIngredients() != null) {

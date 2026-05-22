@@ -34,11 +34,16 @@
 
         @for (product of category.products; track product.id) {
 
-          <!-- Emitir evento cuando se selecciona -->
-        <app-product-card
-          [product]="product"
-          (selectProduct)="onProductSelected($event)" >
-        </app-product-card>
+          <div class="product-item-wrapper" [class.is-unavailable]="product.available === false">
+            <app-product-card
+              [product]="product"
+              (selectProduct)="onProductSelected($event)" >
+            </app-product-card>
+            
+            @if (product.available === false) {
+              <div class="menu-unavailable-badge">No disponible</div>
+            }
+          </div>
         }
 
       </section>

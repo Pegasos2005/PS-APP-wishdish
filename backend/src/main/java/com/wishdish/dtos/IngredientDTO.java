@@ -9,6 +9,7 @@ public class IngredientDTO {
     private String name;
     private String description;
     private Boolean isDefault;
+    private Boolean available;
     private BigDecimal extraPrice;
 
     public IngredientDTO() {
@@ -19,6 +20,7 @@ public class IngredientDTO {
         this.name = ingredient.getName();
         this.description = ingredient.getDescription();
         this.extraPrice = ingredient.getExtraPrice();
+        this.available = ingredient.isAvailable();
     }
 
     // Getters y Setters
@@ -56,5 +58,9 @@ public class IngredientDTO {
     public BigDecimal getExtraPrice() { return extraPrice; }
 
     public void setExtraPrice(BigDecimal extraPrice) { this.extraPrice = extraPrice; }
+
+    public Boolean getAvailable() { return available; }
+
+    public void setAvailable(Boolean available) { this.available = available; }
 
 }
