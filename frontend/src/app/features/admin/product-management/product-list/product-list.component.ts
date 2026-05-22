@@ -52,9 +52,18 @@ export class ProductListComponent implements OnInit {
   toggleAvailability(product: ProductDTO) {
     if (!product.id) return;
     
-    const updatedProduct = { ...product, available: !product.available };
+    // Creamos el payload asegurándonos de mapear 'ingredients' a 'productIngredients'
+    // para que el backend reconozca la lista y no intente borrarla.
+    const payload = { 
+      ...product, 
+      available: !product.available,
+      productIngredients: product.ingredients?.map(ing => ({
+        ingredient: { id: ing.id },
+        isDefault: ing.isDefault
+      })) || []
+    };
     
-    this.productService.updateProduct(product.id, updatedProduct).subscribe({
+    this.productService.updateProduct(product.id, payload).subscribe({
       next: () => {
         this.products.update(current => 
           current.map(p => p.id === product.id ? { ...p, available: !p.available } : p)
