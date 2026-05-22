@@ -187,8 +187,47 @@
   align-items: center;
 }
 
+.product-main-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
 .product-name {
   flex: 1; /* Permite que el nombre ocupe el espacio disponible */
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-left: 12px;
+  font-weight: 500;
+  background: #e8f5e9;
+  color: #2e7d32;
+  vertical-align: middle;
+}
+
+.status-badge.unavailable {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.btn-toggle {
+  background: #f0f2f5;
+  color: #666;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-toggle:hover {
+  background: #6c757d;
+  color: white;
 }
 
 /* Contenedor que agrupa precio y botones */
@@ -247,4 +286,3 @@
 }
 
 .btn-delete:hover { background: #e31b23; color: white; }
-
