@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { loadStripe, Stripe, StripeElements } from '@stripe/stripe-js';
+import { loadStripe, PaymentIntent, Stripe, StripeElements, StripeError } from '@stripe/stripe-js';
 import { CustomerOrderService } from '../../../core/services/customer-order.service';
 import { PaymentService } from '../../../core/services/payment.service';
 import { environment } from '../../../../environments/environment';
@@ -84,7 +84,7 @@ export class CustomerPaymentComponent implements OnInit, OnDestroy {
     this.submitting.set(true);
     this.errorMessage.set(null);
 
-    let result: Awaited<ReturnType<Stripe['confirmPayment']>>;
+    let result: { paymentIntent: PaymentIntent; error?: undefined } | { paymentIntent?: undefined; error: StripeError };
     try {
       result = await this.stripe.confirmPayment({
         elements: this.elements,
