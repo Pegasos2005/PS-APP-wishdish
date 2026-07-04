@@ -1,0 +1,21 @@
+<div class="chart-wrapper">
+  <div class="y-axis">
+    @for (label of yAxisLabels(); track label) {
+    <span>{{ valuePrefix }}{{ label | number }}</span>
+    }
+  </div>
+
+  <div class="bars-area">
+    <div class="grid-lines">
+      <div></div><div></div><div></div><div></div><div></div>
+    </div>
+    <div class="bars-container">
+      @for (data of bars(); track data.label) {
+      <div class="bar-group">
+        <div class="bar" [style.height.%]="data.percentage" [title]="valuePrefix + data.amount"></div>
+        <span class="x-label">{{ data.label }}</span>
+      </div>
+      }
+    </div>
+  </div>
+</div>

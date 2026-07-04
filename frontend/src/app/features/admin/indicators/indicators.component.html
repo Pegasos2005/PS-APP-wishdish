@@ -1,0 +1,115 @@
+<div class="principal-container">
+
+  <header class="admin-header">
+    <div class="header-left">
+      <button class="return-button" (click)="goBack()" aria-label="Go back">&lt;</button>
+    </div>
+    <div class="header-center">
+      <img src="assets/logo.png" alt="WishDish Logo" class="header-logo">
+    </div>
+    <div class="header-right">
+      <span class="header-date">{{ currentDateFormatted() }}</span>
+    </div>
+  </header>
+
+  <main class="indicators-content">
+
+    <div class="page-heading">
+      <h2 class="page-title">BUSINESS INDICATORS</h2>
+
+      <div class="range-selector">
+        <button class="range-btn" [class.active]="range() === 'daily'" (click)="setRange('daily')">DAILY</button>
+        <button class="range-btn" [class.active]="range() === 'weekly'" (click)="setRange('weekly')">WEEKLY</button>
+      </div>
+    </div>
+
+    <!-- BLOQUE: FACTURACIÓN -->
+    <section class="indicator-card">
+      <h3 class="card-title">{{ range() === 'daily' ? 'DAILY' : 'WEEKLY' }} REVENUE</h3>
+
+      @if (revenueError()) {
+      <div class="block-error">
+        <p>⚠️ This indicator could not be loaded.</p>
+        <button class="retry-btn" (click)="loadRevenue()">Retry</button>
+      </div>
+      } @else if (revenueLoading()) {
+      <p class="block-loading">Loading…</p>
+      } @else if (revenueIsEmpty()) {
+      <div class="block-empty">
+        <p>No revenue recorded in this period.</p>
+        <span>Sales will appear here as soon as orders are paid.</span>
+      </div>
+      } @else {
+      <div class="green-overview">
+        <h1 class="total-amount">€{{ revenue()?.total | number:'1.2-2' }}</h1>
+        <app-bar-chart [points]="revenueChartPoints()" />
+      </div>
+      }
+    </section>
+
+    <!-- BLOQUE: RANKING DE PRODUCTOS MÁS VENDIDOS -->
+    <section class="indicator-card">
+      <h3 class="card-title">TOP SELLING PRODUCTS</h3>
+
+      @if (topProductsError()) {
+      <div class="block-error">
+        <p>⚠️ This indicator could not be loaded.</p>
+        <button class="retry-btn" (click)="loadTopProducts()">Retry</button>
+      </div>
+      } @else if (topProductsLoading()) {
+      <p class="block-loading">Loading…</p>
+      } @else if (topProductsIsEmpty()) {
+      <div class="block-empty">
+        <p>No products sold in this period.</p>
+        <span>The ranking will appear here as soon as orders are paid.</span>
+      </div>
+      } @else {
+      <table class="ranking-table">
+        <thead>
+          <tr>
+            <th class="rank-col">#</th>
+            <th class="name-col">Product</th>
+            <th class="units-col">Units</th>
+            <th class="revenue-col">Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of topProducts()?.products; track product.name; let i = $index) {
+          <tr>
+            <td class="rank-col rank-badge">{{ i + 1 }}</td>
+            <td class="name-col">{{ product.name }}</td>
+            <td class="units-col">{{ product.units }}</td>
+            <td class="revenue-col">€{{ product.revenue | number:'1.2-2' }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+      }
+    </section>
+
+    <!-- BLOQUE: DISTRIBUCIÓN DE COMANDAS POR FRANJA HORARIA -->
+    <section class="indicator-card">
+      <h3 class="card-title">ORDERS BY TIME SLOT</h3>
+
+      @if (slotsError()) {
+      <div class="block-error">
+        <p>⚠️ This indicator could not be loaded.</p>
+        <button class="retry-btn" (click)="loadSlots()">Retry</button>
+      </div>
+      } @else if (slotsLoading()) {
+      <p class="block-loading">Loading…</p>
+      } @else if (slotsIsEmpty()) {
+      <div class="block-empty">
+        <p>No orders recorded in this period.</p>
+        <span>The distribution will appear here as soon as orders are paid.</span>
+      </div>
+      } @else {
+      <div class="slots-summary">
+        <span class="slots-total">{{ slots()?.totalOrders }}</span> orders in this period
+      </div>
+      <app-bar-chart [points]="slotsChartPoints()" valuePrefix="" />
+      }
+    </section>
+
+  </main>
+</div>

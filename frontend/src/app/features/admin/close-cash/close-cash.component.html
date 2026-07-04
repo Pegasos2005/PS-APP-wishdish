@@ -24,27 +24,7 @@
         <h3 class="overview-title">DAILY SALES OVERVIEW</h3>
         <h1 class="total-amount">€{{ totalSales() | number:'1.2-2' }}</h1>
 
-        <div class="chart-wrapper">
-          <div class="y-axis">
-            @for (label of yAxisLabels(); track label) {
-            <span>€{{ label | number }}</span>
-            }
-          </div>
-
-          <div class="bars-area">
-            <div class="grid-lines">
-              <div></div><div></div><div></div><div></div><div></div>
-            </div>
-            <div class="bars-container">
-              @for (data of hourlyData(); track data.hour) {
-              <div class="bar-group">
-                <div class="bar" [style.height.%]="data.percentage" [title]="'€' + data.amount"></div>
-                <span class="x-label">{{ data.hour }}</span>
-              </div>
-              }
-            </div>
-          </div>
-        </div>
+        <app-bar-chart [points]="chartPoints()" />
       </div>
 
       <div class="stats-row">

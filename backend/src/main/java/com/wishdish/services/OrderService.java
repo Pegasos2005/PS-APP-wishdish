@@ -191,20 +191,6 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    // NUEVO MÉTODO: Limpieza absoluta de caja tras el cierre
-    @Transactional
-    public void clearAllOrdersAndItems() {
-        System.out.println("⚠️ Iniciando vaciado de caja definitivo...");
-
-        // 1. Primero borramos los ítems obligatoriamente por la clave foránea
-        orderItemRepository.deleteAllInBatch();
-
-        // 2. Ahora que los platos están borrados, podemos limpiar las comandas
-        orderRepository.deleteAllInBatch();
-
-        System.out.println("✅ Caja limpia. Listo para el siguiente turno.");
-    }
-
     @Transactional
     public OrderItem updateItemStatus(Integer itemId, String statusName) {
         OrderItem item = orderItemRepository.findById(itemId)

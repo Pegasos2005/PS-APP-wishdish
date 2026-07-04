@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { BarChartComponent, BarChartPoint } from '../../../shared/components/bar-chart/bar-chart.component';
 
 @Component({
   selector: 'app-close-cash',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BarChartComponent],
   templateUrl: './close-cash.component.html',
   styleUrls: ['./close-cash.component.css']
 })
@@ -26,10 +27,13 @@ export class CloseCashComponent implements OnInit {
   totalSales = signal<number>(0);
   totalTransactions = signal<number>(0);
   averageOrder = signal<number>(0);
-  hourlyData = signal<{ hour: string, amount: number, percentage?: number }[]>([]);
+  hourlyData = signal<{ hour: string, amount: number }[]>([]);
   rawBackendOrders = signal<any[]>([]); // <--- Se llenará 100% con datos reales
 
-  yAxisLabels = signal<number[]>([2000, 1500, 1000, 500, 0]);
+  // Puntos para la gráfica compartida (ella calcula ejes y escalas)
+  chartPoints = computed<BarChartPoint[]>(() =>
+    this.hourlyData().map(d => ({ label: d.hour, amount: d.amount }))
+  );
 
   // Agrupador dinámico por Mesas de las órdenes reales
   tableGroupedOrders = computed(() => {
@@ -95,27 +99,9 @@ export class CloseCashComponent implements OnInit {
         this.averageOrder.set(data.averageOrder || 0);
         this.hourlyData.set(data.hourlyData || []);
         this.rawBackendOrders.set(data.orders || []); // <--- COMPORTAMIENTO REAL ASIGNADO
-
-        this.calculateChartPercentages();
       },
       error: (err) => console.error("Error cargando el reporte diario", err)
     });
-  }
-
-  calculateChartPercentages() {
-    const data = this.hourlyData();
-    if (data.length === 0) return;
-    const maxAmount = Math.max(...data.map(d => d.amount));
-    let chartTopLimit = 10;
-    if (maxAmount > 0) {
-      const digits = Math.floor(Math.log10(maxAmount));
-      const factor = Math.pow(10, digits - 1 >= 0 ? digits - 1 : 0);
-      const step = Math.ceil(maxAmount / 4 / factor) * factor;
-      chartTopLimit = step * 4;
-    }
-    this.yAxisLabels.set([chartTopLimit, chartTopLimit * 0.75, chartTopLimit * 0.5, chartTopLimit * 0.25, 0]);
-    const updatedData = data.map(d => ({ ...d, percentage: chartTopLimit > 0 ? (d.amount / chartTopLimit) * 100 : 0 }));
-    this.hourlyData.set(updatedData);
   }
 
   generateFormattedDate() {
@@ -151,16 +137,8 @@ export class CloseCashComponent implements OnInit {
   }
 
   printSummaryAndExit() {
-    this.http.delete(`${environment.apiUrl}orders/clear-all`).subscribe({
-      next: () => {
-        alert("🖨️ Summary printed successfully and day data cleared! Returning to dashboard.");
-        this.router.navigate(['/admin/dashboard']);
-      },
-      error: (err) => {
-        console.error("Error al vaciar la caja:", err);
-        alert("An error occurred while trying to clear the cash register data, but returning to dashboard.");
-        this.router.navigate(['/admin/dashboard']);
-      }
-    });
+    // Las comandas pagadas se conservan en base de datos como histórico
+    alert("🖨️ Summary printed successfully! Returning to dashboard.");
+    this.router.navigate(['/admin/dashboard']);
   }
 }

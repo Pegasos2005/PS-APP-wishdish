@@ -90,6 +90,9 @@ export class DashboardComponent {
       case 'close-table':
         this.router.navigate(['/admin/close-table']);
         break;
+      case 'stats':
+        this.router.navigate(['/admin/indicators']);
+        break;
       default:
         console.log('Acción no implementada todavía:', action);
         break;

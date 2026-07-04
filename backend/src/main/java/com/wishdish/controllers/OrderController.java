@@ -95,11 +95,4 @@ public class OrderController {
         // Aquí iría tu lógica en el futuro para archivar el día, por ahora devolvemos OK
         return ResponseEntity.ok().build();
     }
-
-    // NUEVO ENDPOINT: Vaciar los datos de la caja del día
-    @DeleteMapping("/clear-all")
-    public ResponseEntity<Void> clearAllOrders() {
-        orderService.clearAllOrdersAndItems();
-        return ResponseEntity.noContent().build(); // Devuelve un estado 204 No Content limpio
-    }
 }
