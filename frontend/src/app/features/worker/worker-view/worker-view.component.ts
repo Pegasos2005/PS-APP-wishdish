@@ -5,6 +5,7 @@ import { interval, of, forkJoin } from 'rxjs';
 import { switchMap, catchError, map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { KitchenOrdersSystemService } from '../../../core/services/kitchen-orders-system.service';
+import { PaymentService } from '../../../core/services/payment.service';
 import { ComandaResponseDTO, ItemComandaDTO } from '../../../core/models/comanda.model';
 
 @Component({
@@ -16,10 +17,14 @@ import { ComandaResponseDTO, ItemComandaDTO } from '../../../core/models/comanda
 })
 export class WorkerViewComponent implements OnInit {
   private kitchenService = inject(KitchenOrdersSystemService);
+  private paymentService = inject(PaymentService);
   private destroyRef = inject(DestroyRef);
 
   // Signal tipado con tu interfaz para evitar el error de DataTransferItemList
   orders = signal<ComandaResponseDTO[]>([]);
+
+  // Cobros completados en los últimos minutos (aviso para el personal)
+  recentPayments = signal<any[]>([]);
 
   private manualStates = new Map<number, string>();
   private isBulkUpdating = false;
@@ -27,6 +32,15 @@ export class WorkerViewComponent implements OnInit {
 
   ngOnInit() {
     this.startPolling();
+    this.startRecentPaymentsPolling();
+  }
+
+  startRecentPaymentsPolling() {
+    interval(3000).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      switchMap(() => this.paymentService.getRecentPayments()),
+      catchError(() => of(this.recentPayments()))
+    ).subscribe(payments => this.recentPayments.set(payments));
   }
 
   startPolling() {

@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { loadStripe, PaymentIntent, Stripe, StripeElements, StripeError } from '@stripe/stripe-js';
+import QRCode from 'qrcode';
 import { CustomerOrderService } from '../../../core/services/customer-order.service';
 import { PaymentService } from '../../../core/services/payment.service';
 import { environment } from '../../../../environments/environment';
@@ -24,6 +25,36 @@ export class CustomerPaymentComponent implements OnInit, OnDestroy {
   success = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
   amountEuros = signal<number>(0);
+
+  // Datos del recibo (capturados antes de confirmar el pago)
+  receiptOrders = signal<any[]>([]);
+  receiptTable = signal<number | null>(null);
+  receiptDate = signal<Date | null>(null);
+  receiptReference = signal<string | null>(null);
+
+  // QR con el enlace al recibo público, para llevárselo al móvil
+  showQr = signal<boolean>(false);
+  qrDataUrl = signal<string | null>(null);
+
+  receiptUrl = computed(() =>
+    this.receiptReference() ? `${window.location.origin}/receipt/${this.receiptReference()}` : null
+  );
+
+  // Mismos cálculos que el ticket: el precio de línea ya incluye el IGIC
+  receiptTotal = computed(() => {
+    if (this.receiptOrders().length === 0) return this.amountEuros();
+    let total = 0;
+    this.receiptOrders().forEach(order => {
+      order.items.forEach((item: any) => {
+        total += (item.price * item.quantity);
+      });
+    });
+    return total;
+  });
+
+  receiptSubtotal = computed(() => this.receiptTotal() / 1.07);
+
+  receiptTax = computed(() => this.receiptTotal() - this.receiptSubtotal());
 
   private stripe: Stripe | null = null;
   private elements: StripeElements | null = null;
@@ -102,15 +133,27 @@ export class CustomerPaymentComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Capturamos el ticket ANTES de confirmar: tras la confirmación las comandas
+    // pasan a "paid" y el endpoint de ticket activo deja de devolverlas.
+    const tableId = this.orderService.tableId();
+    if (tableId !== null && this.receiptOrders().length === 0) {
+      this.receiptTable.set(tableId);
+      try {
+        const backendOrders = await firstValueFrom(this.orderService.getTicketByTable(tableId));
+        this.receiptOrders.set(this.adaptOrders(backendOrders));
+      } catch {
+        // Si el desglose no llega, el recibo mostrará solo el total cobrado.
+      }
+    }
+
     try {
       await firstValueFrom(this.paymentService.confirm(this.paymentIntentId));
+      this.receiptReference.set(this.paymentIntentId);
+      this.receiptDate.set(new Date());
       this.success.set(true);
       this.submitting.set(false);
       sessionStorage.removeItem('paymentRequested');
       this.orderService.clear();
-      setTimeout(() => {
-        this.router.navigate(['/customer/customer-home']);
-      }, 2000);
     } catch (err: any) {
       const backendMsg = err?.error?.error;
       this.errorMessage.set(
@@ -123,5 +166,48 @@ export class CustomerPaymentComponent implements OnInit, OnDestroy {
 
   cancel(): void {
     this.router.navigate(['/customer/customer-ticket']);
+  }
+
+  printReceipt(): void {
+    window.print();
+  }
+
+  async toggleQr(): Promise<void> {
+    if (this.showQr()) {
+      this.showQr.set(false);
+      return;
+    }
+    const url = this.receiptUrl();
+    if (url && !this.qrDataUrl()) {
+      try {
+        this.qrDataUrl.set(await QRCode.toDataURL(url, { width: 240, margin: 1 }));
+      } catch {
+        // Si el QR no se genera, se muestra igualmente el enlace en texto.
+      }
+    }
+    this.showQr.set(true);
+  }
+
+  goHome(): void {
+    this.router.navigate(['/customer/customer-home']);
+  }
+
+  private adaptOrders(backendOrders: any[]): any[] {
+    return backendOrders.map((order, index) => {
+      const dateObj = order.orderDate ? new Date(order.orderDate) : new Date();
+      const timeString = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
+
+      return {
+        commandNumber: index + 1,
+        time: timeString,
+        items: order.items.map((item: any) => ({
+          quantity: item.quantity,
+          name: item.productName || item.product?.name,
+          price: item.productPrice || item.unitPrice || item.product?.price,
+          extras: (item.extras || []).map((extra: any) => ({ name: extra.name, price: extra.price })),
+          removed: item.removedDefaults || []
+        }))
+      };
+    });
   }
 }

@@ -4,12 +4,14 @@ import com.stripe.exception.StripeException;
 import com.wishdish.dtos.ConfirmPaymentRequestDTO;
 import com.wishdish.dtos.CreateIntentRequestDTO;
 import com.wishdish.dtos.CreateIntentResponseDTO;
+import com.wishdish.dtos.RecentPaymentDTO;
 import com.wishdish.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -30,6 +32,11 @@ public class PaymentController {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                     .body(Map.of("error", "Stripe: " + e.getMessage()));
         }
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<List<RecentPaymentDTO>> getRecentPayments() {
+        return ResponseEntity.ok(paymentService.getRecentPayments());
     }
 
     @PostMapping("/confirm")

@@ -4,6 +4,9 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.wishdish.dtos.CreateIntentResponseDTO;
+import com.wishdish.dtos.OrderResponseDTO;
+import com.wishdish.dtos.ReceiptDTO;
+import com.wishdish.dtos.RecentPaymentDTO;
 import com.wishdish.models.Order;
 import com.wishdish.models.OrderItem;
 import com.wishdish.models.PaymentStatus;
@@ -14,11 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -31,6 +37,9 @@ public class PaymentService {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Value("${stripe.currency:eur}")
     private String currency;
@@ -132,10 +141,53 @@ public class PaymentService {
                             + expectedCents + ").");
         }
 
+        // La instantánea se captura ANTES de cerrar la mesa: al cerrarla las
+        // comandas pasan a "paid" y dejan de aparecer como ticket activo.
+        tx.setReceiptJson(buildReceiptJson(tx));
         tx.setStatus(PaymentStatus.SUCCEEDED);
         paymentRepository.save(tx);
 
         // Cierra la mesa con la lógica existente.
         orderService.closeTable(tx.getTableNumber());
+    }
+
+    // Ventana de "cobros recientes" que se muestran como aviso al personal.
+    static final int RECENT_PAYMENTS_WINDOW_MINUTES = 5;
+
+    @Transactional(readOnly = true)
+    public List<RecentPaymentDTO> getRecentPayments() {
+        LocalDateTime after = LocalDateTime.now().minusMinutes(RECENT_PAYMENTS_WINDOW_MINUTES);
+        return paymentRepository
+                .findByStatusAndUpdatedAtAfterOrderByUpdatedAtDesc(PaymentStatus.SUCCEEDED, after)
+                .stream()
+                .map(tx -> new RecentPaymentDTO(
+                        tx.getId(), tx.getTableNumber(), tx.getAmount(), tx.getUpdatedAt()))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public String getReceiptJson(String reference) {
+        return paymentRepository.findByStripePaymentIntentId(reference)
+                .filter(tx -> tx.getStatus() == PaymentStatus.SUCCEEDED && tx.getReceiptJson() != null)
+                .map(PaymentTransaction::getReceiptJson)
+                .orElseThrow(() -> new IllegalArgumentException("Recibo no encontrado para la referencia dada."));
+    }
+
+    // El recibo es secundario al cobro: si algo falla aquí, el pago se confirma
+    // igualmente y el endpoint de recibo responderá 404 para esta referencia.
+    String buildReceiptJson(PaymentTransaction tx) {
+        try {
+            List<OrderResponseDTO> orders = orderService.getActiveOrdersByTable(tx.getTableNumber());
+            ReceiptDTO receipt = new ReceiptDTO(
+                    tx.getStripePaymentIntentId(),
+                    tx.getTableNumber(),
+                    LocalDateTime.now(),
+                    tx.getAmount(),
+                    tx.getCurrency(),
+                    orders);
+            return objectMapper.writeValueAsString(receipt);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

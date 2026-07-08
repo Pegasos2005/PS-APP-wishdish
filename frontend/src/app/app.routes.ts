@@ -11,6 +11,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/public/join-as/join-as.component').then(c => c.JoinAsComponent)
   },
 
+  // Recibo público de un pago (se llega vía QR desde la pantalla de confirmación)
+  {
+    path: 'receipt/:ref',
+    loadComponent: () => import('./features/public/receipt-view/receipt-view.component').then(c => c.ReceiptViewComponent)
+  },
+
   // ROL: Admin (Lazy Load)
   {
     path: 'admin',
