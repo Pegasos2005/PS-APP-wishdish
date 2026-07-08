@@ -91,3 +91,20 @@
 .charge-btn:hover {
   background: #fb8c00;
 }
+
+/* --- AVISO DE COBROS COMPLETADOS --- */
+.paid-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.paid-chip {
+  background-color: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  color: #2e7d32;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}

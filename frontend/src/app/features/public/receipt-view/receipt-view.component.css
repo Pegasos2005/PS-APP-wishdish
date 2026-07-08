@@ -1,76 +1,13 @@
-.payment-page {
+.receipt-page {
   background-color: #1a1a1a;
   min-height: 100vh;
   color: #eaeaea;
   font-family: system-ui, sans-serif;
-  padding: 0 0 24px 0;
-}
-
-.payment-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px;
-}
-
-.return-button {
-  background: none;
-  border: none;
-  color: #eaeaea;
-  font-size: 1.6rem;
-  cursor: pointer;
-  width: 40px;
-}
-
-.return-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.payment-title {
-  margin: 0;
-  font-size: 1.1rem;
-  letter-spacing: 0.1em;
-  flex: 1;
-  text-align: center;
-}
-
-.payment-card {
-  max-width: 480px;
-  margin: 0 auto;
-  background: #232323;
-  border-radius: 12px;
-  padding: 24px;
+  padding: 24px 12px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 20px;
-}
-
-.amount-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 16px;
-  background: #2c2c2c;
-  border-radius: 8px;
-}
-
-.amount-label {
-  font-size: 0.8rem;
-  color: #aaa;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.amount-value {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #fff;
-}
-
-.stripe-element {
-  min-height: 200px;
 }
 
 .info-text {
@@ -78,50 +15,19 @@
   color: #bbb;
 }
 
-.error-text {
-  color: #ff7676;
-  text-align: center;
-  margin: 0;
-  font-size: 0.9rem;
-}
-
-.pay-btn {
-  background: #4caf50;
-  color: #fff;
-  border: none;
-  padding: 14px 20px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  letter-spacing: 0.04em;
-}
-
-.pay-btn:disabled {
-  background: #555;
-  cursor: not-allowed;
-}
-
-.hint-text {
-  margin: 0;
-  text-align: center;
-  color: #888;
-  font-size: 0.78rem;
-}
-
-.success-section {
+.error-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 20px;
+  padding: 40px 20px;
 }
 
-.success-icon {
+.error-icon {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: #4caf50;
+  background: #e74c3c;
   color: #fff;
   display: flex;
   align-items: center;
@@ -130,11 +36,10 @@
   margin: 0;
 }
 
-.success-text {
+.error-text {
+  color: #ff7676;
+  text-align: center;
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #4caf50;
 }
 
 /* --- RECIBO EN FORMATO DE IMPRESORA TÉRMICA --- */
@@ -261,32 +166,17 @@
   margin: 10px 0;
 }
 
-/* --- BOTONES DEL RECIBO --- */
+/* --- BOTÓN DE DESCARGA --- */
 .receipt-actions {
+  width: 100%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
-.print-btn,
-.home-btn {
-  border: none;
-  padding: 14px 20px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  letter-spacing: 0.04em;
-}
-
-.print-btn {
+.download-btn {
   background: #4caf50;
   color: #fff;
-}
-
-.qr-btn {
-  background: #ff9f43;
-  color: #fff;
   border: none;
   padding: 14px 20px;
   font-size: 1rem;
@@ -296,57 +186,15 @@
   letter-spacing: 0.04em;
 }
 
-.qr-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 16px;
-  background: #fdfbf7;
-  border-radius: 8px;
-}
-
-.qr-img {
-  width: 240px;
-  max-width: 100%;
-}
-
-.qr-hint {
-  margin: 0;
-  color: #333;
-  font-size: 0.85rem;
-  text-align: center;
-}
-
-.qr-url {
-  margin: 0;
-  color: #777;
-  font-size: 0.7rem;
-  text-align: center;
-  word-break: break-all;
-}
-
-.home-btn {
-  background: #3a3a3a;
-  color: #eaeaea;
-}
-
-/* --- IMPRESIÓN: solo el recibo --- */
+/* --- IMPRESIÓN / GUARDAR PDF: solo el recibo --- */
 @media print {
-  .payment-header,
   .no-print {
     display: none !important;
   }
 
-  .payment-page {
+  .receipt-page {
     background: #fff;
     min-height: auto;
-    padding: 0;
-  }
-
-  .payment-card {
-    background: none;
-    max-width: none;
     padding: 0;
   }
 

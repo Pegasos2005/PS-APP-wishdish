@@ -5,6 +5,7 @@ import { interval, of } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CustomerOrderService } from '../../../core/services/customer-order.service';
+import { PaymentService } from '../../../core/services/payment.service';
 
 @Component({
   selector: 'app-close-table',
@@ -15,13 +16,18 @@ import { CustomerOrderService } from '../../../core/services/customer-order.serv
 })
 export class CloseTableComponent implements OnInit {
   private orderService = inject(CustomerOrderService);
+  private paymentService = inject(PaymentService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
   tablesAwaitingPayment = signal<number[]>([]);
 
+  // Cobros completados en los últimos minutos (aviso para el personal)
+  recentPayments = signal<any[]>([]);
+
   ngOnInit() {
     this.startPaymentRequestsPolling();
+    this.startRecentPaymentsPolling();
   }
 
   startPaymentRequestsPolling() {
@@ -30,6 +36,14 @@ export class CloseTableComponent implements OnInit {
       switchMap(() => this.orderService.getTablesAwaitingPayment()),
       catchError(() => of(this.tablesAwaitingPayment()))
     ).subscribe(tables => this.tablesAwaitingPayment.set(tables));
+  }
+
+  startRecentPaymentsPolling() {
+    interval(3000).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      switchMap(() => this.paymentService.getRecentPayments()),
+      catchError(() => of(this.recentPayments()))
+    ).subscribe(payments => this.recentPayments.set(payments));
   }
 
   closeTable(tableNumber: number) {

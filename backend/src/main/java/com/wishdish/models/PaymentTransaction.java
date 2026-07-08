@@ -31,6 +31,13 @@ public class PaymentTransaction {
     @Column(nullable = false, length = 16)
     private PaymentStatus status = PaymentStatus.PENDING;
 
+    // Instantánea del recibo en JSON, capturada al confirmar el pago
+    // (las comandas pasan a "paid" al cerrar la mesa y el ticket activo desaparece).
+    // Sin longitud explícita, Hibernate generaría tinytext (255 bytes) y el JSON no cabe.
+    @Lob
+    @Column(name = "receipt_json", columnDefinition = "longtext")
+    private String receiptJson;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -68,6 +75,9 @@ public class PaymentTransaction {
 
     public PaymentStatus getStatus() { return status; }
     public void setStatus(PaymentStatus status) { this.status = status; }
+
+    public String getReceiptJson() { return receiptJson; }
+    public void setReceiptJson(String receiptJson) { this.receiptJson = receiptJson; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

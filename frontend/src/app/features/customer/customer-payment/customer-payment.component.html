@@ -37,10 +37,120 @@
     }
 
     @if (success()) {
-      <div class="success-section">
+      <div class="success-section no-print">
         <p class="success-icon">✓</p>
         <p class="success-text">Pago confirmado</p>
-        <p class="info-text">Volviendo al inicio…</p>
+      </div>
+
+      <!-- RECIBO EN FORMATO DE IMPRESORA TÉRMICA -->
+      <main class="thermal-receipt">
+
+        <div class="receipt-header">
+          <p class="divider">==========================================</p>
+          <h2 class="receipt-restaurant-name">WISH DISH RESTAURANT</h2>
+          <p class="divider">==========================================</p>
+          <p class="receipt-subtitle">RECIBO DE PAGO</p>
+
+          <div class="receipt-info-row">
+            <span>FECHA: {{ receiptDate() | date:'dd/MM/yyyy HH:mm' }}</span>
+            <span>MESA: {{ receiptTable() }}</span>
+          </div>
+          <div class="receipt-info-row">
+            <span class="receipt-ref">REF: {{ receiptReference() }}</span>
+          </div>
+          <p class="divider">------------------------------------------</p>
+
+          @if (receiptOrders().length > 0) {
+            <div class="receipt-grid receipt-grid-header">
+              <span class="col-uds">UDS</span>
+              <span class="col-desc">DESCRIPCION</span>
+              <span class="col-pvp">PVP</span>
+              <span class="col-importe">IMPORTE</span>
+            </div>
+            <p class="divider">------------------------------------------</p>
+          }
+        </div>
+
+        <div class="receipt-body">
+          @for (order of receiptOrders(); track order.commandNumber) {
+            <div class="command-section">
+              <p class="command-title">* COMANDA {{ order.commandNumber }} ({{ order.time }}) *</p>
+
+              @for (item of order.items; track item.name) {
+                <div class="receipt-grid item-row">
+                  <span class="col-uds">{{ item.quantity }}</span>
+                  <span class="col-desc">{{ item.name | uppercase }}</span>
+                  <span class="col-pvp">{{ item.price | number:'1.2-2' }}</span>
+                  <span class="col-importe">{{ (item.price * item.quantity) | number:'1.2-2' }} €</span>
+                </div>
+
+                @for (extra of item.extras; track extra.name) {
+                  <div class="receipt-grid extra-row">
+                    <span class="col-uds"></span>
+                    <span class="col-desc">+ {{ extra.name | uppercase }}</span>
+                    <span class="col-pvp">{{ extra.price > 0 ? (extra.price | number:'1.2-2') : '' }}</span>
+                    <span class="col-importe">{{ extra.price > 0 ? ((extra.price * item.quantity) | number:'1.2-2') + ' €' : '' }}</span>
+                  </div>
+                }
+
+                @for (rem of item.removed; track rem) {
+                  <div class="receipt-grid extra-row">
+                    <span class="col-uds"></span>
+                    <span class="col-desc">- SIN {{ rem | uppercase }}</span>
+                    <span class="col-pvp"></span>
+                    <span class="col-importe"></span>
+                  </div>
+                }
+              }
+            </div>
+          } @empty {
+            <p class="receipt-empty-note">Desglose no disponible</p>
+          }
+        </div>
+
+        <div class="receipt-footer">
+          <p class="divider">------------------------------------------</p>
+          <div class="totals-section">
+            <div class="total-line">
+              <span class="total-label">SUBTOTAL:</span>
+              <span class="total-value">{{ receiptSubtotal() | number:'1.2-2' }} €</span>
+            </div>
+            <div class="total-line">
+              <span class="total-label">IGIC/IVA (7%):</span>
+              <span class="total-value">{{ receiptTax() | number:'1.2-2' }} €</span>
+            </div>
+            <p class="divider">------------------------------------------</p>
+            <div class="total-line grand-total">
+              <span class="total-label">TOTAL PAGADO:</span>
+              <span class="total-value">{{ receiptTotal() | number:'1.2-2' }} €</span>
+            </div>
+          </div>
+
+          <p class="tax-note">El importe de los extras vienen<br>incluidos en el precio del producto</p>
+          <p class="divider">------------------------------------------</p>
+          <p class="receipt-thanks">¡Gracias por su visita!</p>
+          <p class="divider">==========================================</p>
+        </div>
+
+      </main>
+
+      <div class="receipt-actions no-print">
+        <button class="qr-btn" (click)="toggleQr()">
+          {{ showQr() ? 'Ocultar QR' : 'Recibo en tu móvil (QR)' }}
+        </button>
+
+        @if (showQr()) {
+          <div class="qr-section">
+            @if (qrDataUrl()) {
+              <img class="qr-img" [src]="qrDataUrl()" alt="QR del recibo">
+            }
+            <p class="qr-hint">Escanéalo con tu móvil para abrir y descargar tu recibo</p>
+            <p class="qr-url">{{ receiptUrl() }}</p>
+          </div>
+        }
+
+        <button class="print-btn" (click)="printReceipt()">Imprimir recibo</button>
+        <button class="home-btn" (click)="goHome()">Volver al inicio</button>
       </div>
     }
 

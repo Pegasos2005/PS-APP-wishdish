@@ -25,5 +25,18 @@
         </div>
       }
     </section>
+
+    @if (recentPayments().length > 0) {
+      <section class="ct-section">
+        <h2 class="ct-section-title">Recently paid</h2>
+        <div class="paid-banner">
+          @for (payment of recentPayments(); track payment.id) {
+            <span class="paid-chip">
+              ✓ Table {{ payment.tableNumber }} paid — {{ payment.amount | number:'1.2-2' }} € ({{ payment.paidAt | date:'HH:mm' }})
+            </span>
+          }
+        </div>
+      </section>
+    }
   </main>
 </div>

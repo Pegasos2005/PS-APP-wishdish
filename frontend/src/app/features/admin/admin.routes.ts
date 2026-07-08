@@ -80,6 +80,10 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./close-cash/close-cash.component').then(c => c.CloseCashComponent)
       },
       {
+        path: 'indicators',
+        loadComponent: () => import('./indicators/indicators.component').then(c => c.IndicatorsComponent)
+      },
+      {
         path: 'close-table',
         loadComponent: () => import('./close-table/close-table.component').then(c => c.CloseTableComponent)
       }

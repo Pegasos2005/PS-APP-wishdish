@@ -28,4 +28,12 @@ export class PaymentService {
       { paymentIntentId }
     );
   }
+
+  getReceipt(reference: string): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}receipts/${reference}`);
+  }
+
+  getRecentPayments(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/recent`);
+  }
 }

@@ -1,0 +1,282 @@
+/* --- Contenedor Principal (mismo lenguaje visual que close-cash) --- */
+.principal-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- CABECERA --- */
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 3rem;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  z-index: 10;
+}
+
+.header-left, .header-right {
+  width: 250px;
+}
+
+.header-left {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.header-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.return-button {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 28px;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0.2rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.return-button:hover {
+  background-color: #fceceb;
+  transform: translateX(-3px);
+}
+
+.header-logo {
+  height: 40px;
+  object-fit: contain;
+}
+
+.header-date {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  letter-spacing: 0.3px;
+}
+
+/* --- Cuerpo del contenido --- */
+.indicators-content {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* --- Título y selector de rango --- */
+.page-heading {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.range-selector {
+  display: flex;
+  background-color: white;
+  border-radius: 10px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.range-btn {
+  border: none;
+  background: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+}
+
+.range-btn.active {
+  background-color: #2c3e50;
+  color: white;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.3);
+}
+
+/* --- Tarjeta de cada indicador --- */
+.indicator-card {
+  background: white;
+  padding: 2rem 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #475569;
+  margin: 0 0 15px 0;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+/* --- Caja verde de facturación (mismo estilo que close-cash) --- */
+.green-overview {
+  background-color: #e6f4ea;
+  width: 100%;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.total-amount {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #16a34a;
+  margin: 5px 0 20px 0;
+  letter-spacing: -1px;
+}
+
+/* --- Tabla del ranking de productos --- */
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.ranking-table th {
+  text-align: left;
+  color: #64748b;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 8px 10px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.ranking-table td {
+  padding: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+}
+
+.ranking-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.rank-col {
+  width: 40px;
+  text-align: center;
+}
+
+.rank-badge {
+  font-weight: 800;
+  color: #16a34a;
+}
+
+.units-col, .revenue-col {
+  width: 110px;
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 600;
+}
+
+.ranking-table th.units-col, .ranking-table th.revenue-col {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Resumen del bloque de franjas --- */
+.slots-summary {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.slots-total {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #2c3e50;
+}
+
+/* --- Estados por bloque: carga, vacío y error localizado --- */
+.block-loading {
+  text-align: center;
+  color: #94a3b8;
+  padding: 30px 0;
+}
+
+.block-empty {
+  text-align: center;
+  padding: 30px 0;
+  color: #64748b;
+}
+
+.block-empty p {
+  font-weight: 700;
+  margin: 0 0 6px 0;
+}
+
+.block-empty span {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.block-error {
+  text-align: center;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 20px;
+  color: #b91c1c;
+}
+
+.block-error p {
+  margin: 0 0 12px 0;
+  font-weight: 600;
+}
+
+.retry-btn {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 10px 26px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.retry-btn:hover {
+  background-color: #b91c1c;
+}
